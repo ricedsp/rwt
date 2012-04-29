@@ -74,6 +74,7 @@ MATLAB description:
 */
 #include <math.h>
 #include <stdio.h>
+#include "matrix.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */

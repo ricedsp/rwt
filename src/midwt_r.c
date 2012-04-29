@@ -67,6 +67,7 @@ decription of the matlab call:
 
 #include <math.h>
 #include <stdio.h>
+#include "matrix.h"
 
 #define max(A,B) (A > B ? A : B)
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */

@@ -73,6 +73,7 @@ MATLAB description:
 
 #include <math.h>
 #include <stdio.h>
+#include "matrix.h"
 
 /*#define mat(a, i, j) (a[m*(j)+i]) */
 #define mat(a, i, j) (*(a + (m*(j)+i))) 

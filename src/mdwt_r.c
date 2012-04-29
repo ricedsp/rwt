@@ -63,6 +63,7 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 
 #include <math.h>
 #include <stdio.h>
+#include "matrix.h"
 
 #define max(A,B) (A > B ? A : B)
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
