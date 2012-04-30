@@ -34,7 +34,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
 {
   double *x, *h,  *y, *Lf, *Lr;
-  int m, n, h_col, h_row, lh, L, i, po2, j;
+  int m, n, h_col, h_row, lh, L, i, po2, j, dim;
   double mtest, ntest;
 
   /* check for correct # of input variables */
@@ -46,6 +46,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     mexErrMsgTxt("There are at least 2 input parameters required!");
     return;
   }
+  
+  /* buffer overflow will occur if matrix isn't 1-D or 2-D */
+  dim = mxGetNumberOfDimensions(prhs[0]);
+  if (dim > 2){
+    mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
+    return;
+  }
+  
   x = mxGetPr(prhs[0]);
   n = mxGetN(prhs[0]); 
   m = mxGetM(prhs[0]); 
