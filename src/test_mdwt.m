@@ -1,4 +1,9 @@
-function test_mdwt
+function test_suite = test_mdwt
+initTestSuite;
+
+
+
+function test_mdwt_1
        x = makesig('LinChirp',8);
        h = daubcqf(4,'min');
        L = 2;
@@ -11,4 +16,3 @@ function test_mdwt
 
 assertVectorsAlmostEqual(y, y_corr,'relative',0.001);
 assertEqual(L,L_corr);
-end
