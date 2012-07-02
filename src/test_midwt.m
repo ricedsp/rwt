@@ -3,7 +3,7 @@ initTestSuite;
 
 
 
-function test_midwt_1
+function test_midwt_1D
        x = makesig('LinChirp',8);
        h = daubcqf(4,'min');
        L = 2;

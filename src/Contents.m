@@ -16,3 +16,8 @@
 % Other.
 %     makesig - Create Donoho-Johnstone test signals
 %     compile - compile the Rice Wavelet toolbox
+
+% Added by Robert Brockman II, April 2012:
+%     test_*dwt.m - Unit Tests for above wavelet transforms.  Requires
+%                   xUnit in path, use "runtests" in MATLAB Command Window to access.
+%     lena512.mat - Standard "Lena" grayscale test image.

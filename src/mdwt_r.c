@@ -159,6 +159,30 @@ double *x_in, *h0, *h1, *x_outl, *x_outh;
 int lx, lhm1;
 #endif
 
+/*
+{
+  int i, j;
+  double x0, x1;
+  
+  int lh;
+  lh=lhm1+1;
+
+  for (i=lx; i < lx+lh-1; i++)
+     x_in[i] = *(x_in+(i-lx));
+  for (i=0; i<lx; i+=2){
+    x0 = 0;
+    x1 = 0;
+    for (j=0; j<lh; j++){
+      x0 = x0 + x_in[j+i]*h0[lh-1-j];
+      x1 = x1 + x_in[j+i]*h1[lh-1-j];
+    }
+    x_outl[i] = x0;
+    x_outh[i] = x1;
+  }
+}
+*/
+
+
 {
   int i, j, ind;
   double x0, x1;

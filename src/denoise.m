@@ -149,7 +149,7 @@ if(type == 0),
   default_opt = [0 3.0 0 0 0 0];
 elseif(type == 1),
   default_opt = [0 3.6 0 1 0 0];
-else,
+else
   error(['Unknown denoising method',10,...
 	  'If it is any good we need to have a serious talk :-)']);
 end;
@@ -158,7 +158,7 @@ option = setopt(option,default_opt);
 dim = min(mx,nx);
 if(dim == 1),
   n = max(mx,nx);
-else,
+else
   n = dim;
 end;
 if(option(5) == 0),
@@ -177,7 +177,7 @@ if(type == 0), 			% Denoising by DWT
     else
       error('Unknown threshold estimator, Use either MAD or STD');
     end;
-  else,
+  else
     thld = option(6);
   end;
   if(dim == 1)
@@ -192,13 +192,13 @@ if(type == 0), 			% Denoising by DWT
     xd = SoftTh(xd,thld);
   elseif(option(4) == 1),
     xd = HardTh(xd,thld);
-  else,
+  else
     error('Unknown threshold rule. Use either Soft (0) or Hard (1)');
   end;
   if (option(1) == 0),
     if(dim == 1),
       xd(ix) = ykeep;
-    else,
+    else
       xd(ix,jx) = ykeep;
     end;
   end;
@@ -207,7 +207,7 @@ elseif(type == 1), 			% Denoising by UDWT
   [xl,xh] = mrdwt(x,h,L);
   if(dim == 1),
     c_offset = 1;
-  else,
+  else
     c_offset = 2*nx + 1;
   end;
   if (option(6) == 0),
@@ -219,7 +219,7 @@ elseif(type == 1), 			% Denoising by UDWT
     else
       error('Unknown threshold estimator, Use either MAD or STD');
     end;
-  else,
+  else
     thld = option(6);
   end;
   if(option(4) == 0),
@@ -232,11 +232,11 @@ elseif(type == 1), 			% Denoising by UDWT
     if(option(1) == 1),
       xl = HardTh(xl,thld);
     end;
-  else,
+  else
     error('Unknown threshold rule. Use either Soft (0) or Hard (1)');
   end;
   xd = mirdwt(xl,xh,h,L);
-else, 					% Denoising by unknown method
+else 					% Denoising by unknown method
   error(['Unknown denoising method',10,...
          'If it is any good we need to have a serious talk :-)']);
 end;
