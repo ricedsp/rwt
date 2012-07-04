@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include "mex.h"
 #include "matrix.h"
+#include "limits.h"
+
+
 
 #define max(A,B) (A > B ? A : B)
 #define min(A,B) (A < B ? A : B)
@@ -17,17 +20,26 @@
 #define INVERSE_DWT 3
 #define INVERSE_REDUNDANT_DWT 4
 
+extern "C" {
+int MDWT(double *x, int m, int n, double *h, int lh, int L, double *y);
+int MIDWT(double *x, int m, int n, double *h, int lh, int L, double *y);
+int MRDWT(double *x, int m, int n, double *h, int lh, int L,
+	      double *yl, double *yh);
+int MIRDWT(double *x, int m, int n, double *h, int lh, int L,
+       double *yl, double *yh);
+}
+
 /* Checks for correct # of input variables based on type of transform. */
 int dwtInputCheck(int nrhs, int dwtType)
 {
   if (dwtType == INVERSE_REDUNDANT_DWT) {
     if (nrhs>4){
         mexErrMsgTxt("There are at most 4 input parameters allowed!");
-        return;
+        return 1;
     }
     if (nrhs<3){
         mexErrMsgTxt("There are at least 3 input parameters required!");
-        return;
+        return 1;
     }      
   }
   else {
@@ -187,5 +199,6 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
     Lr = mxGetPr(plhs[1]);
     *Lr = L;
     MIRDWT(x, m, n, h, lh, L, yl, yh); 
+    break;
   }    
 }
