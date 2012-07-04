@@ -38,26 +38,22 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: RwtTest
-
-dependents:
-	-cd /home/robert/Desktop/Great\ Work/Rice/Archives/Spring\ 2012/ELEC\ 544/rwt/RwtLib/Debug && $(MAKE) all
+all: libRwtLib.a
 
 # Tool invocations
-RwtTest: $(OBJS) $(USER_OBJS) /home/robert/Desktop/Great\ Work/Rice/Archives/Spring\ 2012/ELEC\ 544/rwt/RwtLib/Debug/libRwtLib.a
+libRwtLib.a: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/robert/Desktop/Great Work/Rice/Archives/Spring 2012/ELEC 544/rwt/RwtLib/Debug" -L../../RwtLib/Debug -L../../matlab_lib -fprofile-arcs -ftest-coverage -std=c99 -o "RwtTest" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC Archiver'
+	ar -r  "libRwtLib.a" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) RwtTest
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(ARCHIVES)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS) libRwtLib.a
 	-@echo ' '
 
 .PHONY: all clean dependents
 .SECONDARY:
-/home/robert/Desktop/Great\ Work/Rice/Archives/Spring\ 2012/ELEC\ 544/rwt/RwtLib/Debug/libRwtLib.a:
 
 -include ../makefile.targets

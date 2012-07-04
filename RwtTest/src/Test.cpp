@@ -8,6 +8,7 @@
 #include "mex.h"
 #include "matrix.h"
 #include "dwt.h"
+#include "fcn.hpp"
 
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
@@ -21,6 +22,7 @@ void thisIsATest() {
 	mxArray *plhs[2];
 	const mxArray *prhs[4];
 	mexFunction(0,plhs,0,prhs);
+	doit();
 
 	ASSERTM("start writing tests", false);
 }
