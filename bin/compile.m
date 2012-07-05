@@ -40,10 +40,10 @@
 %mex -v mdwt.c ../RwtLib/src/mdwt_r.c ../RwtLib/src/midwt_r.c ../RwtLib/src/mrdwt_r.c ../RwtLib/src/mirdwt_r.c -I../RwtLib/include 
 
 % Use library compiled with Makefile.
-mex mdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
-mex midwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
-mex mrdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
-mex mirdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex ../src/mdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex ../src/midwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex ../src/mrdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex ../src/mirdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
 
 %mex mdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
 %mex midwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c

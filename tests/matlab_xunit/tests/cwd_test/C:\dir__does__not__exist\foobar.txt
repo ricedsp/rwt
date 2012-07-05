@@ -1,0 +1,7 @@
+Test suite: dir1
+Test suite location: ../dir1
+30-Apr-2012 16:08:05
+
+Starting test run with 1 test case.
+.
+PASSED in 0.064 seconds.

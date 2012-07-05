@@ -1,5 +1,5 @@
-In order to install this distribution of Rice Wavelet Tools version 2.4
-released - <Dec 1 2002>
+In order to install this distribution of Rice Wavelet Tools version 3.0
+released - <Aug 6 2012>
 
 1. Properly set up your system to create MEX-files. Please refer to the
    "Matlab Application Program Guide" to properly set up of your matlab
@@ -13,15 +13,19 @@ released - <Dec 1 2002>
         gunzip rwt.tar.gz
         tar xvf rwt.tar
 
-3. Run MATLAB and change to the temporary directory containing the source
-   files.
+3. Run MATLAB and change to the "bin" subdirectory containing the .m 
+   files. 
 
 4. Compile the toolbox by executing the Matlab command 
 
         compile
 
-5. Add the toolbox directory to your Matlab path.
+5. Add the toolbox "bin" subdirectory to your Matlab path.
 
-6. For further instructions, please refer to the README file.
+6. High-level tests can be found in the "tests" subdirectory.  Using 
+   them requires recursively adding the "tests" directory and all of
+   its subdirectories to the MATLAB search path.
+
+7. For further instructions, please refer to the README file.
 
 
