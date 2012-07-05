@@ -36,7 +36,16 @@
 %For information on commercial licenses, contact Rice University's Office of 
 %Technology Transfer at techtran@rice.edu or (713) 348-6173
 
-mex mdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
-mex midwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
-mex mrdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
-mex mirdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
+% Use c files directly.
+%mex -v mdwt.c ../RwtLib/src/mdwt_r.c ../RwtLib/src/midwt_r.c ../RwtLib/src/mrdwt_r.c ../RwtLib/src/mirdwt_r.c -I../RwtLib/include 
+
+% Use library compiled with Makefile.
+mex mdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex midwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex mrdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+mex mirdwt.c -I../RwtLib/include -L../RwtLib/Release -lRwtLib
+
+%mex mdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
+%mex midwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
+%mex mrdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
+%mex mirdwt.c  mdwt_r.c mrdwt_r.c midwt_r.c mirdwt_r.c
