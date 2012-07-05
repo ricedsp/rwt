@@ -1,40 +1,10 @@
 /*
- * WHAT AM I?
+ * dwt.c
+ *
+ *  Created on: Jul 4, 2012
+ *      Author: robert
  */
-#include <math.h>
-/*#include <malloc.h>*/
-#include <stdio.h>
-#include "mex.h"
-#include "matrix.h"
-#include "limits.h"
-
-
-
-#define max(A,B) (A > B ? A : B)
-#define min(A,B) (A < B ? A : B)
-#define even(x)  ((x & 1) ? 0 : 1)
-#define isint(x) ((x - floor(x)) > 0.0 ? 0 : 1)
-
-#define NORMAL_DWT 1
-#define REDUNDANT_DWT 2
-#define INVERSE_DWT 3
-#define INVERSE_REDUNDANT_DWT 4
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-int MDWT(double *x, int m, int n, double *h, int lh, int L, double *y);
-int MIDWT(double *x, int m, int n, double *h, int lh, int L, double *y);
-int MRDWT(double *x, int m, int n, double *h, int lh, int L,
-	      double *yl, double *yh);
-int MIRDWT(double *x, int m, int n, double *h, int lh, int L,
-       double *yl, double *yh);
-#ifdef __cplusplus
-}
-#endif
-
-
+#include "dwt_init.h"
 
 /* Checks for correct # of input variables based on type of transform. */
 int dwtInputCheck(int nrhs, int dwtType)
@@ -47,7 +17,7 @@ int dwtInputCheck(int nrhs, int dwtType)
     if (nrhs<3){
         mexErrMsgTxt("There are at least 3 input parameters required!");
         return 1;
-    }      
+    }
   }
   else {
     if (nrhs>3){
@@ -57,7 +27,7 @@ int dwtInputCheck(int nrhs, int dwtType)
     if (nrhs<2){
         mexErrMsgTxt("There are at least 2 input parameters required!");
         return 1;
-    }        
+    }
   }
   return 0;
 }
@@ -90,23 +60,23 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
   double *x, *h,  *y, *yl, *yh, *Lf, *Lr;
   int m, n, mh, nh, h_col, h_row, lh, L, dim, argNumL;
   double mtest, ntest;
-  
+
   /* check for correct # of input variables */
   if (dwtInputCheck(nrhs, dwtType) !=0) return;
- 
 
-  
+
+
   /* buffer overflow will occur if matrix isn't 1-D or 2-D */
   dim = mxGetNumberOfDimensions(prhs[0]);
   if (dim > 2){
     mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
     return;
   }
-  
+
   /* Get input matrix row and column number */
-  n = mxGetN(prhs[0]); 
-  m = mxGetM(prhs[0]); 
-  
+  n = mxGetN(prhs[0]);
+  m = mxGetM(prhs[0]);
+
   /* Read L from command line or compute L */
   argNumL = 2;
   if (dwtType == INVERSE_REDUNDANT_DWT) argNumL += 1;
@@ -118,13 +88,13 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
       mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
       return;
   }
-  
-  
+
+
   if (dwtType == INVERSE_REDUNDANT_DWT) {
-    nh = mxGetN(prhs[1]); 
-    mh = mxGetM(prhs[1]); 
+    nh = mxGetN(prhs[1]);
+    mh = mxGetM(prhs[1]);
     h = mxGetPr(prhs[2]);
-    h_col = mxGetN(prhs[2]); 
+    h_col = mxGetN(prhs[2]);
     h_row = mxGetM(prhs[2]);
     /* check for consistency of rows and columns of yl, yh */
     if (min(m, n) > 1){
@@ -139,21 +109,21 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
                 return;
             }
         }
-    }  
+    }
   }
   else {
     h = mxGetPr(prhs[1]);
-    h_col = mxGetN(prhs[1]); 
-    h_row = mxGetM(prhs[1]);         
+    h_col = mxGetN(prhs[1]);
+    h_row = mxGetM(prhs[1]);
   }
-  
+
   if (h_col>h_row)
     lh = h_col;
-  else  
+  else
     lh = h_row;
-  
 
-  
+
+
   /* Check the ROW dimension of input */
   if(m > 1){
     mtest = (double) m/pow(2.0, (double) L);
@@ -167,14 +137,14 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
       mexErrMsgTxt("The matrix column dimension must be of size n*2^(L)");
   }
   plhs[0] = mxCreateDoubleMatrix(m,n,mxREAL);
-  
+
   switch(dwtType) {
   case NORMAL_DWT:
     x = mxGetPr(prhs[0]);
     y = mxGetPr(plhs[0]);
     plhs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
     Lr = mxGetPr(plhs[1]);
-    *Lr = L;  
+    *Lr = L;
     MDWT(x, m, n, h, lh, L, y);
     break;
   case REDUNDANT_DWT:
@@ -188,7 +158,7 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
     plhs[2] = mxCreateDoubleMatrix(1,1,mxREAL);
     Lr = mxGetPr(plhs[2]);
     *Lr = L;
-    MRDWT(x, m, n, h, lh, L, yl, yh);  
+    MRDWT(x, m, n, h, lh, L, yl, yh);
     break;
   case INVERSE_DWT:
     y = mxGetPr(prhs[0]);
@@ -205,7 +175,7 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
     plhs[1] = mxCreateDoubleMatrix(1,1,mxREAL);
     Lr = mxGetPr(plhs[1]);
     *Lr = L;
-    MIRDWT(x, m, n, h, lh, L, yl, yh); 
+    MIRDWT(x, m, n, h, lh, L, yl, yh);
     break;
-  }    
+  }
 }

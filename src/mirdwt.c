@@ -1,5 +1,5 @@
 /*
-File Name: mrdwt.c
+File Name: mirdwt.c
 Last Modification Date:	%G%	%U%
 Current Version: %M%	%I%
 File Creation Date: Wed Oct 12 08:44:43 1994
@@ -15,17 +15,17 @@ or as part of any commercial product is specifically reserved for the author.
 Change History: Fixed code such that the result has the same dimension as the 
                 input for 1D problems. Also, added some standard error checking.
 		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
+
 */
 
-#include <math.h>
-/*#include <malloc.h>*/
-#include <stdio.h>
-#include "mex.h"
 #include "matrix.h"
-#include "dwt.h"
+#include "mex.h"
+#include "dwt_init.h"
+
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
-  dwtInit(nlhs,plhs,nrhs,prhs,REDUNDANT_DWT);
+  dwtInit(nlhs,plhs,nrhs,prhs,INVERSE_REDUNDANT_DWT);
 }
+
 

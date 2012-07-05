@@ -198,7 +198,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1326378584" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.flags.38843460" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-fprofile-arcs -ftest-coverage -std=c99" valueType="string"/>
 								<option id="gnu.cpp.link.option.paths.1937714978" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RwtLib/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RwtLib/Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="../../RwtLib/Debug"/>
 									<listOptionValue builtIn="false" value="../../matlab_lib"/>
 								</option>
@@ -235,7 +235,7 @@
 				<externalSettings containerId="RwtLib;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/RwtLib"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/RwtLib/Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/RwtLib/Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="RwtLib"/>
 					</externalSetting>
 				</externalSettings>

@@ -1,7 +1,7 @@
 /*
-File Name: mirdwt.c
-Last Modification Date:	%G%	%U%
-Current Version: %M%	%I%
+File Name: midwt.c
+Last Modification Date:	06/14/95	12:55:58
+Current Version: midwt.c	1.4
 File Creation Date: Wed Oct 12 08:44:43 1994
 Author: Markus Lang  <lang@jazz.rice.edu>
 
@@ -17,14 +17,12 @@ Change History: Fixed code such that the result has the same dimension as the
 		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
 
 */
-
 #include "mex.h"
-#include "dwt.h"
-
+#include "matrix.h"
+#include "dwt_init.h"
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
-  dwtInit(nlhs,plhs,nrhs,prhs,INVERSE_REDUNDANT_DWT);
+  dwtInit(nlhs,plhs,nrhs,prhs,INVERSE_DWT);
 }
-
 
