@@ -80,7 +80,33 @@ MATLAB description:
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
 
 #ifdef __STDC__
-MIRDWT(double *x, int m, int n, double *h, int lh, int L,
+void bpconv(double *x_out, int lx, double *g0, double *g1, int lh,
+       double *x_inl, double *x_inh)
+#else
+bpconv(x_out, lx, g0, g1, lh, x_inl, x_inh)
+double *x_inl, *x_inh, *g0, *g1, *x_out;
+int lx, lh;
+#endif
+{
+  int i, j;
+  double x0;
+
+  for (i=lh-2; i > -1; i--){
+    x_inl[i] = x_inl[lx+i];
+    x_inh[i] = x_inh[lx+i];
+  }
+  for (i=0; i<lx; i++){
+    x0 = 0;
+    for (j=0; j<lh; j++)
+      x0 = x0 + x_inl[j+i]*g0[lh-1-j] +
+	x_inh[j+i]*g1[lh-1-j];
+    x_out[i] = x0;
+  }
+}
+
+
+#ifdef __STDC__
+void MIRDWT(double *x, int m, int n, double *h, int lh, int L,
        double *yl, double *yh)
 #else
 MIRDWT(x, m, n, h, lh, L, yl, yh)
@@ -90,9 +116,9 @@ int m, n, lh, L;
 {
   double  *g0, *g1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh, *xh;
-  long i, j;
-  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, n_c_o, lhm1;
-  int ic, n_r, n_rb, n_r_o, c_o_a_p2n, sample_f;
+  long i;
+  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, lhm1;
+  int ic, n_r, n_rb, c_o_a_p2n, sample_f;
   xh = (double *)mxCalloc(m*n,sizeof(double));
   xdummyl = (double *)mxCalloc(max(m,n),sizeof(double));
   xdummyh = (double *)mxCalloc(max(m,n),sizeof(double));
@@ -193,27 +219,3 @@ int m, n, lh, L;
   }
 }
 
-#ifdef __STDC__
-bpconv(double *x_out, int lx, double *g0, double *g1, int lh,
-       double *x_inl, double *x_inh)
-#else
-bpconv(x_out, lx, g0, g1, lh, x_inl, x_inh)
-double *x_inl, *x_inh, *g0, *g1, *x_out;
-int lx, lh;
-#endif
-{
-  int i, j;
-  double x0;
- 
-  for (i=lh-2; i > -1; i--){
-    x_inl[i] = x_inl[lx+i];
-    x_inh[i] = x_inh[lx+i];
-  }
-  for (i=0; i<lx; i++){
-    x0 = 0;
-    for (j=0; j<lh; j++)
-      x0 = x0 + x_inl[j+i]*g0[lh-1-j] +
-	x_inh[j+i]*g1[lh-1-j];
-    x_out[i] = x0;
-  }
-}

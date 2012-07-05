@@ -57,7 +57,7 @@ int dwtEstimateL(int n, int m) {
 
 void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType)
 {
-  double *x, *h,  *y, *yl, *yh, *Lf, *Lr;
+  double *x, *h,  *y, *yl, *yh, *Lr;
   int m, n, mh, nh, h_col, h_row, lh, L, dim, argNumL;
   double mtest, ntest;
 

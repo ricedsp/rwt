@@ -80,7 +80,33 @@ MATLAB description:
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
 #ifdef __STDC__
-MRDWT(double *x, int m, int n, double *h, int lh, int L,
+void fpconv(double *x_in, int lx, double *h0, double *h1, int lh,
+       double *x_outl, double *x_outh)
+#else
+fpconv(x_in, lx, h0, h1, lh, x_outl, x_outh)
+double *x_in, *h0, *h1, *x_outl, *x_outh;
+int lx, lh;
+#endif
+{
+  int i, j;
+  double x0, x1;
+
+  for (i=lx; i < lx+lh-1; i++)
+    x_in[i] = x_in[i-lx];
+  for (i=0; i<lx; i++){
+    x0 = 0;
+    x1 = 0;
+    for (j=0; j<lh; j++){
+      x0 = x0 + x_in[j+i]*h0[lh-1-j];
+      x1 = x1 + x_in[j+i]*h1[lh-1-j];
+    }
+    x_outl[i] = x0;
+    x_outh[i] = x1;
+  }
+}
+
+#ifdef __STDC__
+void MRDWT(double *x, int m, int n, double *h, int lh, int L,
       double *yl, double *yh)
 #else
 MRDWT(x, m, n, h, lh, L, yl, yh)
@@ -88,12 +114,11 @@ double *x, *h, *yl, *yh;
 int m, n, lh, L;
 #endif
 {
-  double *tmp;
   double  *h0, *h1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh;
-  long i, j;
-  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, n_c_o;
-  int ic, n_r, n_rb, n_r_o, c_o_a_p2n, sample_f;
+  long i;
+  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb;
+  int ic, n_r, n_rb, c_o_a_p2n, sample_f;
   xdummyl = (double *)mxCalloc(max(m,n)+lh-1,sizeof(double));
   xdummyh = (double *)mxCalloc(max(m,n)+lh-1,sizeof(double));
   ydummyll = (double *)mxCalloc(max(m,n),sizeof(double));
@@ -185,28 +210,4 @@ int m, n, lh, L;
   }
 }
 
-#ifdef __STDC__
-fpconv(double *x_in, int lx, double *h0, double *h1, int lh,
-       double *x_outl, double *x_outh)
-#else
-fpconv(x_in, lx, h0, h1, lh, x_outl, x_outh)
-double *x_in, *h0, *h1, *x_outl, *x_outh;
-int lx, lh;
-#endif
-{
-  int i, j;
-  double x0, x1;
 
-  for (i=lx; i < lx+lh-1; i++)
-    x_in[i] = x_in[i-lx];
-  for (i=0; i<lx; i++){
-    x0 = 0;
-    x1 = 0;
-    for (j=0; j<lh; j++){
-      x0 = x0 + x_in[j+i]*h0[lh-1-j];
-      x1 = x1 + x_in[j+i]*h1[lh-1-j];
-    }
-    x_outl[i] = x0;
-    x_outh[i] = x1;
-  }
-}
