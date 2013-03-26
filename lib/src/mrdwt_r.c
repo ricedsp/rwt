@@ -119,14 +119,14 @@ int m, n, lh, L;
   long i;
   int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb;
   int ic, n_r, n_rb, c_o_a_p2n, sample_f;
-  xdummyl = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  xdummyh = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  ydummyll = (double *)ralloc(max(m,n),sizeof(double));
-  ydummylh = (double *)ralloc(max(m,n),sizeof(double));
-  ydummyhl = (double *)ralloc(max(m,n),sizeof(double));
-  ydummyhh = (double *)ralloc(max(m,n),sizeof(double));
-  h0 = (double *)ralloc(lh,sizeof(double));
-  h1 = (double *)ralloc(lh,sizeof(double));
+  xdummyl = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  xdummyh = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  ydummyll = (double *)rcalloc(max(m,n),sizeof(double));
+  ydummylh = (double *)rcalloc(max(m,n),sizeof(double));
+  ydummyhl = (double *)rcalloc(max(m,n),sizeof(double));
+  ydummyhh = (double *)rcalloc(max(m,n),sizeof(double));
+  h0 = (double *)rcalloc(lh,sizeof(double));
+  h1 = (double *)rcalloc(lh,sizeof(double));
 
   if (n==1){
     n = m;

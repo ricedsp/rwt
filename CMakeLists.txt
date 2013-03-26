@@ -16,6 +16,7 @@ IF (UNIX)
    lib/src/*.cmake
    Makefile
    lib/src/Makefile
+   lib/src/*.a
    core core.*
    gmon.out
    *~

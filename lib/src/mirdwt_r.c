@@ -119,15 +119,15 @@ int m, n, lh, L;
   long i;
   int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, lhm1;
   int ic, n_r, n_rb, c_o_a_p2n, sample_f;
-  xh = (double *)ralloc(m*n,sizeof(double));
-  xdummyl = (double *)ralloc(max(m,n),sizeof(double));
-  xdummyh = (double *)ralloc(max(m,n),sizeof(double));
-  ydummyll = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  ydummylh = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  ydummyhl = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  ydummyhh = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  g0 = (double *)ralloc(lh,sizeof(double));
-  g1 = (double *)ralloc(lh,sizeof(double));
+  xh = (double *)rcalloc(m*n,sizeof(double));
+  xdummyl = (double *)rcalloc(max(m,n),sizeof(double));
+  xdummyh = (double *)rcalloc(max(m,n),sizeof(double));
+  ydummyll = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  ydummylh = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  ydummyhl = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  ydummyhh = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  g0 = (double *)rcalloc(lh,sizeof(double));
+  g1 = (double *)rcalloc(lh,sizeof(double));
   
   if (n==1){
     n = m;

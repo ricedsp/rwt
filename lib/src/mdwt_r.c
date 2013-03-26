@@ -140,11 +140,11 @@ int m, n, lh, L;
   double  *h0, *h1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1;
-  xdummy = (double *)ralloc(max(m,n)+lh-1,sizeof(double));
-  ydummyl = (double *)ralloc(max(m,n),sizeof(double));
-  ydummyh = (double *)ralloc(max(m,n),sizeof(double));
-  h0 = (double *)ralloc(lh,sizeof(double));
-  h1 = (double *)ralloc(lh,sizeof(double));
+  xdummy = (double *)rcalloc(max(m,n)+lh-1,sizeof(double));
+  ydummyl = (double *)rcalloc(max(m,n),sizeof(double));
+  ydummyh = (double *)rcalloc(max(m,n),sizeof(double));
+  h0 = (double *)rcalloc(lh,sizeof(double));
+  h1 = (double *)rcalloc(lh,sizeof(double));
   
   
   /* analysis lowpass and highpass */
