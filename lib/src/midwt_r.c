@@ -115,11 +115,11 @@ int m, n, lh, L;
   double  *g0, *g1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;
-  xdummy = (double *)rcalloc(max(m,n),sizeof(double));
-  ydummyl = (double *)rcalloc(max(m,n)+lh/2-1,sizeof(double));
-  ydummyh = (double *)rcalloc(max(m,n)+lh/2-1,sizeof(double));
-  g0 = (double *)rcalloc(lh,sizeof(double));
-  g1 = (double *)rcalloc(lh,sizeof(double));
+  xdummy = (double *)rwt_calloc(max(m,n),sizeof(double));
+  ydummyl = (double *)rwt_calloc(max(m,n)+lh/2-1,sizeof(double));
+  ydummyh = (double *)rwt_calloc(max(m,n)+lh/2-1,sizeof(double));
+  g0 = (double *)rwt_calloc(lh,sizeof(double));
+  g1 = (double *)rwt_calloc(lh,sizeof(double));
 
   if (n==1){
     n = m;
