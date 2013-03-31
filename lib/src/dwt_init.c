@@ -54,13 +54,13 @@ int dwtEstimateL(int n, int m) {
   else return L;
 }
 
-void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType) {
+void dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
   double *x, *h,  *y, *yl, *yh, *Lr;
   int m, n, mh, nh, h_col, h_row, lh, L, dim, argNumL;
   double mtest, ntest;
 
   /* check for correct # of input variables */
-  if (dwtInputCheck(nrhs, dwtType) !=0) return;
+  if (dwtInputCheck(nrhs, dwtType) != 0) return;
 
   /* buffer overflow will occur if matrix isn't 1-D or 2-D */
   dim = mxGetNumberOfDimensions(prhs[0]);
