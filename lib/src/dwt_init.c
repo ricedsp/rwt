@@ -34,12 +34,12 @@ int dwtInputCheck(int nrhs, int dwtType) {
 int dwtEstimateL(int n, int m) {
   int i, j, L;
   i = n ; j = 0;
-  while (even(i)){
-    i=(i>>1);
+  while (even(i)) {
+    i = (i >> 1);
     j++;
   }
   L = m; i = 0;
-  while (even(L)){
+  while (even(L)) {
     L = (L >> 1);
     i++;
   }
@@ -64,7 +64,7 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
 
   /* buffer overflow will occur if matrix isn't 1-D or 2-D */
   dim = mxGetNumberOfDimensions(prhs[0]);
-  if (dim > 2){
+  if (dim > 2) {
     mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
     return;
   }
@@ -76,7 +76,7 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
   /* Read L from command line or compute L */
   argNumL = 2;
   if (dwtType == INVERSE_REDUNDANT_DWT) argNumL += 1;
-  if ( (argNumL + 1) == nrhs){
+  if ((argNumL + 1) == nrhs) {
     L = (int) *mxGetPr(prhs[argNumL]);
   }
   else L = dwtEstimateL(n, m);
@@ -118,14 +118,14 @@ void dwtInit(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[],int dwtType
     lh = h_row;
 
   /* Check the ROW dimension of input */
-  if(m > 1){
-    mtest = (double) m/pow(2.0, (double) L);
+  if (m > 1) {
+    mtest = (double) m / pow(2.0, (double) L);
     if (!isint(mtest))
       mexErrMsgTxt("The matrix row dimension must be of size m*2^(L)");
   }
   /* Check the COLUMN dimension of input */
-  if(n > 1){
-    ntest = (double) n/pow(2.0, (double) L);
+  if (n > 1) {
+    ntest = (double) n / pow(2.0, (double) L);
     if (!isint(ntest))
       mexErrMsgTxt("The matrix column dimension must be of size n*2^(L)");
   }
