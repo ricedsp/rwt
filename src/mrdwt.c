@@ -21,8 +21,19 @@ Change History: Fixed code such that the result has the same dimension as the
 #include "matrix.h"
 #include "dwt_init.h"
 
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
-{
-  dwtInit(nlhs,plhs,nrhs,prhs,REDUNDANT_DWT);
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+  double *x, *yl, *yh, *Lr;
+  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, REDUNDANT_DWT);
+  x = mxGetPr(prhs[0]);
+  yl = mxGetPr(plhs[0]);
+  if (min(params.m, params.n) == 1)
+    plhs[1] = mxCreateDoubleMatrix(params.m, params.L*params.n, mxREAL);
+  else
+    plhs[1] = mxCreateDoubleMatrix(params.m, 3*params.L*params.n, mxREAL);
+  yh = mxGetPr(plhs[1]);
+  plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
+  Lr = mxGetPr(plhs[2]);
+  *Lr = params.L;
+  MRDWT(x, params.m, params.n, params.h, params.lh, params.L, yl, yh);
 }
 

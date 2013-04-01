@@ -18,13 +18,19 @@ Change History: Fixed code such that the result has the same dimension as the
 
 MATLAB gateway for MDWT.c, discrete wavelet transform
 */
+
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"
 
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
-
-{
-  dwtInit(nlhs,plhs,nrhs,prhs,NORMAL_DWT);
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+  double *x, *y, *Lr;
+  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, NORMAL_DWT);
+  x = mxGetPr(prhs[0]);
+  y = mxGetPr(plhs[0]);
+  plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
+  Lr = mxGetPr(plhs[1]);
+  *Lr = params.L;
+  MDWT(x, params.m, params.n, params.h, params.lh, params.L, y);
 }
 

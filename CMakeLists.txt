@@ -19,6 +19,8 @@ IF (UNIX)
    lib/src/*.a
    core core.*
    gmon.out
+   bin/*.mexa64
+   bin/*.mexmaci64
    *~
   )
   

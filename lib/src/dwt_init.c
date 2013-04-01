@@ -54,7 +54,7 @@ int dwtEstimateL(int n, int m) {
   else return L;
 }
 
-void dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
+rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
   double *x, *h,  *y, *yl, *yh, *Lr;
   int m, n, mh, nh, h_col, h_row, lh, L, dim, argNumL;
   double mtest, ntest;
@@ -131,44 +131,11 @@ void dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwt
   }
   plhs[0] = mxCreateDoubleMatrix(m, n, mxREAL);
 
-  switch(dwtType) {
-  case NORMAL_DWT:
-    x = mxGetPr(prhs[0]);
-    y = mxGetPr(plhs[0]);
-    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    Lr = mxGetPr(plhs[1]);
-    *Lr = L;
-    MDWT(x, m, n, h, lh, L, y);
-    break;
-  case REDUNDANT_DWT:
-    x = mxGetPr(prhs[0]);
-    yl = mxGetPr(plhs[0]);
-    if (min(m,n) == 1)
-      plhs[1] = mxCreateDoubleMatrix(m, L*n, mxREAL);
-    else
-      plhs[1] = mxCreateDoubleMatrix(m, 3*L*n, mxREAL);
-    yh = mxGetPr(plhs[1]);
-    plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    Lr = mxGetPr(plhs[2]);
-    *Lr = L;
-    MRDWT(x, m, n, h, lh, L, yl, yh);
-    break;
-  case INVERSE_DWT:
-    y = mxGetPr(prhs[0]);
-    x = mxGetPr(plhs[0]);
-    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    Lr = mxGetPr(plhs[1]);
-    *Lr = L;
-    MIDWT(x, m, n, h, lh, L, y);
-    break;
-  case INVERSE_REDUNDANT_DWT:
-    yl = mxGetPr(prhs[0]);
-    yh = mxGetPr(prhs[1]);
-    x = mxGetPr(plhs[0]);
-    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    Lr = mxGetPr(plhs[1]);
-    *Lr = L;
-    MIRDWT(x, m, n, h, lh, L, yl, yh);
-    break;
-  }
+  rwt_init_params params;
+  params.m = m;
+  params.n = n;
+  params.lh = lh;
+  params.L = L;
+  params.h = h;
+  return params;
 }

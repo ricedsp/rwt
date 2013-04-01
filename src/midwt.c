@@ -17,12 +17,19 @@ Change History: Fixed code such that the result has the same dimension as the
 		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
 
 */
+
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"
 
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
-{
-  dwtInit(nlhs,plhs,nrhs,prhs,INVERSE_DWT);
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+  double *x, *y, *Lr;
+  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, INVERSE_DWT);
+  y = mxGetPr(prhs[0]);
+  x = mxGetPr(plhs[0]);
+  plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
+  Lr = mxGetPr(plhs[1]);
+  *Lr = params.L;
+  MIDWT(x, params.m, params.n, params.h, params.lh, params.L, y);
 }
 

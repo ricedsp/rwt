@@ -15,17 +15,21 @@ or as part of any commercial product is specifically reserved for the author.
 Change History: Fixed code such that the result has the same dimension as the 
                 input for 1D problems. Also, added some standard error checking.
 		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
-
 */
 
 #include "matrix.h"
 #include "mex.h"
 #include "dwt_init.h"
 
-
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
-{
-  dwtInit(nlhs,plhs,nrhs,prhs,INVERSE_REDUNDANT_DWT);
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+  double *x, *yl, *yh, *Lr;
+  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, INVERSE_REDUNDANT_DWT);
+  yl = mxGetPr(prhs[0]);
+  yh = mxGetPr(prhs[1]);
+  x = mxGetPr(plhs[0]);
+  plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
+  Lr = mxGetPr(plhs[1]);
+  *Lr = params.L;
+  MIRDWT(x, params.m, params.n, params.h, params.lh, params.L, yl, yh);
 }
-
 
