@@ -65,15 +65,13 @@ int dimensionCheck(int length, int L) {
 
 rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
   rwt_init_params params;
-  int mh, nh, h_col, h_row, dim, argNumL;
-  double mtest, ntest;
+  int h_col, h_row, argNumL;
 
   /* check for correct # of input variables */
   if (dwtInputCheck(nrhs, dwtType) != 0) return;
 
   /* buffer overflow will occur if matrix isn't 1-D or 2-D */
-  dim = mxGetNumberOfDimensions(prhs[0]);
-  if (dim > 2) {
+  if (mxGetNumberOfDimensions(prhs[0]) > 2) {
     mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
     return;
   }
@@ -99,8 +97,8 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     return;
 
   if (dwtType == INVERSE_REDUNDANT_DWT) {
-    mh = mxGetM(prhs[1]);
-    nh = mxGetN(prhs[1]);
+    int mh = mxGetM(prhs[1]);
+    int nh = mxGetN(prhs[1]);
     params.h = mxGetPr(prhs[2]);
     h_row = mxGetM(prhs[2]);
     h_col = mxGetN(prhs[2]);
