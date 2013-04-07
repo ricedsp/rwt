@@ -86,23 +86,22 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   }
 
   if (dwtType == INVERSE_REDUNDANT_DWT) {
-    nh = mxGetN(prhs[1]);
     mh = mxGetM(prhs[1]);
+    nh = mxGetN(prhs[1]);
     params.h = mxGetPr(prhs[2]);
-    h_col = mxGetN(prhs[2]);
     h_row = mxGetM(prhs[2]);
+    h_col = mxGetN(prhs[2]);
     /* check for consistency of rows and columns of yl, yh */
     if (min(params.m, params.n) > 1){
-      if((params.m != mh) | (3*params.n*params.L != nh)){
+      if ((params.m != mh) | (3*params.n*params.L != nh)) {
         mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
         return;
       }
     }
-    else{
-      if((params.m != mh) | (params.n*params.L != nh)){
-        mexErrMsgTxt("Dimensions of first two input vectors not consistent!");{
-          return;
-        }
+    else {
+      if ((params.m != mh) | (params.n*params.L != nh)) {
+        mexErrMsgTxt("Dimensions of first two input vectors not consistent!");
+        return;
       }
     }
   }
