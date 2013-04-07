@@ -54,6 +54,15 @@ int dwtEstimateL(int n, int m) {
   else return L;
 }
 
+int dimensionCheck(int length, int L) {
+  double test = (double) length / pow(2.0, (double) L);
+  if (!isint(test)) {
+    mexErrMsgTxt("The matrix dimensions must be of size m*2^(L) by n*2^(L)");
+    return 1;
+  }
+  return 0;
+}
+
 rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
   rwt_init_params params;
   int mh, nh, h_col, h_row, dim, argNumL;
@@ -85,6 +94,10 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     return;
   }
 
+  /* Check input dimensions */
+  if ((params.m > 1 && dimensionCheck(params.m, params.L)) || (params.n > 1 && dimensionCheck(params.n, params.L)))
+    return;
+
   if (dwtType == INVERSE_REDUNDANT_DWT) {
     mh = mxGetM(prhs[1]);
     nh = mxGetN(prhs[1]);
@@ -93,13 +106,13 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     h_col = mxGetN(prhs[2]);
     /* check for consistency of rows and columns of yl, yh */
     if (min(params.m, params.n) > 1){
-      if ((params.m != mh) | (3*params.n*params.L != nh)) {
+      if ((params.m != mh) | (3 * params.n * params.L != nh)) {
         mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
         return;
       }
     }
     else {
-      if ((params.m != mh) | (params.n*params.L != nh)) {
+      if ((params.m != mh) | (params.n * params.L != nh)) {
         mexErrMsgTxt("Dimensions of first two input vectors not consistent!");
         return;
       }
@@ -107,8 +120,8 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   }
   else {
     params.h = mxGetPr(prhs[1]);
-    h_col = mxGetN(prhs[1]);
     h_row = mxGetM(prhs[1]);
+    h_col = mxGetN(prhs[1]);
   }
 
   if (h_col > h_row)
@@ -116,18 +129,6 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   else
     params.lh = h_row;
 
-  /* Check the ROW dimension of input */
-  if (params.m > 1) {
-    mtest = (double) params.m / pow(2.0, (double) params.L);
-    if (!isint(mtest))
-      mexErrMsgTxt("The matrix row dimension must be of size m*2^(L)");
-  }
-  /* Check the COLUMN dimension of input */
-  if (params.n > 1) {
-    ntest = (double) params.n / pow(2.0, (double) params.L);
-    if (!isint(ntest))
-      mexErrMsgTxt("The matrix column dimension must be of size n*2^(L)");
-  }
   plhs[0] = mxCreateDoubleMatrix(params.m, params.n, mxREAL);
 
   return params;
