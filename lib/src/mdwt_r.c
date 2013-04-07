@@ -61,10 +61,6 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 % see also: midwt, mrdwt, mirdwt
 */
 
-// We don't need math.h or stdio.h
-
-#include <math.h>
-#include <stdio.h>
 #include "platform.h"
 
 // We should define these macros in 1 file instead of in all 4
@@ -73,41 +69,8 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
 
 
-// Instead of supporting ancient K&R C compilers we should drop this check and slap people that try to use one
-#ifdef __STDC__
-void fpsconv(double *x_in, int lx, double *h0, double *h1, int lhm1,
-	double *x_outl, double *x_outh)
-#else
-fpsconv(x_in, lx, h0, h1, lhm1, x_outl, x_outh)
-double *x_in, *h0, *h1, *x_outl, *x_outh;
-int lx, lhm1;
-#endif
-
-/*
-{
-  int i, j;
-  double x0, x1;
-
-  int lh;
-  lh=lhm1+1;
-
-  for (i=lx; i < lx+lh-1; i++)
-     x_in[i] = *(x_in+(i-lx));
-  for (i=0; i<lx; i+=2){
-    x0 = 0;
-    x1 = 0;
-    for (j=0; j<lh; j++){
-      x0 = x0 + x_in[j+i]*h0[lh-1-j];
-      x1 = x1 + x_in[j+i]*h1[lh-1-j];
-    }
-    x_outl[i] = x0;
-    x_outh[i] = x1;
-  }
-}
-*/
-
 // Why ind ? Using the i index var over again seems fine to me
-{
+void fpsconv(double *x_in, int lx, double *h0, double *h1, int lhm1, double *x_outl, double *x_outh) {
   int i, j, ind;
   double x0, x1;
 
@@ -127,16 +90,7 @@ int lx, lhm1;
 }
 
 
-
-
-#ifdef __STDC__
-void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y)
-#else
-MDWT(x, m, n, h, lh, L, y)
-double *x, *h, *y;
-int m, n, lh, L;
-#endif
-{
+void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1;
