@@ -55,8 +55,8 @@ int dwtEstimateL(int n, int m) {
 }
 
 rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
-  double *x, *h,  *y, *yl, *yh, *Lr;
-  int m, n, mh, nh, h_col, h_row, lh, L, dim, argNumL;
+  rwt_init_params params;
+  int mh, nh, h_col, h_row, dim, argNumL;
   double mtest, ntest;
 
   /* check for correct # of input variables */
@@ -70,17 +70,17 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   }
 
   /* Get input matrix row and column number */
-  n = mxGetN(prhs[0]);
-  m = mxGetM(prhs[0]);
+  params.m = mxGetM(prhs[0]);
+  params.n = mxGetN(prhs[0]);
 
   /* Read L from command line or compute L */
   argNumL = 2;
   if (dwtType == INVERSE_REDUNDANT_DWT) argNumL += 1;
   if ((argNumL + 1) == nrhs) {
-    L = (int) *mxGetPr(prhs[argNumL]);
+    params.L = (int) *mxGetPr(prhs[argNumL]);
   }
-  else L = dwtEstimateL(n, m);
-  if (L < 0) {
+  else params.L = dwtEstimateL(params.n, params.m);
+  if (params.L < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
     return;
   }
@@ -88,18 +88,18 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   if (dwtType == INVERSE_REDUNDANT_DWT) {
     nh = mxGetN(prhs[1]);
     mh = mxGetM(prhs[1]);
-    h = mxGetPr(prhs[2]);
+    params.h = mxGetPr(prhs[2]);
     h_col = mxGetN(prhs[2]);
     h_row = mxGetM(prhs[2]);
     /* check for consistency of rows and columns of yl, yh */
-    if (min(m, n) > 1){
-      if((m != mh) | (3*n*L != nh)){
+    if (min(params.m, params.n) > 1){
+      if((params.m != mh) | (3*params.n*params.L != nh)){
         mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
         return;
       }
     }
     else{
-      if((m != mh) | (n*L != nh)){
+      if((params.m != mh) | (params.n*params.L != nh)){
         mexErrMsgTxt("Dimensions of first two input vectors not consistent!");{
           return;
         }
@@ -107,35 +107,29 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     }
   }
   else {
-    h = mxGetPr(prhs[1]);
+    params.h = mxGetPr(prhs[1]);
     h_col = mxGetN(prhs[1]);
     h_row = mxGetM(prhs[1]);
   }
 
   if (h_col > h_row)
-    lh = h_col;
+    params.lh = h_col;
   else
-    lh = h_row;
+    params.lh = h_row;
 
   /* Check the ROW dimension of input */
-  if (m > 1) {
-    mtest = (double) m / pow(2.0, (double) L);
+  if (params.m > 1) {
+    mtest = (double) params.m / pow(2.0, (double) params.L);
     if (!isint(mtest))
       mexErrMsgTxt("The matrix row dimension must be of size m*2^(L)");
   }
   /* Check the COLUMN dimension of input */
-  if (n > 1) {
-    ntest = (double) n / pow(2.0, (double) L);
+  if (params.n > 1) {
+    ntest = (double) params.n / pow(2.0, (double) params.L);
     if (!isint(ntest))
       mexErrMsgTxt("The matrix column dimension must be of size n*2^(L)");
   }
-  plhs[0] = mxCreateDoubleMatrix(m, n, mxREAL);
+  plhs[0] = mxCreateDoubleMatrix(params.m, params.n, mxREAL);
 
-  rwt_init_params params;
-  params.m = m;
-  params.n = n;
-  params.lh = lh;
-  params.L = L;
-  params.h = h;
   return params;
 }
