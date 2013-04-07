@@ -65,9 +65,10 @@ int dimensionCheck(int length, int L) {
   return 0;
 }
 
+
 rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
   rwt_init_params params;
-  int h_col, h_row, argNumL;
+  int argNumL;
 
   /* check for correct # of input variables */
   if (dwtInputCheck(nrhs, dwtType) != 0) return;
@@ -102,8 +103,7 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     int mh = mxGetM(prhs[1]);
     int nh = mxGetN(prhs[1]);
     params.h = mxGetPr(prhs[2]);
-    h_row = mxGetM(prhs[2]);
-    h_col = mxGetN(prhs[2]);
+    params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
     /* check for consistency of rows and columns of yl, yh */
     if (min(params.m, params.n) > 1){
       if ((params.m != mh) | (3 * params.n * params.L != nh)) {
@@ -120,14 +120,8 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   }
   else {
     params.h = mxGetPr(prhs[1]);
-    h_row = mxGetM(prhs[1]);
-    h_col = mxGetN(prhs[1]);
+    params.lh = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
-
-  if (h_col > h_row)
-    params.lh = h_col;
-  else
-    params.lh = h_row;
 
   plhs[0] = mxCreateDoubleMatrix(params.m, params.n, mxREAL);
 
