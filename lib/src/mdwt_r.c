@@ -68,21 +68,18 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 // This macro is evil because it uses the variable m which is not included in the arguments
 #define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
 
-
-// Why ind ? Using the i index var over again seems fine to me
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lhm1, double *x_outl, double *x_outh) {
   int i, j, ind;
   double x0, x1;
-
-  for (i=lx; i < lx+lhm1; i++)
+  for (i=lx; i<lx+lhm1; i++)
     x_in[i] = *(x_in+(i-lx));
   ind = 0;
-  for (i=0; i<(lx); i+=2){
+  for (i=0; i<(lx); i+=2) {
     x0 = 0;
     x1 = 0;
-    for (j=0; j<=lhm1; j++){
-      x0 = x0 + x_in[i+j]*h0[lhm1-j];
-      x1 = x1 + x_in[i+j]*h1[lhm1-j];
+    for (j=0; j<=lhm1; j++) {
+      x0 = x0 + x_in[i+j] * h0[lhm1-j];
+      x1 = x1 + x_in[i+j] * h1[lhm1-j];
     }
     x_outl[ind] = x0;
     x_outh[ind++] = x1;
@@ -108,7 +105,7 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   }
   for (i=0; i<lh; i++){
     h0[i] = h[lh-i-1];
-    h1[i] =h[i];
+    h1[i] = h[i];
   }
   for (i=0; i<lh; i+=2)
     h1[i] = -h1[i];
