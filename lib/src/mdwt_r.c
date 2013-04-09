@@ -91,19 +91,18 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1;
-  xdummy = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  ydummyl = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummyh = (double *)rwt_calloc(max(m,n),sizeof(double));
-  h0 = (double *)rwt_calloc(lh,sizeof(double));
-  h1 = (double *)rwt_calloc(lh,sizeof(double));
-  
+  xdummy  = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  ydummyl = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  ydummyh = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  h0 = (double *) rwt_calloc(lh, sizeof(double));
+  h1 = (double *) rwt_calloc(lh, sizeof(double));
   
   /* analysis lowpass and highpass */
-  if (n==1){
+  if (n==1) {
     n = m;
     m = 1;
   }
-  for (i=0; i<lh; i++){
+  for (i=0; i<lh; i++) {
     h0[i] = h[lh-i-1];
     h1[i] = h[i];
   }
@@ -115,7 +114,7 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   actual_n = 2*n;
   
   /* main loop */
-  for (actual_L=1; actual_L <= L; actual_L++){
+  for (actual_L=1; actual_L <= L; actual_L++) {
     if (m==1)
       actual_m = 1;
     else{
@@ -126,7 +125,7 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
     c_o_a = actual_n/2;
     
     /* go by rows */
-    for (ir=0; ir<actual_m; ir++){            /* loop over rows */
+    for (ir=0; ir<actual_m; ir++) {            /* loop over rows */
       /* store in dummy variable */
 // Why do we copy in and out of dummy vars?
       for (i=0; i<actual_n; i++)
@@ -138,15 +137,15 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
       fpsconv(xdummy, actual_n, h0, h1, lhm1, ydummyl, ydummyh); 
       /* restore dummy variables in matrices */
       ic = c_o_a;
-      for  (i=0; i<c_o_a; i++){    
+      for  (i=0; i<c_o_a; i++) {    
 	mat(y, ir, i) = ydummyl[i];  
 	mat(y, ir, ic++) = ydummyh[i];  
       } 
     }  
     
     /* go by columns in case of a 2D signal*/
-    if (m>1){
-      for (ic=0; ic<actual_n; ic++){            /* loop over column */
+    if (m>1) {
+      for (ic=0; ic<actual_n; ic++) {            /* loop over column */
 	/* store in dummy variables */
 	for (i=0; i<actual_m; i++)
 	  xdummy[i] = mat(y, i, ic);  
@@ -154,7 +153,7 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	fpsconv(xdummy, actual_m, h0, h1, lhm1, ydummyl, ydummyh); 
 	/* restore dummy variables in matrix */
 	ir = r_o_a;
-	for (i=0; i<r_o_a; i++){    
+	for (i=0; i<r_o_a; i++) {
 	  mat(y, i, ic) = ydummyl[i];  
 	  mat(y, ir++, ic) = ydummyh[i];  
 	}
