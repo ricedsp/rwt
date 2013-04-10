@@ -26,14 +26,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, REDUNDANT_DWT);
   x = mxGetPr(prhs[0]);
   yl = mxGetPr(plhs[0]);
-  if (min(params.m, params.n) == 1)
-    plhs[1] = mxCreateDoubleMatrix(params.m, params.L*params.n, mxREAL);
+  if (min(params.nrows, params.ncols) == 1)
+    plhs[1] = mxCreateDoubleMatrix(params.nrows, params.levels*params.ncols, mxREAL);
   else
-    plhs[1] = mxCreateDoubleMatrix(params.m, 3*params.L*params.n, mxREAL);
+    plhs[1] = mxCreateDoubleMatrix(params.nrows, 3*params.levels*params.ncols, mxREAL);
   yh = mxGetPr(plhs[1]);
   plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
   Lr = mxGetPr(plhs[2]);
-  *Lr = params.L;
-  MRDWT(x, params.m, params.n, params.h, params.lh, params.L, yl, yh);
+  *Lr = params.levels;
+  MRDWT(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
 }
 

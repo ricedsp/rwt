@@ -80,50 +80,50 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   }
 
   /* Get input matrix row and column number */
-  params.m = mxGetM(prhs[0]);
-  params.n = mxGetN(prhs[0]);
+  params.nrows = mxGetM(prhs[0]);
+  params.ncols = mxGetN(prhs[0]);
 
   /* Read L from command line or compute L */
   argNumL = (dwtType == INVERSE_REDUNDANT_DWT) ? 3 : 2;
   if ((argNumL + 1) == nrhs)
-    params.L = (int) *mxGetPr(prhs[argNumL]);
+    params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
-    params.L = dwtEstimateL(params.n, params.m);
+    params.levels = dwtEstimateL(params.ncols, params.nrows);
 
-  if (params.L < 0) {
+  if (params.levels < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
     return;
   }
 
   /* Check input dimensions */
-  if ((params.m > 1 && dimensionCheck(params.m, params.L)) || (params.n > 1 && dimensionCheck(params.n, params.L)))
+  if ((params.nrows > 1 && dimensionCheck(params.nrows, params.levels)) || (params.ncols > 1 && dimensionCheck(params.ncols, params.levels)))
     return;
 
   if (dwtType == INVERSE_REDUNDANT_DWT) {
     int mh = mxGetM(prhs[1]);
     int nh = mxGetN(prhs[1]);
-    params.h = mxGetPr(prhs[2]);
+    params.scalings = mxGetPr(prhs[2]);
     params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
     /* check for consistency of rows and columns of yl, yh */
-    if (min(params.m, params.n) > 1){
-      if ((params.m != mh) | (3 * params.n * params.L != nh)) {
+    if (min(params.nrows, params.ncols) > 1){
+      if ((params.nrows != mh) | (3 * params.ncols * params.levels != nh)) {
         mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
         return;
       }
     }
     else {
-      if ((params.m != mh) | (params.n * params.L != nh)) {
+      if ((params.nrows != mh) | (params.ncols * params.levels != nh)) {
         mexErrMsgTxt("Dimensions of first two input vectors not consistent!");
         return;
       }
     }
   }
   else {
-    params.h = mxGetPr(prhs[1]);
+    params.scalings = mxGetPr(prhs[1]);
     params.lh = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
 
-  plhs[0] = mxCreateDoubleMatrix(params.m, params.n, mxREAL);
+  plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);
 
   return params;
 }

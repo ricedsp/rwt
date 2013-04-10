@@ -30,7 +30,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   y = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   Lr = mxGetPr(plhs[1]);
-  *Lr = params.L;
-  MDWT(x, params.m, params.n, params.h, params.lh, params.L, y);
+  *Lr = params.levels;
+  MDWT(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, y);
 }
 

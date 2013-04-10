@@ -15,8 +15,8 @@
 #include "limits.h"
 
 typedef struct {
-  int m, n, lh, L;
-  double *h;
+  int nrows, ncols, lh, levels;
+  double *scalings;
 } rwt_init_params;
 
 #define max(A,B) (A > B ? A : B)
