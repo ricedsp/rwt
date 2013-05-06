@@ -21,6 +21,10 @@ IF (UNIX)
    gmon.out
    bin/*.mexa64
    bin/*.mexmaci64
+   src/*.mexa64
+   src/*.mexmaci64
+   tests/*.mexa64
+   tests/*.mexmaci64
    *~
   )
   
