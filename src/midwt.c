@@ -23,7 +23,7 @@ Change History: Fixed code such that the result has the same dimension as the
 #include "dwt_init.h"
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  double *x, *y, *Lr;
+  double *x, *y;
   rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, INVERSE_DWT);
   y = mxGetPr(prhs[0]);
   x = mxGetPr(plhs[0]);

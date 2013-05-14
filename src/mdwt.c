@@ -24,7 +24,7 @@ MATLAB gateway for MDWT.c, discrete wavelet transform
 #include "dwt_init.h"
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  double *x, *y, *Lr;
+  double *x, *y;
   rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, NORMAL_DWT);
   x = mxGetPr(prhs[0]);
   y = mxGetPr(plhs[0]);
