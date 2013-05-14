@@ -75,10 +75,6 @@ MATLAB description:
 #include <stdio.h>
 #include "platform.h"
 
-/*#define mat(a, i, j) (a[m*(j)+i]) */
-#define mat(a, i, j) (*(a + (m*(j)+i))) 
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
 #ifdef __STDC__
 void fpconv(double *x_in, int lx, double *h0, double *h1, int lh,
        double *x_outl, double *x_outh)
@@ -165,7 +161,7 @@ int m, n, lh, L;
 	ic = -sample_f + n_c;
 	for (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  xdummyl[i] = mat(yl, ir, ic);  
+	  xdummyl[i] = mat(yl, ir, ic, m);  
 	}
 	/* perform filtering lowpass/highpass */
 	fpconv(xdummyl, actual_n, h0, h1, lh, ydummyll, ydummyhh); 
@@ -173,8 +169,8 @@ int m, n, lh, L;
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  mat(yl, ir, ic) = ydummyll[i];  
-	  mat(yh, ir, c_o_a+ic) = ydummyhh[i];  
+	  mat(yl, ir, ic, m) = ydummyll[i];  
+	  mat(yh, ir, c_o_a+ic, m) = ydummyhh[i];  
 	} 
       }
     }
@@ -188,8 +184,8 @@ int m, n, lh, L;
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    xdummyl[i] = mat(yl, ir, ic);  
-	    xdummyh[i] = mat(yh, ir,c_o_a+ic);  
+	    xdummyl[i] = mat(yl, ir, ic, m);  
+	    xdummyh[i] = mat(yh, ir,c_o_a+ic, m);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
 	  fpconv(xdummyl, actual_m, h0, h1, lh, ydummyll, ydummylh); 
@@ -198,10 +194,10 @@ int m, n, lh, L;
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    mat(yl, ir, ic) = ydummyll[i];  
-	    mat(yh, ir, c_o_a+ic) = ydummylh[i];  
-	    mat(yh, ir,c_o_a+n+ic) = ydummyhl[i];  
-	    mat(yh, ir, c_o_a_p2n+ic) = ydummyhh[i];  
+	    mat(yl, ir, ic, m) = ydummyll[i];  
+	    mat(yh, ir, c_o_a+ic, m) = ydummylh[i];  
+	    mat(yh, ir,c_o_a+n+ic, m) = ydummyhl[i];  
+	    mat(yh, ir, c_o_a_p2n+ic, m) = ydummyhh[i];  
 	  }
 	}
       }

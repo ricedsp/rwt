@@ -69,9 +69,6 @@ decription of the matlab call:
 #include <stdio.h>
 #include "platform.h"
 
-#define max(A,B) (A > B ? A : B)
-#define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
-
 #ifdef __STDC__
 void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1,
 	int lhhm1, double *x_inl, double *x_inh)
@@ -160,14 +157,14 @@ int m, n, lh, L;
 	/* store in dummy variables */
 	ir = r_o_a;
 	for (i=0; i<r_o_a; i++){    
-	  ydummyl[i+lhhm1] = mat(x, i, ic);  
-	  ydummyh[i+lhhm1] = mat(x, ir++, ic);  
+	  ydummyl[i+lhhm1] = mat(x, i, ic, m);  
+	  ydummyh[i+lhhm1] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
 	bpsconv(xdummy, r_o_a, g0, g1, lhm1, lhhm1, ydummyl, ydummyh); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<actual_m; i++)
-	  mat(x, i, ic) = xdummy[i];  
+	  mat(x, i, ic, m) = xdummy[i];  
       }
     }
     /* go by rows */
@@ -175,14 +172,14 @@ int m, n, lh, L;
       /* store in dummy variable */
       ic = c_o_a;
       for  (i=0; i<c_o_a; i++){    
-	ydummyl[i+lhhm1] = mat(x, ir, i);  
-	ydummyh[i+lhhm1] = mat(x, ir, ic++);  
+	ydummyl[i+lhhm1] = mat(x, ir, i, m);  
+	ydummyh[i+lhhm1] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
       bpsconv(xdummy, c_o_a, g0, g1, lhm1, lhhm1, ydummyl, ydummyh); 
       /* restore dummy variables in matrices */
       for (i=0; i<actual_n; i++)
-        mat(x, ir, i) = xdummy[i];  
+        mat(x, ir, i, m) = xdummy[i];  
     }  
     if (m==1)
       actual_m = 1;

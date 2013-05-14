@@ -63,10 +63,6 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 
 #include "platform.h"
 
-// We should define these macros in 1 file instead of in all 4
-#define max(A,B) (A > B ? A : B)
-// This macro is evil because it uses the variable m which is not included in the arguments
-#define mat(a, i, j) (*(a + (m*(j)+i)))  /* macro for matrix indices */
 
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_outl, double *x_outh) {
   int i, j, ind;
@@ -96,26 +92,41 @@ void mdwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, 
 }
 
 
+void mdwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
+  rwt_free(*xdummy);
+  rwt_free(*y_dummy_low);
+  rwt_free(*y_dummy_high);
+  rwt_free(*h0);
+  rwt_free(*h1);
+}
+
+
+/* h0 <- reversed h
+   h1 <- forward h, even values are sign reversed */
+void mdwt_coefficients(int lh, double *h, double **h0, double **h1) {
+  int i;
+  for (i=0; i<lh; i++) {
+    (*h0)[i] = h[(lh-i)-1];
+    (*h1)[i] = h[i];
+  }
+  for (i=0; i<lh; i+=2)
+    (*h1)[i] = -((*h1)[i]);
+}
+
+
 void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   int i, actual_L, lh_minus_one;
   int upsampled_rows, upsampled_columns, pass_rows, pass_columns, idx_rows, idx_columns;
   
   mdwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
+  mdwt_coefficients(lh, h, &h0, &h1);
 
   /* analysis lowpass and highpass */
   if (n==1) {
     n = m;
     m = 1;
   }
-  /* h0 <- reversed h
-     h1 <- forward h, even values are sign reversed */
-  for (i=0; i<lh; i++) {
-    h0[i] = h[(lh-i)-1];
-    h1[i] = h[i];
-  }
-  for (i=0; i<lh; i+=2)
-    h1[i] = -h1[i];
   
   lh_minus_one = lh - 1;
   upsampled_rows = 2*m;
@@ -124,7 +135,7 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   //mexPrintf("new signal. n is %d\n", n);
  
   /* main loop */
-  for (actual_L=1; actual_L <= L; actual_L++) {
+  for (actual_L=1; actual_L<=L; actual_L++) {
     if (m==1)
       upsampled_rows = 1;
     else{
@@ -141,16 +152,16 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
 // Why do we copy in and out of dummy vars?
       for (i=0; i<upsampled_columns; i++)
 	if (actual_L==1)  
-	  xdummy[i] = mat(x, idx_rows, i);  
+	  xdummy[i] = mat(x, idx_rows, i, m);  
 	else 
-	  xdummy[i] = mat(y, idx_rows, i);  
+	  xdummy[i] = mat(y, idx_rows, i, m);  
       /* perform filtering lowpass and highpass*/
       fpsconv(xdummy, upsampled_columns, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       idx_columns = pass_columns;
       for  (i=0; i<pass_columns; i++) {    
-	mat(y, idx_rows, i) = y_dummy_low[i];  
-	mat(y, idx_rows, idx_columns++) = y_dummy_high[i];  
+	mat(y, idx_rows, i, m) = y_dummy_low[i];  
+	mat(y, idx_rows, idx_columns++, m) = y_dummy_high[i];  
       } 
     }  
     
@@ -160,17 +171,18 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
       for (idx_columns=0; idx_columns<upsampled_columns; idx_columns++) { /* loop over columns */
 	/* store in dummy variables */
 	for (i=0; i<upsampled_rows; i++)
-	  xdummy[i] = mat(y, i, idx_columns);  
+	  xdummy[i] = mat(y, i, idx_columns, m);  
 	/* perform filtering lowpass and highpass*/
 	fpsconv(xdummy, upsampled_rows, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	idx_rows = pass_rows;
 	for (i=0; i<pass_rows; i++) {
-	  mat(y, i, idx_columns) = y_dummy_low[i];  
-	  mat(y, idx_rows++, idx_columns) = y_dummy_high[i];  
+	  mat(y, i, idx_columns, m) = y_dummy_low[i];  
+	  mat(y, idx_rows++, idx_columns, m) = y_dummy_high[i];  
 	}
       }
     }
   }
+  mdwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
 }
 

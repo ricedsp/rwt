@@ -28,8 +28,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   yh = mxGetPr(prhs[1]);
   x = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-  Lr = mxGetPr(plhs[1]);
-  *Lr = params.levels;
+  *mxGetPr(plhs[1]) = params.levels;
   MIRDWT(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
 }
 
