@@ -1,2 +1,0 @@
-Sphinx is bsd licensed and supports c code inline documentation
-http://sphinx-doc.org/
