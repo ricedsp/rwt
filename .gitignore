@@ -3,3 +3,5 @@
 *.c~
 *.h~
 *.m~
+docs/html
+docs/latex
