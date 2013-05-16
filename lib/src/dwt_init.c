@@ -6,8 +6,15 @@
  */
 #include "dwt_init.h"
 
-/* Checks for correct # of input variables based on type of transform. */
-int dwtInputCheck(int nrhs, int dwtType) {
+
+/*!
+ * Checks for correct # of input variables based on type of transform.
+ *
+ * @param nrhs number of items on right hand side of matlab call
+ * @param dwtType 
+ *
+ */
+int dwtInputCheck(int nrhs, transform_t dwtType) {
   if (dwtType == INVERSE_REDUNDANT_DWT) {
     if (nrhs > 4) {
       mexErrMsgTxt("There are at most 4 input parameters allowed!");
@@ -66,7 +73,7 @@ int dimensionCheck(int length, int L) {
 }
 
 
-rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], int dwtType) {
+rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType) {
   rwt_init_params params;
   int argNumL;
 
