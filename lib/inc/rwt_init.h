@@ -1,8 +1,11 @@
-#ifndef DWT_INIT_H_
-#define DWT_INIT_H_
+/*! \file rwt_init.h
+    \brief Header for matlab init functions in init.c
+*/
+#ifndef RWT_INIT_H_
+#define RWT_INIT_H_
 
 #include "matrix.h"
-#include "dwt_common.h"
+#include "rwt_common.h"
 
 typedef struct {
   int nrows;        /*!< The number of rows in the input matrix  */
@@ -18,10 +21,10 @@ typedef enum {NORMAL_DWT, REDUNDANT_DWT, INVERSE_DWT, INVERSE_REDUNDANT_DWT} tra
 extern "C" {
 #endif
 
-rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
+rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DWT_INIT_H_ */
+#endif /* RWT_INIT_H_ */

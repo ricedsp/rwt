@@ -27,8 +27,8 @@ MATLAB gateway for MDWT.c, discrete wavelet transform
 
 #include "mex.h"
 #include "matrix.h"
-#include "dwt_init.h"
-#include "dwt_transforms.h"
+#include "rwt_init.h"
+#include "rwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the discrete wavelet transform.
@@ -40,7 +40,7 @@ MATLAB gateway for MDWT.c, discrete wavelet transform
  *
  */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, NORMAL_DWT);
+  rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, NORMAL_DWT);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[1]) = params.levels; /*! The second returned item is the number of levels */
   MDWT(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.lh, params.levels, mxGetPr(plhs[0]));

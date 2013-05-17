@@ -65,12 +65,12 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
     \brief Implementation of the discrete wavelet transform
 
     This file actually implements the wavelet transform. 
-    It references dwt_platform.h and does not use any matlab-specific functions, 
+    It references rwt_platform.h and does not use any matlab-specific functions, 
     though it does use the mat() macro which describes the in-memory layout of 
     1D and 2D matrices in matlab
 */
 
-#include "dwt_platform.h"
+#include "rwt_platform.h"
 
 /*!
  * Perform convolution for dwt

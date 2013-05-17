@@ -26,8 +26,8 @@ Change History: Fixed code such that the result has the same dimension as the
 
 #include "mex.h"
 #include "matrix.h"
-#include "dwt_init.h"
-#include "dwt_transforms.h"
+#include "rwt_init.h"
+#include "rwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the inverse discrete wavelet transform.
@@ -40,7 +40,7 @@ Change History: Fixed code such that the result has the same dimension as the
  */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *x, *y;
-  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, INVERSE_DWT);
+  rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, INVERSE_DWT);
   y = mxGetPr(prhs[0]);
   x = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);

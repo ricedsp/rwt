@@ -25,8 +25,8 @@ Change History: Fixed code such that the result has the same dimension as the
 
 #include "matrix.h"
 #include "mex.h"
-#include "dwt_init.h"
-#include "dwt_transforms.h"
+#include "rwt_init.h"
+#include "rwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the redundant discrete wavelet transform.
@@ -39,7 +39,7 @@ Change History: Fixed code such that the result has the same dimension as the
  */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *x, *yl, *yh;
-  rwt_init_params params = dwtInit(nlhs, plhs, nrhs, prhs, INVERSE_REDUNDANT_DWT);
+  rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, INVERSE_REDUNDANT_DWT);
   yl = mxGetPr(prhs[0]);
   yh = mxGetPr(prhs[1]);
   x = mxGetPr(plhs[0]);

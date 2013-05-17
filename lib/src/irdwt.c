@@ -78,7 +78,7 @@ MATLAB description:
 
 */
 
-#include "dwt_platform.h"
+#include "rwt_platform.h"
 
 void bpconv(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
   int i, j;

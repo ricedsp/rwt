@@ -1,3 +1,6 @@
+/*! \file rwt_transforms.h
+    \brief Function prototypes for the transform implementations
+*/
 #ifndef TRANSFORMS_H_
 #define TRANSFORMS_H_
 

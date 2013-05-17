@@ -75,7 +75,7 @@ MATLAB description:
 
 */
 
-#include "dwt_platform.h"
+#include "rwt_platform.h"
 
 void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl, double *x_outh) {
   int i, j;

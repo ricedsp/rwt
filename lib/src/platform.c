@@ -4,7 +4,7 @@
     rwt_malloc, rwt_calloc, and rwt_free simply wrap the matlab or system versions of malloc, calloc, and free.
 */
 
-#include "dwt_platform.h"
+#include "rwt_platform.h"
 
 #ifdef MATLAB_MEX_FILE
   #include "matrix.h"

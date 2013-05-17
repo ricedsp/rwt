@@ -70,7 +70,7 @@ decription of the matlab call:
 
 */
 
-#include "dwt_platform.h"
+#include "rwt_platform.h"
 
 void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1, double *x_inl, double *x_inh) {
   int i, j, ind, tj;
