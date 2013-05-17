@@ -5,3 +5,16 @@
 *.m~
 docs/html
 docs/latex
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+doc/CMakeFiles/
+doc/Doxyfile
+doc/Makefile
+doc/cmake_install.cmake
+doc/html/
+doc/latex/
+lib/src/CMakeFiles/
+lib/src/Makefile
+lib/src/cmake_install.cmake

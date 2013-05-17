@@ -70,8 +70,6 @@ decription of the matlab call:
 
 */
 
-#include <math.h>
-#include <stdio.h>
 #include "dwt_platform.h"
 
 void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1, double *x_inl, double *x_inh) {
@@ -98,14 +96,7 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1,
 }
 
 
-#ifdef __STDC__
-void MIDWT(double *x, int m, int n, double *h, int lh, int L, double *y)
-#else
-MIDWT(x, m, n, h, lh, L, y)
-double *x, *h, *y;
-int m, n, lh, L;
-#endif
-{
+void MIDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;
