@@ -49,6 +49,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   yh = mxGetPr(plhs[1]);
   plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[2]) = params.levels;
-  MRDWT(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
+  RDWT(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
 }
 

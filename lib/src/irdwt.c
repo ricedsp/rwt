@@ -98,7 +98,7 @@ void bpconv(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl
 }
 
 
-void MIRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
+void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *g0, *g1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh, *xh;
   long i;

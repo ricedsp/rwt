@@ -164,7 +164,7 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
 }
 
 
-void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void DWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   int i, actual_L, lh_minus_one;
   int upsampled_rows, upsampled_columns, pass_rows, pass_columns, idx_rows, idx_columns;

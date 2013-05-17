@@ -96,7 +96,7 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1,
 }
 
 
-void MIDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *ydummyl, *ydummyh, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;

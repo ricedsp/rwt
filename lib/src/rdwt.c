@@ -96,7 +96,7 @@ void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl
 }
 
 
-void MRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
+void RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *h0, *h1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh;
   long i;
