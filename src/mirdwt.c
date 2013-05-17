@@ -20,6 +20,7 @@ Change History: Fixed code such that the result has the same dimension as the
 #include "matrix.h"
 #include "mex.h"
 #include "dwt_init.h"
+#include "dwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the redundant discrete wavelet transform.

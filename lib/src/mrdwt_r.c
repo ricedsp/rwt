@@ -73,7 +73,7 @@ MATLAB description:
 
 #include <math.h>
 #include <stdio.h>
-#include "platform.h"
+#include "dwt_platform.h"
 
 #ifdef __STDC__
 void fpconv(double *x_in, int lx, double *h0, double *h1, int lh,

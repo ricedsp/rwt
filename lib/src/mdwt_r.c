@@ -61,7 +61,7 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 % see also: midwt, mrdwt, mirdwt
 */
 
-#include "platform.h"
+#include "dwt_platform.h"
 
 
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_outl, double *x_outh) {

@@ -4,7 +4,9 @@
  *  Created on: Jul 4, 2012
  *      Author: robert
  */
+
 #include "dwt_init.h"
+#include <math.h>
 
 
 /*!

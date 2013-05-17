@@ -21,6 +21,7 @@ Change History: Fixed code such that the result has the same dimension as the
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"
+#include "dwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the inverse discrete wavelet transform.

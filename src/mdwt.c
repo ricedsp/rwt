@@ -22,6 +22,7 @@ MATLAB gateway for MDWT.c, discrete wavelet transform
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"
+#include "dwt_transforms.h"
 
 /*!
  * Matlab MEX definition for the discrete wavelet transform.

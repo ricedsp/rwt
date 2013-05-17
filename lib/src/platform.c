@@ -1,4 +1,4 @@
-#include "platform.h"
+#include "dwt_platform.h"
 #ifdef MATLAB_MEX_FILE
   #include "matrix.h"
   void *rwt_malloc(size_t size) {

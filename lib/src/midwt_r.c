@@ -67,7 +67,7 @@ decription of the matlab call:
 
 #include <math.h>
 #include <stdio.h>
-#include "platform.h"
+#include "dwt_platform.h"
 
 #ifdef __STDC__
 void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1,
