@@ -73,7 +73,7 @@ MATLAB description:
 
 */
 
-/*! \file mirdwt_r.c
+/*! \file irdwt.c
     \brief Implementation of the inverse redundant discrete wavelet transform
 
 */

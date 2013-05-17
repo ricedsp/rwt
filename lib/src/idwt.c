@@ -65,7 +65,7 @@ decription of the matlab call:
 
 */
 
-/*! \file midwt_r.c
+/*! \file idwt.c
     \brief Implementation of the inverse discrete wavelet transform
 
 */

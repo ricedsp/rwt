@@ -36,7 +36,7 @@
 %For information on commercial licenses, contact Rice University's Office of 
 %Technology Transfer at techtran@rice.edu or (713) 348-6173
 
-mex -v ../src/mdwt.c ../lib/src/mdwt_r.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
-mex -v ../src/midwt.c ../lib/src/midwt_r.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
-mex -v ../src/mrdwt.c ../lib/src/mrdwt_r.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
-mex -v ../src/mirdwt.c ../lib/src/mirdwt_r.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
+mex -v ../src/mdwt.c ../lib/src/dwt.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
+mex -v ../src/midwt.c ../lib/src/idwt.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
+mex -v ../src/mrdwt.c ../lib/src/rdwt.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 
+mex -v ../src/mirdwt.c ../lib/src/irdwt.c ../lib/src/init.c ../lib/src/platform.c -I../lib/inc 

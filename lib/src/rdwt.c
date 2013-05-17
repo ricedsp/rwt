@@ -70,7 +70,7 @@ MATLAB description:
 
 */
 
-/*! \file mrdwt_r.c
+/*! \file rdwt.c
     \brief Implementation of the redundant discrete wavelet transform
 
 */

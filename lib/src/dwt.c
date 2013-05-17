@@ -61,7 +61,7 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 % see also: midwt, mrdwt, mirdwt
 */
 
-/*! \file mdwt_r.c
+/*! \file dwt.c
     \brief Implementation of the discrete wavelet transform
 
     This file actually implements the wavelet transform. 
@@ -72,7 +72,18 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 
 #include "dwt_platform.h"
 
-
+/*!
+ * Perform convolution for dwt
+ *
+ * @param x_in
+ * @param lx
+ * @param h0
+ * @param h1
+ * @param lh_minus_one
+ * @param x_outl low pass results
+ * @param x_outh high pass results
+ *
+ */
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_outl, double *x_outh) {
   int i, j, ind;
   double x0, x1;
@@ -92,7 +103,20 @@ void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, dou
 }
 
 
-void mdwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
+/*!
+ * Allocate memory for dwt
+ *
+ * @param m
+ * @param n
+ * @param lh
+ * @param xdummy
+ * @param y_dummy_low
+ * @param y_dummy_high
+ * @param h0
+ * @param h1
+ *
+ */
+void dwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
   *xdummy       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n),      sizeof(double));
   *y_dummy_high = (double *) rwt_calloc(max(m,n),      sizeof(double));
@@ -101,7 +125,17 @@ void mdwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, 
 }
 
 
-void mdwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
+/*!
+ * Free memory allocated for dwt
+ *
+ * @param xdummy
+ * @param y_dummy_low
+ * @param y_dummy_high
+ * @param h0
+ * @param h1
+ *
+ */
+void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
   rwt_free(*xdummy);
   rwt_free(*y_dummy_low);
   rwt_free(*y_dummy_high);
@@ -110,9 +144,16 @@ void mdwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, dou
 }
 
 
-/* h0 <- reversed h
-   h1 <- forward h, even values are sign reversed */
-void mdwt_coefficients(int lh, double *h, double **h0, double **h1) {
+/*!
+ * Put the scaling coeffients into a form ready for use in the convolution function
+ *
+ * @param lh
+ * @param h  the wavelet scaling coefficients
+ * @param h0 reversed h
+ * @param h1 forward h, even values are sign reversed
+ *
+ */
+void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
   int i;
   for (i=0; i<lh; i++) {
     (*h0)[i] = h[(lh-i)-1];
@@ -128,8 +169,8 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   int i, actual_L, lh_minus_one;
   int upsampled_rows, upsampled_columns, pass_rows, pass_columns, idx_rows, idx_columns;
   
-  mdwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
-  mdwt_coefficients(lh, h, &h0, &h1);
+  dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
+  dwt_coefficients(lh, h, &h0, &h1);
 
   /* analysis lowpass and highpass */
   if (n==1) {
@@ -192,6 +233,6 @@ void MDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
       }
     }
   }
-  mdwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
+  dwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
 }
 
