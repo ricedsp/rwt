@@ -18,6 +18,12 @@ Change History: Fixed code such that the result has the same dimension as the
 
 */
 
+/*! \file midwt.c
+    \brief MATLAB gateway for the inverse discrete wavelet transform
+
+    This file is used to produce a MATLAB MEX binary for the inverse discrete wavelet transform
+*/
+
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"

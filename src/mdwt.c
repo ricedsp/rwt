@@ -19,6 +19,12 @@ Change History: Fixed code such that the result has the same dimension as the
 MATLAB gateway for MDWT.c, discrete wavelet transform
 */
 
+/*! \file mdwt.c
+    \brief MATLAB gateway for the discrete wavelet transform
+
+    This file is used to produce a MATLAB MEX binary for the discrete wavelet transform
+*/
+
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"

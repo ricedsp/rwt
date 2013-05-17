@@ -1,9 +1,8 @@
-/*
- * dwt.c
- *
- *  Created on: Jul 4, 2012
- *      Author: robert
- */
+/*! \file init.c
+    \brief Parse input from MATLAB and do some sanity checking
+
+*/
+
 
 #include "dwt_init.h"
 #include <math.h>
@@ -88,6 +87,16 @@ int dimensionCheck(int length, int L) {
 }
 
 
+/*!
+ * Parse input from MATLAB and do some sanity checking
+ *
+ * @param nlhs number of items on left hand side of matlab call
+ * @param plhs pointer to left hand side data structure
+ * @param nrhs number of items on right hand side of matlab call
+ * @param prhs pointer to right hand side data structure
+ * @param dwtType which transform are we setting up to do
+ *
+ */
 rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType) {
   rwt_init_params params;
   int argNumL;

@@ -65,19 +65,16 @@ decription of the matlab call:
 
 */
 
+/*! \file midwt_r.c
+    \brief Implementation of the inverse discrete wavelet transform
+
+*/
+
 #include <math.h>
 #include <stdio.h>
 #include "dwt_platform.h"
 
-#ifdef __STDC__
-void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1,
-	int lhhm1, double *x_inl, double *x_inh)
-#else
-bpsconv(x_out, lx, g0, g1, lhm1, lhhm1, x_inl, x_inh)
-double *x_inl, *x_inh, *g0, *g1, *x_out;
-int lx, lhm1, lhhm1;
-#endif
-{
+void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1, double *x_inl, double *x_inh) {
   int i, j, ind, tj;
   double x0, x1;
 

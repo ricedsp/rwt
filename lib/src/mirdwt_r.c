@@ -72,19 +72,17 @@ MATLAB description:
 % see also: mdwt, midwt, mrdwt
 
 */
+
+/*! \file mirdwt_r.c
+    \brief Implementation of the inverse redundant discrete wavelet transform
+
+*/
+
 #include <math.h>
 #include <stdio.h>
 #include "dwt_platform.h"
 
-#ifdef __STDC__
-void bpconv(double *x_out, int lx, double *g0, double *g1, int lh,
-       double *x_inl, double *x_inh)
-#else
-bpconv(x_out, lx, g0, g1, lh, x_inl, x_inh)
-double *x_inl, *x_inh, *g0, *g1, *x_out;
-int lx, lh;
-#endif
-{
+void bpconv(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
   int i, j;
   double x0;
 
@@ -102,15 +100,7 @@ int lx, lh;
 }
 
 
-#ifdef __STDC__
-void MIRDWT(double *x, int m, int n, double *h, int lh, int L,
-       double *yl, double *yh)
-#else
-MIRDWT(x, m, n, h, lh, L, yl, yh)
-double *x, *h, *yl, *yh;
-int m, n, lh, L;
-#endif
-{
+void MIRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *g0, *g1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh, *xh;
   long i;

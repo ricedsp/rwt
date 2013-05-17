@@ -17,6 +17,12 @@ Change History: Fixed code such that the result has the same dimension as the
 		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
 */
 
+/*! \file mrdwt.c
+    \brief MATLAB gateway for the redundant discrete wavelet transform
+
+    This file is used to produce a MATLAB MEX binary for the redundant discrete wavelet transform
+*/
+
 #include "mex.h"
 #include "matrix.h"
 #include "dwt_init.h"

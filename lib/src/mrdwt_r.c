@@ -68,6 +68,10 @@ MATLAB description:
 %
 % see also: mdwt, midwt, mirdwt
 
+*/
+
+/*! \file mrdwt_r.c
+    \brief Implementation of the redundant discrete wavelet transform
 
 */
 
@@ -75,15 +79,7 @@ MATLAB description:
 #include <stdio.h>
 #include "dwt_platform.h"
 
-#ifdef __STDC__
-void fpconv(double *x_in, int lx, double *h0, double *h1, int lh,
-       double *x_outl, double *x_outh)
-#else
-fpconv(x_in, lx, h0, h1, lh, x_outl, x_outh)
-double *x_in, *h0, *h1, *x_outl, *x_outh;
-int lx, lh;
-#endif
-{
+void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl, double *x_outh) {
   int i, j;
   double x0, x1;
 
@@ -101,15 +97,8 @@ int lx, lh;
   }
 }
 
-#ifdef __STDC__
-void MRDWT(double *x, int m, int n, double *h, int lh, int L,
-      double *yl, double *yh)
-#else
-MRDWT(x, m, n, h, lh, L, yl, yh)
-double *x, *h, *yl, *yh;
-int m, n, lh, L;
-#endif
-{
+
+void MRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *h0, *h1, *ydummyll, *ydummylh, *ydummyhl;
   double *ydummyhh, *xdummyl , *xdummyh;
   long i;
