@@ -41,7 +41,14 @@ int dwtInputCheck(int nrhs, transform_t dwtType) {
 }
 
 
-int dwtEstimateL(int n, int m) {
+/*!
+ * Find L, the number of levels
+ *
+ * @param m the number of rows in the input
+ * @param n the number of columns in the input
+ *
+ */
+int dwtFindL(int m, int n) {
   int i, j, L;
   i = n ; j = 0;
   while (even(i)) {
@@ -64,7 +71,13 @@ int dwtEstimateL(int n, int m) {
   else return L;
 }
 
-
+/*!
+ * Check that length is divisble by 2^L
+ *
+ * @param length pass in the number of rows or number if columns
+ * @param L the number of levels
+ *
+ */
 int dimensionCheck(int length, int L) {
   double test = (double) length / pow(2.0, (double) L);
   if (!isint(test)) {
@@ -97,7 +110,7 @@ rwt_init_params dwtInit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
   if ((argNumL + 1) == nrhs)
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
-    params.levels = dwtEstimateL(params.ncols, params.nrows);
+    params.levels = dwtFindL(params.nrows, params.ncols);
 
   if (params.levels < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
