@@ -101,7 +101,7 @@ int rwt_find_L(int m, int n) {
  * @param L the number of levels
  *
  */
-int dimensionCheck(int length, int L) {
+int rwt_check_dimensions(int length, int L) {
   double test = (double) length / pow(2.0, (double) L);
   if (!isint(test)) {
     mexErrMsgTxt("The matrix dimensions must be of size m*2^(L) by n*2^(L)");
@@ -123,37 +123,33 @@ int dimensionCheck(int length, int L) {
  */
 rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t transform_type) {
   rwt_init_params params;
-  int argNumL;
-
-  /* check for correct # of input variables */
+  /*! Check for correct # of input parameters */
   if (rwt_check_parameter_count(nrhs, transform_type) != 0) return;
-
-  /* buffer overflow will occur if matrix isn't 1-D or 2-D */
+  /*! Check that we don't have more than two dimensions in the input since that is currently unsupported. */
   if (mxGetNumberOfDimensions(prhs[0]) > 2) {
     mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
     return;
   }
-
-  /* Get input matrix row and column number */
+  /*! Get the number of rows and columns in the input matrix. */
   params.nrows = mxGetM(prhs[0]);
   params.ncols = mxGetN(prhs[0]);
-
-  /* Read L from command line or compute L */
-  argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
+  /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Make sure L > 0 */
+  int argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
   if ((argNumL + 1) == nrhs)
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
     params.levels = rwt_find_L(params.nrows, params.ncols);
-
   if (params.levels < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
     return;
   }
-
-  /* Check input dimensions */
-  if ((params.nrows > 1 && dimensionCheck(params.nrows, params.levels)) || (params.ncols > 1 && dimensionCheck(params.ncols, params.levels)))
+  /*! Check that both the rows and columns are divisible by 2^L */
+  if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels)))
     return;
-
+  /*! Read the scaling coefficients, h, from the input and find their length, lh. 
+   *  In the case of the redundant transform, the scalings are found further one position to the right, 
+   *  and also we check for matching dimensions in the low and high inputs
+   */
   if (transform_type == INVERSE_REDUNDANT_DWT) {
     params.scalings = mxGetPr(prhs[2]);
     params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
@@ -166,10 +162,8 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.scalings = mxGetPr(prhs[1]);
     params.lh = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
-
-  /*! Create the first item in the output array as a double matrix with the same dimensions as the input */
+  /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
   plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);
-
   return params;
 }
 

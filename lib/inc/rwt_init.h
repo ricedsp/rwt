@@ -8,10 +8,10 @@
 #include "rwt_common.h"
 
 typedef struct {
-  int nrows;        /*!< The number of rows in the input matrix  */
-  int ncols;        /*!< The number of columns in the input matrix  */
-  int lh;
+  int nrows;        /*!< The number of rows in the input matrix. Output matrix will match.  */
+  int ncols;        /*!< The number of columns in the input matrix. Output matrix will match. */
   int levels;
+  int lh;           /*!< Length of h / the number of scaling coefficients */
   double *scalings; /*!< Wavelet scaling coefficients */
 } rwt_init_params;
 
