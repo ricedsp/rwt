@@ -3,7 +3,6 @@
 
 */
 
-
 #include "rwt_init.h"
 #include <math.h>
 
@@ -12,11 +11,11 @@
  * Checks for correct # of input variables based on type of transform.
  *
  * @param nrhs number of items on right hand side of matlab call
- * @param dwtType 
+ * @param transform_type 
  *
  */
-int dwtInputCheck(int nrhs, transform_t dwtType) {
-  if (dwtType == INVERSE_REDUNDANT_DWT) {
+int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
+  if (transform_type == INVERSE_REDUNDANT_DWT) {
     if (nrhs > 4) {
       mexErrMsgTxt("There are at most 4 input parameters allowed!");
       return 1;
@@ -41,13 +40,37 @@ int dwtInputCheck(int nrhs, transform_t dwtType) {
 
 
 /*!
+ * For the inverse redundant transform check that the dimensions of the low and high inputs match
+ *
+ * @param prhs
+ * @param params
+ *
+ */
+int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int levels) {
+  int mh = mxGetM(prhs[1]);
+  int nh = mxGetN(prhs[1]);
+  if (min(nrows, ncols) > 1){
+    if ((nrows != mh) | (3 * ncols * levels != nh)) {
+      return 0;
+    }
+  }
+  else {
+    if ((nrows != mh) | (ncols * levels != nh)) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+
+/*!
  * Find L, the number of levels
  *
  * @param m the number of rows in the input
  * @param n the number of columns in the input
  *
  */
-int dwtFindL(int m, int n) {
+int rwt_find_L(int m, int n) {
   int i, j, L;
   i = n ; j = 0;
   while (even(i)) {
@@ -69,6 +92,7 @@ int dwtFindL(int m, int n) {
   }
   else return L;
 }
+
 
 /*!
  * Check that length is divisble by 2^L
@@ -94,15 +118,15 @@ int dimensionCheck(int length, int L) {
  * @param plhs pointer to left hand side data structure
  * @param nrhs number of items on right hand side of matlab call
  * @param prhs pointer to right hand side data structure
- * @param dwtType which transform are we setting up to do
+ * @param transform_type which transform are we setting up to do
  *
  */
-rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType) {
+rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t transform_type) {
   rwt_init_params params;
   int argNumL;
 
   /* check for correct # of input variables */
-  if (dwtInputCheck(nrhs, dwtType) != 0) return;
+  if (rwt_check_parameter_count(nrhs, transform_type) != 0) return;
 
   /* buffer overflow will occur if matrix isn't 1-D or 2-D */
   if (mxGetNumberOfDimensions(prhs[0]) > 2) {
@@ -115,11 +139,11 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   params.ncols = mxGetN(prhs[0]);
 
   /* Read L from command line or compute L */
-  argNumL = (dwtType == INVERSE_REDUNDANT_DWT) ? 3 : 2;
+  argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
   if ((argNumL + 1) == nrhs)
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
-    params.levels = dwtFindL(params.nrows, params.ncols);
+    params.levels = rwt_find_L(params.nrows, params.ncols);
 
   if (params.levels < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
@@ -130,23 +154,12 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   if ((params.nrows > 1 && dimensionCheck(params.nrows, params.levels)) || (params.ncols > 1 && dimensionCheck(params.ncols, params.levels)))
     return;
 
-  if (dwtType == INVERSE_REDUNDANT_DWT) {
-    int mh = mxGetM(prhs[1]);
-    int nh = mxGetN(prhs[1]);
+  if (transform_type == INVERSE_REDUNDANT_DWT) {
     params.scalings = mxGetPr(prhs[2]);
     params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
-    /* check for consistency of rows and columns of yl, yh */
-    if (min(params.nrows, params.ncols) > 1){
-      if ((params.nrows != mh) | (3 * params.ncols * params.levels != nh)) {
-        mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
-        return;
-      }
-    }
-    else {
-      if ((params.nrows != mh) | (params.ncols * params.levels != nh)) {
-        mexErrMsgTxt("Dimensions of first two input vectors not consistent!");
-        return;
-      }
+    if (!rwt_check_yl_matches_yh(prhs, params.nrows, params.ncols, params.levels)) {
+      mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
+      return;
     }
   }
   else {
@@ -154,7 +167,10 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.lh = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
 
+  /*! Create the first item in the output array as a double matrix with the same dimensions as the input */
   plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);
 
   return params;
 }
+
+

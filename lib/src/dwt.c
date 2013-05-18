@@ -75,11 +75,11 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 /*!
  * Perform convolution for dwt
  *
- * @param x_in
+ * @param x_in input signal values
  * @param lx
- * @param h0
- * @param h1
- * @param lh_minus_one
+ * @param h0 wavelet scaling coefficients in reverse order
+ * @param h1 wavelet scaling coefficients with even values sign reversed
+ * @param lh_minus_one one less than the number of scaling coefficients
  * @param x_outl low pass results
  * @param x_outh high pass results
  *
@@ -106,9 +106,9 @@ void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, dou
 /*!
  * Allocate memory for dwt
  *
- * @param m
- * @param n
- * @param lh
+ * @param m the number of rows of the input matrix
+ * @param n the number of columns of the input matrix
+ * @param lh the number of scaling coefficients
  * @param xdummy
  * @param y_dummy_low
  * @param y_dummy_high
@@ -147,7 +147,7 @@ void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, doub
 /*!
  * Put the scaling coeffients into a form ready for use in the convolution function
  *
- * @param lh
+ * @param lh length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
  * @param h0 reversed h
  * @param h1 forward h, even values are sign reversed
@@ -164,6 +164,18 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
 }
 
 
+/*!
+ * Perform the discrete wavelet transform
+ *
+ * @param x  the input signal
+ * @param m  number of rows in the input
+ * @param n  number of columns in the input
+ * @param h  wavelet scaling coefficients
+ * @param lh length of h / the number of scaling coefficients
+ * @param L  the number of levels
+ * @param y  the output signal with the wavelet transform applied
+ *
+ */
 void DWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   int i, actual_L, lh_minus_one;
