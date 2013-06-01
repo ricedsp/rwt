@@ -33,6 +33,9 @@ function test_mdwt_compute_bad_L
        L = -1;
        x = [1 2 3 4 5 6 7 8 9];
        h = daubcqf(4,'min');
-       
        mdwtHandle = @() mdwt(x,h);
-assertExceptionThrown(mdwtHandle,'') ;
+assertExceptionThrown(mdwtHandle,'');
+
+function test_mdwt_empty_input
+       mdwtHandle = @() mdwt([], [0 0 0 0]);
+assertExceptionThrown(mdwtHandle,'');

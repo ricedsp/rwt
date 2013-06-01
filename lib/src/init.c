@@ -133,6 +133,12 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   /*! Get the number of rows and columns in the input matrix. */
   params.nrows = mxGetM(prhs[0]);
   params.ncols = mxGetN(prhs[0]);
+
+  if (params.nrows == 0 && params.ncols == 0) {
+    mexErrMsgTxt("The input matrix cannot be empty");
+    return;
+  }
+
   /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Make sure L > 0 */
   int argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
   if ((argNumL + 1) == nrhs)
