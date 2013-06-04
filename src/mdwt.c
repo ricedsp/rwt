@@ -43,6 +43,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, NORMAL_DWT);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[1]) = params.levels; /*! The second returned item is the number of levels */
-  DWT(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.lh, params.levels, mxGetPr(plhs[0]));
+  dwt(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.lh, params.levels, mxGetPr(plhs[0]));
 }
 

@@ -178,7 +178,7 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * @param y  the output signal with the wavelet transform applied
  *
  */
-void DWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int actual_L, lh_minus_one;

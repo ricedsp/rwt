@@ -114,7 +114,7 @@ void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, dou
 }
 
 
-void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;

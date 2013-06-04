@@ -125,7 +125,7 @@ void irdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_lo
 }
 
 
-void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *y_low, double *y_high) {
+void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, double *y_high) {
   double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;

@@ -122,7 +122,7 @@ void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low
 }
 
 
-void RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
+void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
   long i;

@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 
-int DWT(double *x, int m, int n, double *h, int lh, int L, double *y);
-int IDWT(double *x, int m, int n, double *h, int lh, int L, double *y);
-int RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
-int IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
+int dwt(double *x, int m, int n, double *h, int lh, int L, double *y);
+int idwt(double *x, int m, int n, double *h, int lh, int L, double *y);
+int rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
+int irdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
 
 #ifdef __cplusplus
 }
