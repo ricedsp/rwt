@@ -95,16 +95,28 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1,
   }
 }
 
+void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
+  *xdummy       = (double *) rwt_calloc(max(m,n),        sizeof(double));
+  *y_dummy_low  = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
+  *y_dummy_high = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
+  *g0           = (double *) rwt_calloc(lh,              sizeof(double));
+  *g1           = (double *) rwt_calloc(lh,              sizeof(double));
+}
+
+void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
+  rwt_free(*xdummy);
+  rwt_free(*y_dummy_low);
+  rwt_free(*y_dummy_high);
+  rwt_free(*g0);
+  rwt_free(*g1);
+}
 
 void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
-  double  *g0, *g1, *ydummyl, *ydummyh, *xdummy;
-  long i;
+  double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
+  int i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;
-  xdummy = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummyl = (double *)rwt_calloc(max(m,n)+lh/2-1,sizeof(double));
-  ydummyh = (double *)rwt_calloc(max(m,n)+lh/2-1,sizeof(double));
-  g0 = (double *)rwt_calloc(lh,sizeof(double));
-  g1 = (double *)rwt_calloc(lh,sizeof(double));
+
+  idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
 
   if (n==1){
     n = m;
@@ -145,11 +157,11 @@ void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/* store in dummy variables */
 	ir = r_o_a;
 	for (i=0; i<r_o_a; i++){    
-	  ydummyl[i+lhhm1] = mat(x, i, ic, m);  
-	  ydummyh[i+lhhm1] = mat(x, ir++, ic, m);  
+	  y_dummy_low[i+lhhm1] = mat(x, i, ic, m);  
+	  y_dummy_high[i+lhhm1] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
-	bpsconv(xdummy, r_o_a, g0, g1, lhm1, lhhm1, ydummyl, ydummyh); 
+	bpsconv(xdummy, r_o_a, g0, g1, lhm1, lhhm1, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<actual_m; i++)
 	  mat(x, i, ic, m) = xdummy[i];  
@@ -160,11 +172,11 @@ void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
       /* store in dummy variable */
       ic = c_o_a;
       for  (i=0; i<c_o_a; i++){    
-	ydummyl[i+lhhm1] = mat(x, ir, i, m);  
-	ydummyh[i+lhhm1] = mat(x, ir, ic++, m);  
+	y_dummy_low[i+lhhm1] = mat(x, ir, i, m);  
+	y_dummy_high[i+lhhm1] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
-      bpsconv(xdummy, c_o_a, g0, g1, lhm1, lhhm1, ydummyl, ydummyh); 
+      bpsconv(xdummy, c_o_a, g0, g1, lhm1, lhhm1, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<actual_n; i++)
         mat(x, ir, i, m) = xdummy[i];  
@@ -175,5 +187,6 @@ void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
       actual_m = actual_m*2;
     actual_n = actual_n*2;
   }
+  idwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
 }
 
