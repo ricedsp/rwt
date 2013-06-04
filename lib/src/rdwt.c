@@ -96,20 +96,41 @@ void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl
 }
 
 
+void rdwt_allocate(int m, int n, int lh, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
+  double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
+  *x_dummy_low       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *x_dummy_high      = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *y_dummy_low_low   = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *y_dummy_low_high  = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *y_dummy_high_low  = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *y_dummy_high_high = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *h0                = (double *) rwt_calloc(lh,            sizeof(double));
+  *h1                = (double *) rwt_calloc(lh,            sizeof(double));
+}
+
+
+void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
+  double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
+  rwt_free(*x_dummy_low);
+  rwt_free(*x_dummy_high);
+  rwt_free(*y_dummy_low_low);
+  rwt_free(*y_dummy_low_high);
+  rwt_free(*y_dummy_high_low);
+  rwt_free(*y_dummy_high_high);
+  rwt_free(*h0);
+  rwt_free(*h1);
+}
+
+
 void RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
-  double  *h0, *h1, *ydummyll, *ydummylh, *ydummyhl;
-  double *ydummyhh, *xdummyl , *xdummyh;
+  double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
+  double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
   long i;
   int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb;
   int ic, n_r, n_rb, c_o_a_p2n, sample_f;
-  xdummyl = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  xdummyh = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  ydummyll = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummylh = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummyhl = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummyhh = (double *)rwt_calloc(max(m,n),sizeof(double));
-  h0 = (double *)rwt_calloc(lh,sizeof(double));
-  h1 = (double *)rwt_calloc(lh,sizeof(double));
+
+  rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
+    &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
 
   if (n==1){
     n = m;
@@ -148,16 +169,16 @@ void RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	ic = -sample_f + n_c;
 	for (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  xdummyl[i] = mat(yl, ir, ic, m);  
+	  x_dummy_low[i] = mat(yl, ir, ic, m);  
 	}
 	/* perform filtering lowpass/highpass */
-	fpconv(xdummyl, actual_n, h0, h1, lh, ydummyll, ydummyhh); 
+	fpconv(x_dummy_low, actual_n, h0, h1, lh, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  mat(yl, ir, ic, m) = ydummyll[i];  
-	  mat(yh, ir, c_o_a+ic, m) = ydummyhh[i];  
+	  mat(yl, ir, ic, m) = y_dummy_low_low[i];  
+	  mat(yh, ir, c_o_a+ic, m) = y_dummy_high_high[i];  
 	} 
       }
     }
@@ -171,26 +192,27 @@ void RDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    xdummyl[i] = mat(yl, ir, ic, m);  
-	    xdummyh[i] = mat(yh, ir,c_o_a+ic, m);  
+	    x_dummy_low[i] = mat(yl, ir, ic, m);  
+	    x_dummy_high[i] = mat(yh, ir,c_o_a+ic, m);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
-	  fpconv(xdummyl, actual_m, h0, h1, lh, ydummyll, ydummylh); 
-	  fpconv(xdummyh, actual_m, h0, h1, lh, ydummyhl, ydummyhh); 
+	  fpconv(x_dummy_low, actual_m, h0, h1, lh, y_dummy_low_low, y_dummy_low_high); 
+	  fpconv(x_dummy_high, actual_m, h0, h1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* restore dummy variables in matrices */
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    mat(yl, ir, ic, m) = ydummyll[i];  
-	    mat(yh, ir, c_o_a+ic, m) = ydummylh[i];  
-	    mat(yh, ir,c_o_a+n+ic, m) = ydummyhl[i];  
-	    mat(yh, ir, c_o_a_p2n+ic, m) = ydummyhh[i];  
+	    mat(yl, ir, ic, m) = y_dummy_low_low[i];  
+	    mat(yh, ir, c_o_a+ic, m) = y_dummy_low_high[i];  
+	    mat(yh, ir,c_o_a+n+ic, m) = y_dummy_high_low[i];  
+	    mat(yh, ir, c_o_a_p2n+ic, m) = y_dummy_high_high[i];  
 	  }
 	}
       }
     }
     sample_f = sample_f*2;
   }
+  rdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
 }
 
 

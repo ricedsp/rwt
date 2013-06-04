@@ -95,6 +95,7 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1,
   }
 }
 
+
 void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
   *xdummy       = (double *) rwt_calloc(max(m,n),        sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
@@ -102,6 +103,7 @@ void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, 
   *g0           = (double *) rwt_calloc(lh,              sizeof(double));
   *g1           = (double *) rwt_calloc(lh,              sizeof(double));
 }
+
 
 void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
   rwt_free(*xdummy);
@@ -111,9 +113,10 @@ void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, dou
   rwt_free(*g1);
 }
 
+
 void IDWT(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
-  int i;
+  long i;
   int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;
 
   idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
