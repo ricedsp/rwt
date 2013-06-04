@@ -49,20 +49,20 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
                 Fix minor bug to allow maximum number of levels
 
 MATLAB description:
-%function x = mirdwt(yl,yh,h,L);
+%function x = mirdwt(y_low,y_high,h,L);
 % 
 % function computes the inverse redundant discrete wavelet transform y for a
 % 1D or  2D input signal. redundant means here that the subsampling after
-% each stage of the forward transform has been omitted. yl contains the
-% lowpass and yl the highpass components as computed, e.g., by mrdwt. In
-% case of a 2D signal the ordering in yh is [lh hl hh lh hl ... ] (first
+% each stage of the forward transform has been omitted. y_low contains the
+% lowpass and y_low the highpass components as computed, e.g., by mrdwt. In
+% case of a 2D signal the ordering in y_high is [lh hl hh lh hl ... ] (first
 % letter refers to row, second to column filtering).  
 %
 %    Input:
-%       yl   : lowpass component
-%       yh   : highpass components
+%       y_low   : lowpass component
+%       y_high   : highpass components
 %       h    : scaling filter
-%       L    : number of levels. in case of a 1D signal length(yl) must be
+%       L    : number of levels. in case of a 1D signal length(y_low) must be
 %              divisible by 2^L; in case of a 2D signal the row and the
 %              column dimension must be divisible by 2^L.
 %   
@@ -98,21 +98,41 @@ void bpconv(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl
 }
 
 
-void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
-  double  *g0, *g1, *ydummyll, *ydummylh, *ydummyhl;
-  double *ydummyhh, *xdummyl , *xdummyh, *xh;
+void irdwt_allocate(int m, int n, int lh, double **x_high, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
+  double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **g0, double **g1) {
+  *x_high            = (double *) rwt_calloc(m*n,           sizeof(double));
+  *x_dummy_low       = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *x_dummy_high      = (double *) rwt_calloc(max(m,n),      sizeof(double));
+  *y_dummy_low_low   = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *y_dummy_low_high  = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *y_dummy_high_low  = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *y_dummy_high_high = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
+  *g0                = (double *) rwt_calloc(lh,            sizeof(double));
+  *g1                = (double *) rwt_calloc(lh,            sizeof(double));
+}
+
+
+void irdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
+  double **y_dummy_high_low, double **y_dummy_high_high, double **g0, double **g1) {
+  rwt_free(*x_dummy_low);
+  rwt_free(*x_dummy_high);
+  rwt_free(*y_dummy_low_low);
+  rwt_free(*y_dummy_low_high);
+  rwt_free(*y_dummy_high_low);
+  rwt_free(*y_dummy_high_high);
+  rwt_free(*g0);
+  rwt_free(*g1);
+}
+
+
+void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *y_low, double *y_high) {
+  double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
+  double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;
   int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, lhm1;
   int ic, n_r, n_rb, c_o_a_p2n, sample_f;
-  xh = (double *)rwt_calloc(m*n,sizeof(double));
-  xdummyl = (double *)rwt_calloc(max(m,n),sizeof(double));
-  xdummyh = (double *)rwt_calloc(max(m,n),sizeof(double));
-  ydummyll = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  ydummylh = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  ydummyhl = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  ydummyhh = (double *)rwt_calloc(max(m,n)+lh-1,sizeof(double));
-  g0 = (double *)rwt_calloc(lh,sizeof(double));
-  g1 = (double *)rwt_calloc(lh,sizeof(double));
+  irdwt_allocate(m, n, lh, &x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, 
+    &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
   
   if (n==1){
     n = m;
@@ -133,9 +153,9 @@ void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double
     sample_f = sample_f*2;
   actual_m = m/sample_f;
   actual_n = n/sample_f;
-  /* restore yl in x */
+  /* restore y_low in x */
   for (i=0;i<m*n;i++)
-    x[i] = yl[i];
+    x[i] = y_low[i];
   
   /* main loop */
   for (actual_L=L; actual_L >= 1; actual_L--){
@@ -155,20 +175,20 @@ void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    ydummyll[i+lhm1] = mat(x, ir, ic, m);  
-	    ydummylh[i+lhm1] = mat(yh, ir, c_o_a+ic, m);  
-	    ydummyhl[i+lhm1] = mat(yh, ir,c_o_a+n+ic, m);  
-	    ydummyhh[i+lhm1] = mat(yh, ir, c_o_a_p2n+ic, m);   
+	    y_dummy_low_low[i+lhm1] = mat(x, ir, ic, m);  
+	    y_dummy_low_high[i+lhm1] = mat(y_high, ir, c_o_a+ic, m);  
+	    y_dummy_high_low[i+lhm1] = mat(y_high, ir,c_o_a+n+ic, m);  
+	    y_dummy_high_high[i+lhm1] = mat(y_high, ir, c_o_a_p2n+ic, m);   
 	  }
 	  /* perform filtering and adding: first LL/LH, then HL/HH */
-	  bpconv(xdummyl, actual_m, g0, g1, lh, ydummyll, ydummylh); 
-	  bpconv(xdummyh, actual_m, g0, g1, lh, ydummyhl, ydummyhh); 
+	  bpconv(x_dummy_low, actual_m, g0, g1, lh, y_dummy_low_low, y_dummy_low_high); 
+	  bpconv(x_dummy_high, actual_m, g0, g1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* store dummy variables in matrices */
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    mat(x, ir, ic, m) = xdummyl[i];  
-	    mat(xh, ir, ic, m) = xdummyh[i];  
+	    mat(x, ir, ic, m) = x_dummy_low[i];  
+	    mat(x_high, ir, ic, m) = x_dummy_high[i];  
 	  }
 	}
       }
@@ -182,19 +202,19 @@ void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  ydummyll[i+lhm1] = mat(x, ir, ic, m);  
+	  y_dummy_low_low[i+lhm1] = mat(x, ir, ic, m);  
 	  if (m>1)
-	    ydummyhh[i+lhm1] = mat(xh, ir, ic, m);  
+	    y_dummy_high_high[i+lhm1] = mat(x_high, ir, ic, m);  
 	  else
-	    ydummyhh[i+lhm1] = mat(yh, ir, c_o_a+ic, m);  
+	    y_dummy_high_high[i+lhm1] = mat(y_high, ir, c_o_a+ic, m);  
 	} 
 	/* perform filtering lowpass/highpass */
-	bpconv(xdummyl, actual_n, g0, g1, lh, ydummyll, ydummyhh); 
+	bpconv(x_dummy_low, actual_n, g0, g1, lh, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
 	for (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  mat(x, ir, ic, m) = xdummyl[i];  
+	  mat(x, ir, ic, m) = x_dummy_low[i];  
 	}
       }
     }
@@ -202,5 +222,6 @@ void IRDWT(double *x, int m, int n, double *h, int lh, int L, double *yl, double
     actual_m = actual_m*2;
     actual_n = actual_n*2;
   }
+  irdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
 }
 
