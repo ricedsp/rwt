@@ -193,6 +193,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     m = 1;
   }
   
+  /*! For performance, precalculate what we can outside the loops */
   lh_minus_one = lh - 1;
   upsampled_rows = 2*m;
   upsampled_columns = 2*n;
@@ -230,7 +231,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       } 
     }  
     
-    /* go by columns in case of a 2D signal*/
+    /*! For the 2d transform, we go through each of the columns after having gone through the rows */
     if (m>1) {
       //mexPrintf("2d: %d %d %d %d\n", upsampled_rows, pass_rows, upsampled_columns, pass_columns);
       for (idx_columns=0; idx_columns<upsampled_columns; idx_columns++) { /* loop over columns */

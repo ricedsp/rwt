@@ -72,11 +72,11 @@ decription of the matlab call:
 
 #include "rwt_platform.h"
 
-void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1, double *x_inl, double *x_inh) {
+void bpsconv(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, int lh_halved_minus_one, double *x_inl, double *x_inh) {
   int i, j, ind, tj;
   double x0, x1;
 
-  for (i=lhhm1-1; i > -1; i--){
+  for (i=lh_halved_minus_one-1; i > -1; i--){
     x_inl[i] = x_inl[lx+i];
     x_inh[i] = x_inh[lx+i];
   }
@@ -85,10 +85,10 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lhm1, int lhhm1,
     x0 = 0;
     x1 = 0;
     tj = -2;
-    for (j=0; j<=lhhm1; j++){
+    for (j=0; j<=lh_halved_minus_one; j++){
       tj+=2;
-      x0 = x0 + x_inl[i+j]*g0[lhm1-1-tj] + x_inh[i+j]*g1[lhm1-1-tj] ;
-      x1 = x1 + x_inl[i+j]*g0[lhm1-tj] + x_inh[i+j]*g1[lhm1-tj] ;
+      x0 = x0 + x_inl[i+j]*g0[lh_minus_one-1-tj] + x_inh[i+j]*g1[lh_minus_one-1-tj] ;
+      x1 = x1 + x_inl[i+j]*g0[lh_minus_one-tj] + x_inh[i+j]*g1[lh_minus_one-tj] ;
     }
     x_out[ind++] = x0;
     x_out[ind++] = x1;
@@ -114,27 +114,32 @@ void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, dou
 }
 
 
+void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
+  int i;
+  for (i=0; i<lh; i++){
+    (*g0)[i] = h[i];
+    (*g1)[i] = h[lh-i-1];
+  }
+  for (i=1; i<=lh; i+=2)
+    (*g1)[i] = -((*g1)[i]);
+}
+
+
 void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lhm1, lhhm1, sample_f;
+  int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lh_minus_one, lh_halved_minus_one, sample_f;
 
   idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
+  idwt_coefficients(lh, h, &g0, &g1);
 
   if (n==1){
     n = m;
     m = 1;
   }
-  /* synthesis lowpass and highpass */
-  for (i=0; i<lh; i++){
-    g0[i] = h[i];
-    g1[i] = h[lh-i-1];
-  }
-  for (i=1; i<=lh; i+=2)
-    g1[i] = -g1[i];
   
-  lhm1 = lh - 1;
-  lhhm1 = lh/2 - 1;
+  lh_minus_one = lh - 1;
+  lh_halved_minus_one = lh/2 - 1;
   /* 2^L */
   sample_f = 1;
   for (i=1; i<L; i++)
@@ -160,11 +165,11 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/* store in dummy variables */
 	ir = r_o_a;
 	for (i=0; i<r_o_a; i++){    
-	  y_dummy_low[i+lhhm1] = mat(x, i, ic, m);  
-	  y_dummy_high[i+lhhm1] = mat(x, ir++, ic, m);  
+	  y_dummy_low[i+lh_halved_minus_one] = mat(x, i, ic, m);  
+	  y_dummy_high[i+lh_halved_minus_one] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
-	bpsconv(xdummy, r_o_a, g0, g1, lhm1, lhhm1, y_dummy_low, y_dummy_high); 
+	bpsconv(xdummy, r_o_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<actual_m; i++)
 	  mat(x, i, ic, m) = xdummy[i];  
@@ -175,11 +180,11 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       /* store in dummy variable */
       ic = c_o_a;
       for  (i=0; i<c_o_a; i++){    
-	y_dummy_low[i+lhhm1] = mat(x, ir, i, m);  
-	y_dummy_high[i+lhhm1] = mat(x, ir, ic++, m);  
+	y_dummy_low[i+lh_halved_minus_one] = mat(x, ir, i, m);  
+	y_dummy_high[i+lh_halved_minus_one] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
-      bpsconv(xdummy, c_o_a, g0, g1, lhm1, lhhm1, y_dummy_low, y_dummy_high); 
+      bpsconv(xdummy, c_o_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<actual_n; i++)
         mat(x, ir, i, m) = xdummy[i];  
