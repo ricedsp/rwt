@@ -121,6 +121,17 @@ void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low
   rwt_free(*h1);
 }
 
+/* This is identical to dwt_coefficients */
+void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
+  int i;
+  for (i=0; i<lh; i++) {
+    (*h0)[i] = h[(lh-i)-1];
+    (*h1)[i] = h[i];
+  }
+  for (i=0; i<lh; i+=2)
+    (*h1)[i] = -((*h1)[i]);
+}
+
 
 void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
@@ -132,17 +143,13 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
     &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
 
+  rdwt_coefficients(lh, h, &h0, &h1);
+
   if (n==1){
     n = m;
     m = 1;
   }  
   /* analysis lowpass and highpass */
-  for (i=0; i<lh; i++){
-    h0[i] = h[lh-i-1];
-    h1[i] =h[i];
-  }
-  for (i=0; i<lh; i+=2)
-    h1[i] = -h1[i];
   
   actual_m = 2*m;
   actual_n = 2*n;

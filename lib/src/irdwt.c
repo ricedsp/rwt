@@ -124,29 +124,36 @@ void irdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_lo
   rwt_free(*g1);
 }
 
+/* not the same as idwt_coefficients */
+void irdwt_coefficients(int lh, double *h, double **g0, double **g1) {
+  int i;
+  for (i=0; i<lh; i++){
+    (*g0)[i] = h[i]/2;
+    (*g1)[i] = h[lh-i-1]/2;
+  }
+  for (i=1; i<=lh; i+=2)
+    (*g1)[i] = -((*g1)[i]);
+}
+
 
 void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, double *y_high) {
   double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;
-  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, lhm1;
+  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb, lh_minus_one;
   int ic, n_r, n_rb, c_o_a_p2n, sample_f;
+
   irdwt_allocate(m, n, lh, &x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, 
     &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
+  irdwt_coefficients(lh, h, &g0, &g1);
   
   if (n==1){
     n = m;
     m = 1;
   }
   /* analysis lowpass and highpass */
-  for (i=0; i<lh; i++){
-    g0[i] = h[i]/2;
-    g1[i] = h[lh-i-1]/2;
-  }
-  for (i=1; i<=lh; i+=2)
-    g1[i] = -g1[i];
   
-  lhm1 = lh - 1;
+  lh_minus_one = lh - 1;
   /* 2^L */
   sample_f = 1;
   for (i=1; i<L; i++)
@@ -175,10 +182,10 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    y_dummy_low_low[i+lhm1] = mat(x, ir, ic, m);  
-	    y_dummy_low_high[i+lhm1] = mat(y_high, ir, c_o_a+ic, m);  
-	    y_dummy_high_low[i+lhm1] = mat(y_high, ir,c_o_a+n+ic, m);  
-	    y_dummy_high_high[i+lhm1] = mat(y_high, ir, c_o_a_p2n+ic, m);   
+	    y_dummy_low_low[i+lh_minus_one] = mat(x, ir, ic, m);  
+	    y_dummy_low_high[i+lh_minus_one] = mat(y_high, ir, c_o_a+ic, m);  
+	    y_dummy_high_low[i+lh_minus_one] = mat(y_high, ir,c_o_a+n+ic, m);  
+	    y_dummy_high_high[i+lh_minus_one] = mat(y_high, ir, c_o_a_p2n+ic, m);   
 	  }
 	  /* perform filtering and adding: first LL/LH, then HL/HH */
 	  bpconv(x_dummy_low, actual_m, g0, g1, lh, y_dummy_low_low, y_dummy_low_high); 
@@ -202,11 +209,11 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  y_dummy_low_low[i+lhm1] = mat(x, ir, ic, m);  
+	  y_dummy_low_low[i+lh_minus_one] = mat(x, ir, ic, m);  
 	  if (m>1)
-	    y_dummy_high_high[i+lhm1] = mat(x_high, ir, ic, m);  
+	    y_dummy_high_high[i+lh_minus_one] = mat(x_high, ir, ic, m);  
 	  else
-	    y_dummy_high_high[i+lhm1] = mat(y_high, ir, c_o_a+ic, m);  
+	    y_dummy_high_high[i+lh_minus_one] = mat(y_high, ir, c_o_a+ic, m);  
 	} 
 	/* perform filtering lowpass/highpass */
 	bpconv(x_dummy_low, actual_n, g0, g1, lh, y_dummy_low_low, y_dummy_high_high); 
