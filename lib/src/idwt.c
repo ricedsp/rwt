@@ -165,7 +165,7 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/* store in dummy variables */
 	ir = row_of_a;
 	for (i=0; i<row_of_a; i++){    
-	  y_dummy_low[i+lh_halved_minus_one] = mat(x, i, ic, m);  
+	  y_dummy_low[i+lh_halved_minus_one]  = mat(x, i,    ic, m);  
 	  y_dummy_high[i+lh_halved_minus_one] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
@@ -180,7 +180,7 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       /* store in dummy variable */
       ic = column_of_a;
       for  (i=0; i<column_of_a; i++){    
-	y_dummy_low[i+lh_halved_minus_one] = mat(x, ir, i, m);  
+	y_dummy_low[i+lh_halved_minus_one]  = mat(x, ir, i,    m);  
 	y_dummy_high[i+lh_halved_minus_one] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
