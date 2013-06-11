@@ -137,8 +137,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
   long i;
-  int actual_L, actual_m, actual_n, c_o_a, ir, n_c, n_cb;
-  int ic, n_r, n_rb, c_o_a_p2n, sample_f;
+  int actual_L, actual_m, actual_n, column_of_a, ir, n_c, n_cb;
+  int ic, n_r, n_rb, column_of_a_plus_double_n, sample_f;
 
   rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
     &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
@@ -163,10 +163,10 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     actual_n = actual_n/2;
     /* actual (level dependent) column offset */
     if (m==1)
-      c_o_a = n*(actual_L-1);
+      column_of_a = n*(actual_L-1);
     else
-      c_o_a = 3*n*(actual_L-1);
-    c_o_a_p2n = c_o_a + 2*n;
+      column_of_a = 3*n*(actual_L-1);
+    column_of_a_plus_double_n = column_of_a + 2*n;
     
     /* go by rows */
     n_cb = n/actual_n;                 /* # of column blocks per row */
@@ -185,7 +185,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
 	  mat(yl, ir, ic, m) = y_dummy_low_low[i];  
-	  mat(yh, ir, c_o_a+ic, m) = y_dummy_high_high[i];  
+	  mat(yh, ir, column_of_a+ic, m) = y_dummy_high_high[i];  
 	} 
       }
     }
@@ -200,7 +200,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
 	    x_dummy_low[i] = mat(yl, ir, ic, m);  
-	    x_dummy_high[i] = mat(yh, ir,c_o_a+ic, m);  
+	    x_dummy_high[i] = mat(yh, ir,column_of_a+ic, m);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
 	  fpconv(x_dummy_low, actual_m, h0, h1, lh, y_dummy_low_low, y_dummy_low_high); 
@@ -209,10 +209,10 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    mat(yl, ir, ic, m) = y_dummy_low_low[i];  
-	    mat(yh, ir, c_o_a+ic, m) = y_dummy_low_high[i];  
-	    mat(yh, ir,c_o_a+n+ic, m) = y_dummy_high_low[i];  
-	    mat(yh, ir, c_o_a_p2n+ic, m) = y_dummy_high_high[i];  
+	    mat(yl, ir, ic,                           m) = y_dummy_low_low[i];  
+	    mat(yh, ir, column_of_a+ic,               m) = y_dummy_low_high[i];  
+	    mat(yh, ir, column_of_a+n+ic,             m) = y_dummy_high_low[i];  
+	    mat(yh, ir, column_of_a_plus_double_n+ic, m) = y_dummy_high_high[i];  
 	  }
 	}
       }

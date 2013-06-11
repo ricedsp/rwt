@@ -182,7 +182,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int actual_L, lh_minus_one;
-  int upsampled_rows, upsampled_columns, pass_rows, pass_columns, idx_rows, idx_columns;
+  int actual_m, actual_n, row_of_a, column_of_a, idx_rows, idx_columns;
   
   dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
   dwt_coefficients(lh, h, &h0, &h1);
@@ -195,37 +195,37 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   
   /*! For performance, precalculate what we can outside the loops */
   lh_minus_one = lh - 1;
-  upsampled_rows = 2*m;
-  upsampled_columns = 2*n;
+  actual_m = 2*m;
+  actual_n = 2*n;
  
   //mexPrintf("new signal. n is %d\n", n);
  
   /* main loop */
   for (actual_L=1; actual_L<=L; actual_L++) {
     if (m==1)
-      upsampled_rows = 1;
+      actual_m = 1;
     else{
-      upsampled_rows = upsampled_rows/2;
-      pass_rows = upsampled_rows/2;     
+      actual_m = actual_m/2;
+      row_of_a = actual_m/2;     
     }
-    upsampled_columns = upsampled_columns/2;
-    pass_columns = upsampled_columns/2;
+    actual_n = actual_n/2;
+    column_of_a = actual_n/2;
 
-    //mexPrintf("1d: %d %d\n", upsampled_columns, pass_columns);
+    //mexPrintf("1d: %d %d\n", actual_n, column_of_a);
     /* go by rows */
-    for (idx_rows=0; idx_rows<upsampled_rows; idx_rows++) {            /* loop over rows */
+    for (idx_rows=0; idx_rows<actual_m; idx_rows++) {            /* loop over rows */
       /* store in dummy variable */
 // Why do we copy in and out of dummy vars?
-      for (i=0; i<upsampled_columns; i++)
+      for (i=0; i<actual_n; i++)
 	if (actual_L==1)  
 	  xdummy[i] = mat(x, idx_rows, i, m);  
 	else 
 	  xdummy[i] = mat(y, idx_rows, i, m);  
       /* perform filtering lowpass and highpass*/
-      fpsconv(xdummy, upsampled_columns, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+      fpsconv(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
-      idx_columns = pass_columns;
-      for  (i=0; i<pass_columns; i++) {    
+      idx_columns = column_of_a;
+      for  (i=0; i<column_of_a; i++) {    
 	mat(y, idx_rows, i, m) = y_dummy_low[i];  
 	mat(y, idx_rows, idx_columns++, m) = y_dummy_high[i];  
       } 
@@ -233,16 +233,16 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     
     /*! For the 2d transform, we go through each of the columns after having gone through the rows */
     if (m>1) {
-      //mexPrintf("2d: %d %d %d %d\n", upsampled_rows, pass_rows, upsampled_columns, pass_columns);
-      for (idx_columns=0; idx_columns<upsampled_columns; idx_columns++) { /* loop over columns */
+      //mexPrintf("2d: %d %d %d %d\n", actual_m, row_of_a, actual_n, column_of_a);
+      for (idx_columns=0; idx_columns<actual_n; idx_columns++) { /* loop over columns */
 	/* store in dummy variables */
-	for (i=0; i<upsampled_rows; i++)
+	for (i=0; i<actual_m; i++)
 	  xdummy[i] = mat(y, i, idx_columns, m);  
 	/* perform filtering lowpass and highpass*/
-	fpsconv(xdummy, upsampled_rows, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+	fpsconv(xdummy, actual_m, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
-	idx_rows = pass_rows;
-	for (i=0; i<pass_rows; i++) {
+	idx_rows = row_of_a;
+	for (i=0; i<row_of_a; i++) {
 	  mat(y, i, idx_columns, m) = y_dummy_low[i];  
 	  mat(y, idx_rows++, idx_columns, m) = y_dummy_high[i];  
 	}

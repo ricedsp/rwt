@@ -128,7 +128,7 @@ void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
 void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int actual_L, actual_m, actual_n, r_o_a, c_o_a, ir, ic, lh_minus_one, lh_halved_minus_one, sample_f;
+  int actual_L, actual_m, actual_n, row_of_a, column_of_a, ir, ic, lh_minus_one, lh_halved_minus_one, sample_f;
 
   idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
   idwt_coefficients(lh, h, &g0, &g1);
@@ -156,20 +156,20 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   
   /* main loop */
   for (actual_L=L; actual_L >= 1; actual_L--){
-    r_o_a = actual_m/2;
-    c_o_a = actual_n/2;
+    row_of_a = actual_m/2;
+    column_of_a = actual_n/2;
     
     /* go by columns in case of a 2D signal*/
     if (m>1){
       for (ic=0; ic<actual_n; ic++){            /* loop over column */
 	/* store in dummy variables */
-	ir = r_o_a;
-	for (i=0; i<r_o_a; i++){    
+	ir = row_of_a;
+	for (i=0; i<row_of_a; i++){    
 	  y_dummy_low[i+lh_halved_minus_one] = mat(x, i, ic, m);  
 	  y_dummy_high[i+lh_halved_minus_one] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
-	bpsconv(xdummy, r_o_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
+	bpsconv(xdummy, row_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<actual_m; i++)
 	  mat(x, i, ic, m) = xdummy[i];  
@@ -178,13 +178,13 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     /* go by rows */
     for (ir=0; ir<actual_m; ir++){            /* loop over rows */
       /* store in dummy variable */
-      ic = c_o_a;
-      for  (i=0; i<c_o_a; i++){    
+      ic = column_of_a;
+      for  (i=0; i<column_of_a; i++){    
 	y_dummy_low[i+lh_halved_minus_one] = mat(x, ir, i, m);  
 	y_dummy_high[i+lh_halved_minus_one] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
-      bpsconv(xdummy, c_o_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
+      bpsconv(xdummy, column_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<actual_n; i++)
         mat(x, ir, i, m) = xdummy[i];  
