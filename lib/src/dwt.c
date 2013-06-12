@@ -199,7 +199,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   int actual_L, lh_minus_one;
   int actual_m, actual_n, row_of_a, column_of_a, idx_rows, idx_columns;
 
-  if (n==1) { /* If passed a 1d column vector, just treat it as a row vector */
+  if (n==1) { /*! If passed a 1d column vector, just treat it as a row vector */
     n = m;
     m = 1;
   }
@@ -226,9 +226,9 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	  xdummy[i] = mat(x, idx_rows, i, m);  
 	else 
 	  xdummy[i] = mat(y, idx_rows, i, m);  
-      /* perform filtering lowpass and highpass*/
+      /*! Perform filtering lowpass and highpass*/
       fpsconv(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
-      /* restore dummy variables in matrices */
+      /*! Restore dummy variables in matrices */
       idx_columns = column_of_a;
       for (i=0; i<column_of_a; i++) {    
 	mat(y, idx_rows, i,             m) = y_dummy_low[i];  
