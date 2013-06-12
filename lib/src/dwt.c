@@ -89,8 +89,8 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
   int i, j, ind;
   double x0, x1;
-  for (i=lx; i<lx+lh_minus_one; i++) {
-    x_in[i] = *(x_in+(i-lx));
+  for (i=lx; i<lx+lh_minus_one; i++) { 
+    x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length lh_minus_one */
   }
   ind = 0;
   for (i=0; i<(lx); i+=2) {
