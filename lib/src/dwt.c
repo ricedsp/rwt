@@ -76,20 +76,21 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
  * Perform convolution for dwt
  *
  * @param x_in input signal values
- * @param lx
- * @param h0 wavelet scaling coefficients in reverse order
- * @param h1 wavelet scaling coefficients with even values sign reversed
+ * @param lx the length of x
+ * @param h0 the low pass coefficients
+ * @param h1 the high pass coefficients
  * @param lh_minus_one one less than the number of scaling coefficients
- * @param x_outl low pass results
- * @param x_outh high pass results
+ * @param x_out_low low pass results
+ * @param x_out_high high pass results
+ * 
+ * For the convolution we will calculate the output of the lowpass and highpass filters in parallel
  *
  */
-void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_outl, double *x_outh) {
+void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
   int i, j, ind;
   double x0, x1;
   for (i=lx; i<lx+lh_minus_one; i++) {
     x_in[i] = *(x_in+(i-lx));
-    //mexPrintf("%f\n", x_in[i]);
   }
   ind = 0;
   for (i=0; i<(lx); i+=2) {
@@ -99,8 +100,8 @@ void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, dou
       x0 = x0 + x_in[i+j] * h0[lh_minus_one-j];
       x1 = x1 + x_in[i+j] * h1[lh_minus_one-j];
     }
-    x_outl[ind] = x0;
-    x_outh[ind++] = x1;
+    x_out_low[ind] = x0;
+    x_out_high[ind++] = x1;
   }
 }
 
@@ -117,6 +118,9 @@ void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, dou
  * @param h0
  * @param h1
  *
+ * The low pass and high pass filter coefficients are the same size as the scaling coefficients
+ * For the output storage area we will need as much space as the input: m*n
+ * For the input storage area we will need the same plus one less than the length of the coeffiecients
  */
 void dwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
   *xdummy       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
@@ -128,7 +132,7 @@ void dwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, d
 
 
 /*!
- * Free memory allocated for dwt
+ * Free memory that we allocated for dwt
  *
  * @param xdummy
  * @param y_dummy_low
@@ -151,8 +155,11 @@ void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, doub
  *
  * @param lh length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
- * @param h0 reversed h
- * @param h1 forward h, even values are sign reversed
+ * @param h0 the high pass coefficients - reversed h
+ * @param h1 the high pass coefficients - forward h, even values are sign flipped
+ *
+ * The coefficients of our Quadrature Mirror Filter are described by
+ * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  */
 void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
@@ -177,30 +184,32 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * @param L  the number of levels
  * @param y  the output signal with the wavelet transform applied
  *
+ * The discrete wavelet transform begins with a set of samples of a signal whose length
+ * is a power of 2. This exponent we shall call 'L' as it corresponds to the number of
+ * levels in the filter bank for the calculation of the wavelet transform. 
+ *
+ * We shall use the name 'a' to refer to the approximation coefficients.
+ * However, the actual implementation will not store this information separately, 
+ * but rather will place it in the available space in the output array.
+ *
  */
 void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int actual_L, lh_minus_one;
   int actual_m, actual_n, row_of_a, column_of_a, idx_rows, idx_columns;
-  
-  dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
-  dwt_coefficients(lh, h, &h0, &h1);
 
-  /* analysis lowpass and highpass */
-  if (n==1) {
+  if (n==1) { /* If passed a 1d column vector, just treat it as a row vector */
     n = m;
     m = 1;
   }
   
-  /*! For performance, precalculate what we can outside the loops */
+  dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
+  dwt_coefficients(lh, h, &h0, &h1); /*! For performance, precalculate what we can outside the loops */
   lh_minus_one = lh - 1;
   actual_m = 2*m;
   actual_n = 2*n;
  
-  //mexPrintf("new signal. n is %d\n", n);
- 
-  /* main loop */
   for (actual_L=1; actual_L<=L; actual_L++) {
     if (m==1)
       actual_m = 1;
@@ -211,11 +220,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     actual_n = actual_n/2;
     column_of_a = actual_n/2;
 
-    //mexPrintf("1d: %d %d\n", actual_n, column_of_a);
-    /* go by rows */
-    for (idx_rows=0; idx_rows<actual_m; idx_rows++) {            /* loop over rows */
-      /* store in dummy variable */
-// Why do we copy in and out of dummy vars?
+    for (idx_rows=0; idx_rows<actual_m; idx_rows++) {
       for (i=0; i<actual_n; i++)
 	if (actual_L==1)  
 	  xdummy[i] = mat(x, idx_rows, i, m);  
@@ -225,22 +230,21 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       fpsconv(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       idx_columns = column_of_a;
-      for  (i=0; i<column_of_a; i++) {    
-	mat(y, idx_rows, i, m) = y_dummy_low[i];  
+      for (i=0; i<column_of_a; i++) {    
+	mat(y, idx_rows, i,             m) = y_dummy_low[i];  
 	mat(y, idx_rows, idx_columns++, m) = y_dummy_high[i];  
       } 
     }  
     
     /*! For the 2d transform, we go through each of the columns after having gone through the rows */
     if (m>1) {
-      //mexPrintf("2d: %d %d %d %d\n", actual_m, row_of_a, actual_n, column_of_a);
       for (idx_columns=0; idx_columns<actual_n; idx_columns++) { /* loop over columns */
-	/* store in dummy variables */
+	/*! Store in dummy variables */
 	for (i=0; i<actual_m; i++)
 	  xdummy[i] = mat(y, i, idx_columns, m);  
-	/* perform filtering lowpass and highpass*/
+	/*! Perform filtering lowpass and highpass*/
 	fpsconv(xdummy, actual_m, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
-	/* restore dummy variables in matrix */
+	/*! Restore dummy variables in matrix */
 	idx_rows = row_of_a;
 	for (i=0; i<row_of_a; i++) {
 	  mat(y, i, idx_columns, m) = y_dummy_low[i];  

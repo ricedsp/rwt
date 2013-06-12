@@ -124,7 +124,18 @@ void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
     (*g1)[i] = -((*g1)[i]);
 }
 
-
+/*!
+ * Perform the inverse discrete wavelet transform
+ *
+ * @param x  the output signal with the inverse wavelet transform applied
+ * @param m  number of rows in the input
+ * @param n  number of columns in the input
+ * @param h  wavelet scaling coefficients
+ * @param lh length of h / the number of scaling coefficients
+ * @param L  the number of levels
+ * @param y  the input signal
+ *
+ */
 void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
