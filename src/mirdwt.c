@@ -1,26 +1,29 @@
-/*
-File Name: mirdwt.c
-Last Modification Date:	%G%	%U%
-Current Version: %M%	%I%
-File Creation Date: Wed Oct 12 08:44:43 1994
-Author: Markus Lang  <lang@jazz.rice.edu>
-
-Copyright: All software, documentation, and related files in this distribution
-           are Copyright (c) 1994  Rice University
-
-Permission is granted for use and non-profit distribution providing that this
-notice be clearly maintained. The right to distribute any portion for profit
-or as part of any commercial product is specifically reserved for the author.
-
-Change History: Fixed code such that the result has the same dimension as the 
-                input for 1D problems. Also, added some standard error checking.
-		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
-*/
-
 /*! \file mirdwt.c
     \brief MATLAB gateway for the inverse redundant discrete wavelet transform
 
     This file is used to produce a MATLAB MEX binary for the inverse redundant discrete wavelet transform
+
+%function x = mirdwt(y_low,y_high,h,L);
+% 
+% function computes the inverse redundant discrete wavelet transform y for a
+% 1D or  2D input signal. redundant means here that the subsampling after
+% each stage of the forward transform has been omitted. y_low contains the
+% lowpass and y_low the highpass components as computed, e.g., by mrdwt. In
+% case of a 2D signal the ordering in y_high is [lh hl hh lh hl ... ] (first
+% letter refers to row, second to column filtering).  
+%
+%    Input:
+%       y_low   : lowpass component
+%       y_high   : highpass components
+%       h    : scaling filter
+%       L    : number of levels. in case of a 1D signal length(y_low) must be
+%              divisible by 2^L; in case of a 2D signal the row and the
+%              column dimension must be divisible by 2^L.
+%   
+%    Output:
+%	x    : finite length 1D or 2D signal
+%
+% see also: mdwt, midwt, mrdwt
 */
 
 #include "matrix.h"

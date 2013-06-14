@@ -1,26 +1,28 @@
-/*
-File Name: mrdwt.c
-Last Modification Date:	%G%	%U%
-Current Version: %M%	%I%
-File Creation Date: Wed Oct 12 08:44:43 1994
-Author: Markus Lang  <lang@jazz.rice.edu>
-
-Copyright: All software, documentation, and related files in this distribution
-           are Copyright (c) 1994  Rice University
-
-Permission is granted for use and non-profit distribution providing that this
-notice be clearly maintained. The right to distribute any portion for profit
-or as part of any commercial product is specifically reserved for the author.
-
-Change History: Fixed code such that the result has the same dimension as the 
-                input for 1D problems. Also, added some standard error checking.
-		Jan Erik Odegard <odegard@ece.rice.edu> Wed Jun 14 1995
-*/
-
 /*! \file mrdwt.c
     \brief MATLAB gateway for the redundant discrete wavelet transform
 
     This file is used to produce a MATLAB MEX binary for the redundant discrete wavelet transform
+
+%[yl,yh] = mrdwt(x,h,L);
+% 
+% function computes the redundant discrete wavelet transform y for a 1D or
+% 2D input signal . redundant means here that the subsampling after each
+% stage is omitted. yl contains the lowpass and yl the highpass
+% components. In case of a 2D signal the ordering in yh is [lh hl hh lh hl
+% ... ] (first letter refers to row, second to column filtering). 
+%
+%    Input:
+%	x    : finite length 1D or 2D signal (implicitely periodized)
+%       h    : scaling filter
+%       L    : number of levels. in case of a 1D signal length(x) must be
+%              divisible by 2^L; in case of a 2D signal the row and the
+%              column dimension must be divisible by 2^L.
+%   
+%    Output:
+%       yl   : lowpass component
+%       yh   : highpass components
+%
+% see also: mdwt, midwt, mirdwt
 */
 
 #include "mex.h"
