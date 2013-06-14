@@ -85,6 +85,10 @@ Change History: Fixed the code such that 1D vectors passed to it can be in
  * 
  * For the convolution we will calculate the output of the lowpass and highpass filters in parallel
  *
+ * Normally we can describe the calculation of a convolution as
+ * \f$ (\textbf{w} * \textbf{z})_k = \frac{1}{N} \sum\limits_{l=0}^{2N-1} w_{k-l} \cdot z_{l} \f$
+ * 
+ *
  */
 void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
   int i, j, ind;
@@ -247,7 +251,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/*! Restore dummy variables in matrix */
 	idx_rows = row_of_a;
 	for (i=0; i<row_of_a; i++) {
-	  mat(y, i, idx_columns, m) = y_dummy_low[i];  
+	  mat(y, i,          idx_columns, m) = y_dummy_low[i];  
 	  mat(y, idx_rows++, idx_columns, m) = y_dummy_high[i];  
 	}
       }

@@ -4,4 +4,3 @@ add_library(idwt idwt.c)
 add_library(irdwt irdwt.c)
 add_library(rdwt rdwt.c)
 add_library(platform platform.c)
-
