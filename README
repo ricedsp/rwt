@@ -1,8 +1,6 @@
 Rice Wavelet Tools version 2.4
 Released - <Dec 1 2002>
 
-[DEPRECATED]
-
 The Rice Wavelet Toolbox (RWT) is a collection of Matlab M-files and C 
 MEX-files for 1D and 2D wavelet and filter bank design, analysis, and 
 processing. The toolbox provides tools for denoising and interfaces directly 
