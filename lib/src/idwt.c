@@ -5,13 +5,26 @@
 
 #include "rwt_platform.h"
 
-void bpsconv(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, int lh_halved_minus_one, double *x_inl, double *x_inh) {
+/*!
+ * Perform convolution for idwt
+ *
+ * @param x_out
+ * @param lx
+ * @param g0
+ * @param g1
+ * @param lh_minus_one
+ * @param lh_halved_minus_one
+ * @param x_in_low
+ * @param x_in_high
+ * 
+ */
+void idwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, int lh_halved_minus_one, double *x_in_low, double *x_in_high) {
   int i, j, ind, tj;
   double x0, x1;
 
   for (i=lh_halved_minus_one-1; i > -1; i--){
-    x_inl[i] = x_inl[lx+i];
-    x_inh[i] = x_inh[lx+i];
+    x_in_low[i] = x_in_low[lx+i];
+    x_in_high[i] = x_in_high[lx+i];
   }
   ind = 0;
   for (i=0; i<(lx); i++){
@@ -20,8 +33,8 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, in
     tj = -2;
     for (j=0; j<=lh_halved_minus_one; j++){
       tj+=2;
-      x0 = x0 + x_inl[i+j]*g0[lh_minus_one-1-tj] + x_inh[i+j]*g1[lh_minus_one-1-tj] ;
-      x1 = x1 + x_inl[i+j]*g0[lh_minus_one-tj] + x_inh[i+j]*g1[lh_minus_one-tj] ;
+      x0 = x0 + x_in_low[i+j]*g0[lh_minus_one-1-tj] + x_in_high[i+j]*g1[lh_minus_one-1-tj] ;
+      x1 = x1 + x_in_low[i+j]*g0[lh_minus_one-tj] + x_in_high[i+j]*g1[lh_minus_one-tj] ;
     }
     x_out[ind++] = x0;
     x_out[ind++] = x1;
@@ -29,6 +42,19 @@ void bpsconv(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, in
 }
 
 
+/*!
+ * Allocate memory for idwt
+ *
+ * @param m the number of rows of the input matrix
+ * @param n the number of columns of the input matrix
+ * @param lh the number of scaling coefficients
+ * @param xdummy
+ * @param y_dummy_low
+ * @param y_dummy_high
+ * @param g0
+ * @param g1
+ *
+ */
 void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
   *xdummy       = (double *) rwt_calloc(max(m,n),        sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
@@ -38,6 +64,16 @@ void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, 
 }
 
 
+/*!
+ * Free memory we allocated for idwt
+ *
+ * @param xdummy
+ * @param y_dummy_low
+ * @param y_dummy_high
+ * @param g0
+ * @param g1
+ *
+ */
 void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
   rwt_free(*xdummy);
   rwt_free(*y_dummy_low);
@@ -47,6 +83,15 @@ void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, dou
 }
 
 
+/*!
+ * Put the scaling coeffients into a form ready for use in the convolution function
+ *
+ * @param lh length of h / the number of scaling coefficients
+ * @param h  the wavelet scaling coefficients
+ * @param g0 same as h
+ * @param g1 reversed h, even values are sign flipped
+ *
+ */
 void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
   int i;
   for (i=0; i<lh; i++){
@@ -56,6 +101,7 @@ void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
   for (i=1; i<=lh; i+=2)
     (*g1)[i] = -((*g1)[i]);
 }
+
 
 /*!
  * Perform the inverse discrete wavelet transform
@@ -113,7 +159,7 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	  y_dummy_high[i+lh_halved_minus_one] = mat(x, ir++, ic, m);  
 	}
 	/* perform filtering lowpass and highpass*/
-	bpsconv(xdummy, row_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
+	idwt_convolution(xdummy, row_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<actual_m; i++)
 	  mat(x, i, ic, m) = xdummy[i];  
@@ -128,7 +174,7 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	y_dummy_high[i+lh_halved_minus_one] = mat(x, ir, ic++, m);  
       } 
       /* perform filtering lowpass and highpass*/
-      bpsconv(xdummy, column_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
+      idwt_convolution(xdummy, column_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<actual_n; i++)
         mat(x, ir, i, m) = xdummy[i];  

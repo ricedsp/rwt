@@ -10,7 +10,7 @@
 typedef struct {
   int nrows;        /*!< The number of rows in the input matrix. Output matrix will match.  */
   int ncols;        /*!< The number of columns in the input matrix. Output matrix will match. */
-  int levels;
+  int levels;       /*!< L, the number of levels for the transform. */
   int lh;           /*!< Length of h / the number of scaling coefficients */
   double *scalings; /*!< Wavelet scaling coefficients */
 } rwt_init_params;

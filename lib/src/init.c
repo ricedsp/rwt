@@ -97,7 +97,7 @@ int rwt_find_L(int m, int n) {
 /*!
  * Check that length is divisble by 2^L
  *
- * @param length pass in the number of rows or number if columns
+ * @param length the number of rows or number of columns
  * @param L the number of levels
  *
  */

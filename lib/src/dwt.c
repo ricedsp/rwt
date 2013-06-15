@@ -24,10 +24,9 @@
  *
  * Normally we can describe the calculation of a convolution as
  * \f$ (\textbf{w} * \textbf{z})_k = \frac{1}{N} \sum\limits_{l=0}^{2N-1} w_{k-l} \cdot z_{l} \f$
- * 
  *
  */
-void fpsconv(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
+void dwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
   int i, j, ind;
   double x0, x1;
   for (i=lx; i<lx+lh_minus_one; i++) { 
@@ -96,7 +95,7 @@ void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, doub
  *
  * @param lh length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
- * @param h0 the high pass coefficients - reversed h
+ * @param h0 the low pass coefficients - reversed h
  * @param h1 the high pass coefficients - forward h, even values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
@@ -168,7 +167,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	else 
 	  xdummy[i] = mat(y, idx_rows, i, m);  
       /*! Perform filtering lowpass and highpass*/
-      fpsconv(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+      dwt_convolution(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /*! Restore dummy variables in matrices */
       idx_columns = column_of_a;
       for (i=0; i<column_of_a; i++) {    
@@ -184,7 +183,7 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	for (i=0; i<actual_m; i++)
 	  xdummy[i] = mat(y, i, idx_columns, m);  
 	/*! Perform filtering lowpass and highpass*/
-	fpsconv(xdummy, actual_m, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+	dwt_convolution(xdummy, actual_m, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
 	/*! Restore dummy variables in matrix */
 	idx_rows = row_of_a;
 	for (i=0; i<row_of_a; i++) {

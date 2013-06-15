@@ -5,7 +5,19 @@
 
 #include "rwt_platform.h"
 
-void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl, double *x_outh) {
+/*!
+ * Perform convolution for rdwt
+ *
+ * @param x_in input signal values
+ * @param lx the length of x
+ * @param h0 the low pass coefficients
+ * @param h1 the high pass coefficients
+ * @param lh_minus_one one less than the number of scaling coefficients
+ * @param x_out_low low pass results
+ * @param x_out_high high pass results
+ * 
+ */
+void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_h) {
   int i, j;
   double x0, x1;
 
@@ -18,12 +30,28 @@ void fpconv(double *x_in, int lx, double *h0, double *h1, int lh, double *x_outl
       x0 = x0 + x_in[j+i]*h0[lh-1-j];
       x1 = x1 + x_in[j+i]*h1[lh-1-j];
     }
-    x_outl[i] = x0;
-    x_outh[i] = x1;
+    x_out_low[i] = x0;
+    x_out_h[i] = x1;
   }
 }
 
 
+/*!
+ * Allocate memory for rdwt
+ *
+ * @param m the number of rows of the input matrix
+ * @param n the number of columns of the input matrix
+ * @param lh the number of scaling coefficients
+ * @param x_dummy_low
+ * @param x_dummy_high
+ * @param y_dummy_low_low
+ * @param y_dummy_low_high
+ * @param y_dummy_high_low
+ * @param y_dummy_high_high
+ * @param h0
+ * @param h1
+ *
+ */
 void rdwt_allocate(int m, int n, int lh, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
   double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
   *x_dummy_low       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
@@ -36,7 +64,19 @@ void rdwt_allocate(int m, int n, int lh, double **x_dummy_low, double **x_dummy_
   *h1                = (double *) rwt_calloc(lh,            sizeof(double));
 }
 
-
+/*!
+ * Free memory that we allocated for dwt
+ *
+ * @param x_dummy_low
+ * @param x_dummy_high
+ * @param y_dummy_low_low
+ * @param y_dummy_low_high
+ * @param y_dummy_high_low
+ * @param y_dummy_high_high
+ * @param h0
+ * @param h1
+ *
+ */
 void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
   double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
   rwt_free(*x_dummy_low);
@@ -49,7 +89,21 @@ void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low
   rwt_free(*h1);
 }
 
-/* This is identical to dwt_coefficients */
+
+/*!
+ * Put the scaling coeffients into a form ready for use in the convolution function
+ *
+ * @param lh length of h / the number of scaling coefficients
+ * @param h  the wavelet scaling coefficients
+ * @param h0 the high pass coefficients - reversed h
+ * @param h1 the high pass coefficients - forward h, even values are sign flipped
+ *
+ * The coefficients of our Quadrature Mirror Filter are described by
+ * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
+ *
+ * This is identical to dwt_coefficients() 
+ *
+ */
 void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
   int i;
   for (i=0; i<lh; i++) {
@@ -61,6 +115,19 @@ void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
 }
 
 
+/*!
+ * Perform the redundant discrete wavelet transform
+ *
+ * @param x  the input signal
+ * @param m  number of rows in the input
+ * @param n  number of columns in the input
+ * @param h  wavelet scaling coefficients
+ * @param lh length of h / the number of scaling coefficients
+ * @param L  the number of levels
+ * @param yl
+ * @param yh
+ *
+ */
 void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
   double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
@@ -107,7 +174,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  x_dummy_low[i] = mat(yl, ir, ic, m);  
 	}
 	/* perform filtering lowpass/highpass */
-	fpconv(x_dummy_low, actual_n, h0, h1, lh, y_dummy_low_low, y_dummy_high_high); 
+	rdwt_convolution(x_dummy_low, actual_n, h0, h1, lh, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
@@ -131,8 +198,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	    x_dummy_high[i] = mat(yh, ir,column_of_a+ic, m);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
-	  fpconv(x_dummy_low, actual_m, h0, h1, lh, y_dummy_low_low, y_dummy_low_high); 
-	  fpconv(x_dummy_high, actual_m, h0, h1, lh, y_dummy_high_low, y_dummy_high_high); 
+	  rdwt_convolution(x_dummy_low, actual_m, h0, h1, lh, y_dummy_low_low, y_dummy_low_high); 
+	  rdwt_convolution(x_dummy_high, actual_m, h0, h1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* restore dummy variables in matrices */
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    

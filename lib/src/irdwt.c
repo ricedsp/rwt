@@ -5,7 +5,7 @@
 
 #include "rwt_platform.h"
 
-void bpconv(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
+void irdwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
   int i, j;
   double x0;
 
@@ -113,8 +113,8 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	    y_dummy_high_high[i+lh_minus_one] = mat(y_high, ir, column_of_a_plus_double_n+ic, m);   
 	  }
 	  /* perform filtering and adding: first LL/LH, then HL/HH */
-	  bpconv(x_dummy_low,  actual_m, g0, g1, lh, y_dummy_low_low,  y_dummy_low_high); 
-	  bpconv(x_dummy_high, actual_m, g0, g1, lh, y_dummy_high_low, y_dummy_high_high); 
+	  irdwt_convolution(x_dummy_low,  actual_m, g0, g1, lh, y_dummy_low_low,  y_dummy_low_high); 
+	  irdwt_convolution(x_dummy_high, actual_m, g0, g1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* store dummy variables in matrices */
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
@@ -141,7 +141,7 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	    y_dummy_high_high[i+lh_minus_one] = mat(y_high, ir, column_of_a+ic, m);  
 	} 
 	/* perform filtering lowpass/highpass */
-	bpconv(x_dummy_low, actual_n, g0, g1, lh, y_dummy_low_low, y_dummy_high_high); 
+	irdwt_convolution(x_dummy_low, actual_n, g0, g1, lh, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
 	for (i=0; i<actual_n; i++){    
