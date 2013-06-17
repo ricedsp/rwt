@@ -7,7 +7,12 @@
 #include "rwt_common.h"
 #include <stdlib.h>
 
-#define mat(a, i, j, m) (*(a + (m*(j)+i)))  /* macro for matrix indices */
+/*! For MATLAB we need to address inputs and outputs in column-major order */
+#ifdef MATLAB_MEX_FILE
+  #define mat(a, i, j, m) (*(a + (m*(j)+i)))
+#else
+  #define mat(a, i, j, m) (*(a + (m*(i)+j)))
+#endif
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (rwt)
 subdirs(lib/src)
 subdirs(doc)
+subdirs(python)
 
 # This section based on http://www.cmake.org/pipermail/cmake/2003-June/003953.html
 IF (UNIX)
@@ -32,6 +33,12 @@ IF (UNIX)
    src/*.mexmaci64
    tests/*.mexa64
    tests/*.mexmaci64
+   python/*.cmake
+   python/Makefile
+   python/rwtPYTHON_wrap.cxx
+   python/rwt.py
+   python/CMakeFiles
+   python/_rwt.so
    *~
   )
   
