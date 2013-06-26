@@ -17,5 +17,16 @@
 %apply (double* INPLACE_ARRAY2) {(double* yl)};
 %apply (double* INPLACE_ARRAY2) {(double* yh)};
 
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2) {(double* z, int toss1, int toss2)};
+
+
 %include "../lib/inc/rwt_transforms.h"
+
+%inline %{
+
+void py_swig_test(double *x, int m, int n, double *h, int lh, double *z, int toss1, int toss2) {
+  swig_test(x, m, n, h, lh, z);
+}
+
+%}
 

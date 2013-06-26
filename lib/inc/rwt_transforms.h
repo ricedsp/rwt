@@ -15,6 +15,8 @@ int idwt(double *x, int m, int n, double *h, int lh, int L, double *y);
 int rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
 int irdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh);
 
+void swig_test(double *x, int m, int n, double *h, int lh, double *z);
+
 #ifdef __cplusplus
 }
 #endif
