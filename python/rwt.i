@@ -16,6 +16,7 @@
   import_array();
 %}
 
+
 void _c_dwt_1(  double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
 void _c_dwt_2(  double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 void _c_idwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
@@ -25,8 +26,6 @@ void _c_rdwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRA
 void _c_irdwt_1(double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1, double* INPLACE_ARRAY1, int DIM1);
 void _c_irdwt_2(double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 
-void py_swig_test1(double* INPLACE_ARRAY1, int DIM1, double* INPLACE_ARRAY1, int DIM1, double* INPLACE_ARRAY1, int DIM1);
-void py_swig_test2(double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 
 %inline %{
 
@@ -62,26 +61,45 @@ void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, i
   irdwt(x, m, n, h, lh, L, yl, yh);
 }
 
-void py_swig_test2(double *x, int m, int n, double *h, int lh, double *z, int toss1, int toss2) {
-  swig_test(x, m, n, h, lh, z);
-}
-
-void py_swig_test1(double *x, int m, double *h, int lh, double *z, int toss1) {
-  swig_test(x, m, 1, h, lh, z);
-}
-
 %}
+
 
 %pythoncode%{
 
-def pst(x, h):
-  z = x
+def dwt(x, h, L):
+  y = x
   dim = len(x.shape)
   if (dim == 1):
-    _rwt.py_swig_test1(x, h, z)
-    return z
+    _rwt._c_dwt_1(x, h, L, y)
   if (dim == 2):
-    _rwt.py_swig_test2(x, h, z)
-    return z
+    _rwt._c_dwt_2(x, h, L, y)
+  return y, L
+
+def idwt(y, h, L):
+  x = y
+  dim = len(x.shape)
+  if (dim == 1):
+    _rwt._c_idwt_1(x, h, L, y)
+  if (dim == 2):
+    _rwt._c_idwt_2(x, h, L, y)
+  return x, L
+
+def rdwt(x, h, L):
+  yl = yh = x
+  dim = len(x.shape)
+  if (dim == 1):
+    _rwt._c_rdwt_1(x, h, L, yl, yh)
+  if (dim == 2):
+    _rwt._c_rdwt_2(x, h, L, yl, yh)
+  return yl, yh, L
+
+def irdwt(y, h, L):
+  x = y
+  dim = len(x.shape)
+  if (dim == 1):
+    _rwt._c_irdwt_1(x, h, L, yl, yh)
+  if (dim == 2):
+    _rwt._c_irdwt_2(x, h, L, yl, yh)
+  return x, L
 
 %}

@@ -37,6 +37,7 @@ IF (UNIX)
    python/Makefile
    python/rwtPYTHON_wrap.cxx
    python/rwt.py
+   python/rwt.pyc
    python/CMakeFiles
    python/_rwt.so
    *~
