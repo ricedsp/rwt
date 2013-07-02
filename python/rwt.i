@@ -66,6 +66,8 @@ void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, i
 
 %pythoncode%{
 
+from numpy import *
+
 def dwt(x, h, L):
   y = x
   dim = len(x.shape)
@@ -101,5 +103,34 @@ def irdwt(y, h, L):
   if (dim == 2):
     _rwt._c_irdwt_2(x, h, L, yl, yh)
   return x, L
+
+def daubcqf(n, dtype = 'min'):
+  if (n % 2 != 0):
+    raise Exception("No Daubechies filter exists for ODD length")
+  k = n / 2
+  a = p = q = 1
+  h_0 = array([1, 1])
+  for j in range(1, k):
+    a = -a * 0.25 * (j + k - 1) / j
+    h_0 = hstack((0, h_0)) + hstack((h_0, 0))
+    p = hstack((0, -p)) + hstack((p, 0))
+    p = hstack((0, -p)) + hstack((p, 0))
+    q = hstack((0, q, 0)) + a*p
+  q = sort(roots(q))
+  qt = q[0:k-1]
+  #if (dtype == 'mid'):
+  #  if (k % 2 == 1):
+  #    qt = hstack((q[0:n-3:3], q[1:n-3:3]))
+  #  else:
+  #    qt = hstack((q[0], q[3:k-2,3], q[4:k-2,3], q[n-4:k-1:-4], q[n-5:k-1:-4]))
+  h_0 = convolve(h_0, real(poly(qt)))
+  h_0 = sqrt(2)*h_0 / sum(h_0)
+  #if (dtype == 'max'):
+  #  h_0 = flipud(h_0)
+  if (abs(sum(power(h_0, 2))) -1 > 1e-4):
+    raise Exception("Numerically unstable for this value of n")
+  h_1 = copy(flipud(h_0))
+  h_1[0:n-1:2] = -h_1[0:n-1:2]
+  return h_0, h_1
 
 %}
