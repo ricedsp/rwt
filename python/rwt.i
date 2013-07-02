@@ -118,15 +118,16 @@ def daubcqf(n, dtype = 'min'):
     q = hstack((0, q, 0)) + a*p
   q = sort(roots(q))
   qt = q[0:k-1]
-  #if (dtype == 'mid'):
-  #  if (k % 2 == 1):
-  #    qt = hstack((q[0:n-3:3], q[1:n-3:3]))
-  #  else:
-  #    qt = hstack((q[0], q[3:k-2,3], q[4:k-2,3], q[n-4:k-1:-4], q[n-5:k-1:-4]))
+  if (dtype == 'mid'):
+    raise Exception("Not implemented") # MATLAB code for this is opaque
+    #if (k % 2 == 1):
+    #  qt = hstack((q[0:n-2:4], q[1:n-2:4]))
+    #else:
+    #  qt = hstack((q[0], q[3:k-1:4], q[4:k-1:4], q[n-4:k-1:-4], q[n-5:k-1:-4]))
   h_0 = convolve(h_0, real(poly(qt)))
   h_0 = sqrt(2)*h_0 / sum(h_0)
-  #if (dtype == 'max'):
-  #  h_0 = flipud(h_0)
+  if (dtype == 'max'):
+    h_0 = flipud(h_0)
   if (abs(sum(power(h_0, 2))) -1 > 1e-4):
     raise Exception("Numerically unstable for this value of n")
   h_1 = copy(flipud(h_0))
