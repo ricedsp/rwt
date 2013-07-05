@@ -5,6 +5,7 @@
 
 #include "rwt_init.h"
 #include <math.h>
+#include "mex.h"
 
 
 /*!
@@ -124,11 +125,11 @@ int rwt_check_dimensions(int length, int L) {
 rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t transform_type) {
   rwt_init_params params;
   /*! Check for correct # of input parameters */
-  if (rwt_check_parameter_count(nrhs, transform_type) != 0) return;
+  if (rwt_check_parameter_count(nrhs, transform_type) != 0) return params;
   /*! Check that we don't have more than two dimensions in the input since that is currently unsupported. */
   if (mxGetNumberOfDimensions(prhs[0]) > 2) {
     mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
-    return;
+    return params;
   }
   /*! Get the number of rows and columns in the input matrix. */
   params.nrows = mxGetM(prhs[0]);
@@ -136,7 +137,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
 
   if (params.nrows == 0 && params.ncols == 0) {
     mexErrMsgTxt("The input matrix cannot be empty");
-    return;
+    return params;
   }
 
   /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Make sure L > 0 */
@@ -147,11 +148,11 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.levels = rwt_find_L(params.nrows, params.ncols);
   if (params.levels < 0) {
     mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
-    return;
+    return params;
   }
   /*! Check that both the rows and columns are divisible by 2^L */
   if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels)))
-    return;
+    return params;
   /*! Read the scaling coefficients, h, from the input and find their length, lh. 
    *  In the case of the redundant transform, the scalings are found further one position to the right, 
    *  and also we check for matching dimensions in the low and high inputs
@@ -161,7 +162,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
     if (!rwt_check_yl_matches_yh(prhs, params.nrows, params.ncols, params.levels)) {
       mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
-      return;
+      return params;
     }
   }
   else {
