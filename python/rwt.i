@@ -138,5 +138,60 @@ def soft_th(y, thld):
   x = abs(y)
   return sign(y) * (x >= thld) * (x - thld)
 
+def makesig(signame, n):
+  t = array(range(1, n + 1)) / float(n)
+  if (signame == 'HeaviSine'):
+    y = 4 * sin(4 * pi * t)
+    return y - sign(t - .3) - sign(.72 - t)
+  if (signame == 'Bumps'):
+    pos = array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
+    hgt = array([4, 5, 3, 4, 5, 4.2, 2.1, 4.3, 3.1, 5.1, 4.2])
+    wth = array([.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
+    y = zeros(n)
+    for j in range(0, pos.size):
+      y = y + hgt[j] / pow((1 + abs((t - pos[j]) / wth[j])), 4)
+    return y
+  if (signame == 'Blocks'):
+    pos = array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
+    hgt = array([4, (-5), 3, (-4), 5, (-4.2), 2.1, 4.3, (-3.1), 2.1, (-4.2)])
+    y = zeros(n)
+    for j in range(0, pos.size):
+      y = y + (1 + sign(t - pos[j])) * (hgt[j]/2)
+    return y
+  if (signame == 'Doppler'):
+    return sqrt(t * (1-t)) * sin((2 * pi * 1.05) / (t+.05))
+  if (signame == 'Ramp'):
+    return t - (t >= .37)
+  if (signame == 'Cusp'):
+    return sqrt(abs(t - .37))
+  if (signame == 'Sing'):
+    k = floor(n * .37)
+    return 1 / abs(t - (k + .5)/n)
+  if (signame == 'HiSine'):
+    return sin(pi * (n * .6902) * t)
+  if (signame == 'LoSine'):
+    return sin(pi * (n * .3333) * t)
+  if (signame == 'LinChirp'):
+    return sin(pi * t * ((n * .125) * t))
+  if (signame == 'TwoChirp'):
+    return sin(pi * t * (n * t)) + sin((pi / 3) * t * (n * t))
+  if (signame == 'QuadChirp'):
+    return sin((pi/3) * t * (n * pow(t,2)))
+  if (signame == 'MishMash'):
+    y = sin((pi/3) * t * (n * pow(t,2)))
+    y = y + sin(pi * (n * .6902) * t)
+    return y + sin(pi * t * (n * .125 * t))
+  if (signame == 'WernerSorrows'):
+    y = sin(pi * t * (n/2 * pow(t, 2)))
+    y = y + sin(pi * (n * .6902) * t)
+    y = y + sin(pi * t * (n * t))
+    pos = array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
+    hgt = array([4, 5, 3, 4, 5, 4.2, 2.1, 4.3, 3.1, 5.1, 4.2])
+    wth = array([.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
+    for j in range(0, pos.size):
+      y = y + hgt[j] / pow((1 + abs((t - pos[j]) / wth[j])), 4)
+    return y
+  if (signame == 'Leopold'):
+    return (t == floor(.37 * n)/n) * 1
 
 %}
