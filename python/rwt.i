@@ -1,8 +1,8 @@
 %module rwt
 
-%rename(_c_dwt) dwt;
-%rename(_c_idwt) idwt;
-%rename(_c_rdwt) rdwt;
+%rename(_c_dwt)     dwt;
+%rename(_c_idwt)   idwt;
+%rename(_c_rdwt)   rdwt;
 %rename(_c_irdwt) irdwt;
 
 %{
@@ -16,7 +16,6 @@
   import_array();
 %}
 
-
 void _c_dwt_1(  double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
 void _c_dwt_2(  double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 void _c_idwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
@@ -25,7 +24,6 @@ void _c_rdwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRA
 void _c_rdwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 void _c_irdwt_1(double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1, double* INPLACE_ARRAY1, int DIM1);
 void _c_irdwt_2(double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
-
 
 %inline %{
 
@@ -63,8 +61,7 @@ void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, i
 
 %}
 
-
-%pythoncode%{
+%pythoncode %{
 
 from numpy import *
 
@@ -133,5 +130,13 @@ def daubcqf(n, dtype = 'min'):
   h_1 = copy(flipud(h_0))
   h_1[0:n-1:2] = -h_1[0:n-1:2]
   return h_0, h_1
+
+def hard_th(y, thld):
+  return (abx(x) > thld) * x
+
+def soft_th(y, thld):
+  x = abs(y)
+  return sign(y) * (x >= thld) * (x - thld)
+
 
 %}

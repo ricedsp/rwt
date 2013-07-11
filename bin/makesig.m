@@ -19,7 +19,7 @@ function [x,N] = makesig(SigName,N)
 %                        'TwoChirp'
 %                        'QuadChirp'
 %                        'MishMash'
-%                        'Werner Sorrows' (Heisenberg)
+%                        'WernerSorrows' (Heisenberg)
 %                        'Leopold' (Kronecker)
 %            N       - Length in samples of the desired signal (Default 512)
 %
