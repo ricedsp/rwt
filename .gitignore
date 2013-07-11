@@ -18,3 +18,8 @@ doc/latex/
 lib/src/CMakeFiles/
 lib/src/Makefile
 lib/src/cmake_install.cmake
+lib/src/*.a
+python/_rwt.so
+python/rwt.py
+python/rwt.pyc
+python/rwtPYTHON_wrap.cxx
