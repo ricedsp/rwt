@@ -171,7 +171,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	ic = -sample_f + n_c;
 	for (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  x_dummy_low[i] = mat(yl, ir, ic, m);  
+	  x_dummy_low[i] = mat(yl, ir, ic, m, n);  
 	}
 	/* perform filtering lowpass/highpass */
 	rdwt_convolution(x_dummy_low, actual_n, h0, h1, lh, y_dummy_low_low, y_dummy_high_high); 
@@ -179,8 +179,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
 	  ic = ic + sample_f;
-	  mat(yl, ir, ic, m) = y_dummy_low_low[i];  
-	  mat(yh, ir, column_of_a+ic, m) = y_dummy_high_high[i];  
+	  mat(yl, ir, ic, m, n) = y_dummy_low_low[i];  
+	  mat(yh, ir, column_of_a+ic, m, n) = y_dummy_high_high[i];  
 	} 
       }
     }
@@ -194,8 +194,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    x_dummy_low[i] = mat(yl, ir, ic, m);  
-	    x_dummy_high[i] = mat(yh, ir,column_of_a+ic, m);  
+	    x_dummy_low[i] = mat(yl, ir, ic, m, n);  
+	    x_dummy_high[i] = mat(yh, ir,column_of_a+ic, m, n);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
 	  rdwt_convolution(x_dummy_low, actual_m, h0, h1, lh, y_dummy_low_low, y_dummy_low_high); 
@@ -204,10 +204,10 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-	    mat(yl, ir, ic,                           m) = y_dummy_low_low[i];  
-	    mat(yh, ir, column_of_a+ic,               m) = y_dummy_low_high[i];  
-	    mat(yh, ir, column_of_a+n+ic,             m) = y_dummy_high_low[i];  
-	    mat(yh, ir, column_of_a_plus_double_n+ic, m) = y_dummy_high_high[i];  
+	    mat(yl, ir, ic,                           m, n) = y_dummy_low_low[i];  
+	    mat(yh, ir, column_of_a+ic,               m, n) = y_dummy_low_high[i];  
+	    mat(yh, ir, column_of_a+n+ic,             m, n) = y_dummy_high_low[i];  
+	    mat(yh, ir, column_of_a_plus_double_n+ic, m, n) = y_dummy_high_high[i];  
 	  }
 	}
       }

@@ -66,7 +66,7 @@ void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, i
 from numpy import *
 
 def dwt(x, h, L):
-  y = x
+  y = zeros(x.shape)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_dwt_1(x, h, L, y)
@@ -75,7 +75,7 @@ def dwt(x, h, L):
   return y, L
 
 def idwt(y, h, L):
-  x = y
+  x = zeros(y.shape)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_idwt_1(x, h, L, y)
@@ -84,7 +84,8 @@ def idwt(y, h, L):
   return x, L
 
 def rdwt(x, h, L):
-  yl = yh = x
+  yl = zeros(x.shape)
+  yh = zeros(x.shape)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_rdwt_1(x, h, L, yl, yh)
@@ -93,7 +94,7 @@ def rdwt(x, h, L):
   return yl, yh, L
 
 def irdwt(y, h, L):
-  x = y
+  x = zeros(y.shape)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_irdwt_1(x, h, L, yl, yh)

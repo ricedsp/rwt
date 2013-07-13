@@ -2,6 +2,7 @@
 
 import unittest
 from numpy import *
+from scipy.io import loadmat
 from rwt import *
 
 class TestRWT(unittest.TestCase):
@@ -10,12 +11,36 @@ class TestRWT(unittest.TestCase):
       pass
 
   def test_dwt(self):
-    x = array([0.0491, 0.1951, 0.4276, 0.7071, 0.9415, 0.9808, 0.6716, 0.0000])
+    x = makesig('LinChirp', 8)
     h = daubcqf(4, 'min')[0]
     L = 2
     y, L = dwt(x, h, L)
     y_corr = array([1.1097, 0.8767, 0.8204, -0.5201, -0.0339, 0.1001, 0.2201, -0.1401])
-    self.assertTrue(allclose(y, y_corr, 0.0005))
+    self.assertTrue(allclose(y, y_corr, 0.00082))
+
+  def test_dwt_2d(self):
+    x = array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [3, 14, 15, 16.0]])
+    h = daubcqf(4)[0]
+    L = 2
+    y, L = dwt(x, h, L)
+    y_corr = array([[34.0000, -3.4641, 0.0000, -2.0000], [-13.8564, 0.0000, 0.0000, -2.0000], [-0.0000, 0.0000, -0.0000, -0.0000], [-8.0000, -8.0000, 0.0000, -0.0000]])
+    self.assertTrue(allclose(y, y_corr, 0.1))
+
+  def test_idwt(self):
+    x = makesig('LinChirp', 8)
+    h = daubcqf(4, 'min')[0]
+    L = 2
+    y, L = dwt(x, h, L)
+    x_new, L = idwt(y, h, L)
+    self.assertTrue(allclose(x, x_new, 0.0005))
+
+  def test_idwt_2d(self):
+    x = loadmat('../tests/lena512.mat')['lena512'] * 1.0
+    h = daubcqf(6)[0]
+    L = 9
+    y, L = dwt(x, h, L)
+    x_new, L = idwt(y, h, L)
+    self.assertTrue(allclose(x, x_new, 0.0005))
 
   def test_makesig_heavisine(self):
     x = makesig('HeaviSine', 8)

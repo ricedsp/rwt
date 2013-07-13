@@ -9,9 +9,9 @@
 
 /*! For MATLAB we need to address inputs and outputs in column-major order */
 #ifdef MATLAB_MEX_FILE
-  #define mat(a, i, j, m) (*(a + (m*(j)+i)))
+  #define mat(a, i, j, m, n) (*(a + (m*(j)+i)))
 #else
-  #define mat(a, i, j, m) (*(a + (m*(i)+j)))
+  #define mat(a, i, j, m, n) (*(a + (n*(i)+j)))
 #endif
 
 #ifdef __cplusplus
