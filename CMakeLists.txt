@@ -4,6 +4,9 @@ subdirs(lib/src)
 subdirs(doc)
 subdirs(python)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+FIND_PACKAGE(MatlabMex REQUIRED)
+
 # This section based on http://www.cmake.org/pipermail/cmake/2003-June/003953.html
 IF (UNIX)
   ADD_CUSTOM_TARGET (distclean @echo cleaning for source distribution)
@@ -15,14 +18,16 @@ IF (UNIX)
    cmake.check_cache
    Makefile
    *.cmake
-   lib/src/*.cmake
-   lib/src/Makefile
-   lib/src/CMakeFiles
+   */CMakeCache.txt
+   */CMakeFiles
+   */Makefile
+   */*.cmake
+   */*/CMakeCache.txt
+   */*/CMakeFiles
+   */*/*.cmake
+   */*/Makefile
    lib/src/*.a
-   doc/CMakeFiles
    doc/Doxyfile
-   doc/Makefile
-   doc/*.cmake
    doc/html
    doc/latex
    core core.*
@@ -33,12 +38,9 @@ IF (UNIX)
    src/*.mexmaci64
    tests/*.mexa64
    tests/*.mexmaci64
-   python/*.cmake
-   python/Makefile
    python/rwtPYTHON_wrap.cxx
    python/rwt.py
    python/rwt.pyc
-   python/CMakeFiles
    python/_rwt.so
    *~
   )
@@ -51,5 +53,3 @@ IF (UNIX)
     TARGET  distclean
   )
 ENDIF(UNIX)
-
-
