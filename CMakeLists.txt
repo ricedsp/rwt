@@ -4,8 +4,8 @@ subdirs(lib/src)
 subdirs(doc)
 subdirs(python)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-FIND_PACKAGE(MatlabMex REQUIRED)
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+#FIND_PACKAGE(MatlabMex REQUIRED)
 
 # This section based on http://www.cmake.org/pipermail/cmake/2003-June/003953.html
 IF (UNIX)

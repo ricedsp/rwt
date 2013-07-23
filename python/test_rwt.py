@@ -19,12 +19,12 @@ class TestRWT(unittest.TestCase):
     self.assertTrue(allclose(y, y_corr, 0.00082))
 
   def test_dwt_2d(self):
-    x = array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [3, 14, 15, 16.0]])
+    x = array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16.0]])
     h = daubcqf(4)[0]
     L = 2
     y, L = dwt(x, h, L)
     y_corr = array([[34.0000, -3.4641, 0.0000, -2.0000], [-13.8564, 0.0000, 0.0000, -2.0000], [-0.0000, 0.0000, -0.0000, -0.0000], [-8.0000, -8.0000, 0.0000, -0.0000]])
-    self.assertTrue(allclose(y, y_corr, 0.1))
+    self.assertTrue(allclose(y, y_corr, 0.0000005))
 
   def test_idwt(self):
     x = makesig('LinChirp', 8)
