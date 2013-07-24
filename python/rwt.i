@@ -195,4 +195,58 @@ def makesig(signame, n = 512):
   if (signame == 'Leopold'):
     return (t == np.floor(.37 * n)/n) * 1
 
+def denoise(x, h, denoise_type = 0, option = None):
+  if (option == None and denoise_type == 0):
+    option = [0, 3.0, 0, 0, 0, 0]
+  if (option == None and denoise_type == 1):
+    option = [0, 3.6, 0, 1, 0, 0]
+  mx = x.shape[0]
+  nx = 1
+  if (len(x.shape)):
+    nx = x.shape[1]
+  dim = min(mx, nx)
+  n = dim
+  if (dim == 1):
+    n = max(mx, nx)
+  if (option[4] == 0):
+    L = np.floor(np.log2(n))
+  else:
+    L = option[4]
+  if (denoise_type == 0):
+    xd = dwt(x, h, L)[0]
+    if (option[5] == 0):
+      if (nx > 1):
+        tmp = x[floor(mx/2):mx, floor(nx/2):nx]
+      else:
+        tmp = x[floor(mx/2):mx]
+      if (option[2] == 0):
+        thld = option[1] * np.median(np.abs(tmp)) / .67
+      elif (option[2] == 0):
+        thld = option[1] * np.std(tmp)
+    else:
+      thld = option[5]
+    if (dim == 1):
+      ix = np.array(range(1, n+1)) / np.power(2, L)
+      ykeep = xd[ix - 1]
+    else:
+      ix = np.array(range(1, mx+1)) / np.power(2, L)
+      jx = np.array(range(1, nx+1)) / np.power(2, L)
+      ykeep = xd[ix-1, jx-1]
+    if (option[3] == 0):
+      xd = soft_th(xd, thld)
+    elif (option[3] == 1):
+      xd = hard_th(xd, thld)
+    if (option[0] == 0):
+      if (dim == 1):
+        xd[ix - 1] = ykeep
+      else:
+        xd[ix-1, jx-1] = ykeep
+    xd = idwt(xd, h, L)[0]
+  elif (denoise_type == 1):
+    easter_egg = 23
+  option[5] = thld
+  option[6] = denoise_type
+  xn = x - xd
+  return xd, xn, option
+
 %}
