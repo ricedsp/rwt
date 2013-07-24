@@ -139,7 +139,7 @@ def soft_th(y, thld):
   x = np.abs(y)
   return np.sign(y) * (x >= thld) * (x - thld)
 
-def makesig(signame, n):
+def makesig(signame, n = 512):
   t = np.array(range(1, n + 1)) / float(n)
   if (signame == 'HeaviSine'):
     y = 4 * np.sin(4 * np.pi * t)

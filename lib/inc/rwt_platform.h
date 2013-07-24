@@ -7,7 +7,8 @@
 #include "rwt_common.h"
 #include <stdlib.h>
 
-/*! For MATLAB we need to address inputs and outputs in column-major order */
+/*! For MATLAB we address 2d inputs and outputs in column-major order */
+/*! For Python we address 2d inputs and outputs in row-major order */
 #ifdef MATLAB_MEX_FILE
   #define mat(a, i, j, m, n) (*(a + (m*(j)+i)))
 #else

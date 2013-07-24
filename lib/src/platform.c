@@ -1,7 +1,7 @@
 /*! \file platform.c
-    \brief Wrap memory allocation routines so that we can use the matlab ones when we build for matlab.
+    \brief Wrap memory allocation routines so that we can use the MATLAB ones when we build for MATLAB.
 
-    rwt_malloc, rwt_calloc, and rwt_free simply wrap the matlab or system versions of malloc, calloc, and free.
+    rwt_malloc, rwt_calloc, and rwt_free simply wrap the MATLAB or system versions of malloc, calloc, and free.
 */
 
 #include "rwt_platform.h"
