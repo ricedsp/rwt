@@ -133,7 +133,7 @@ def daubcqf(n, dtype = 'min'):
   return h_0, h_1
 
 def hard_th(y, thld):
-  return (abx(x) > thld) * x
+  return (np.abs(y) > thld) * y
 
 def soft_th(y, thld):
   x = np.abs(y)
@@ -200,28 +200,30 @@ def denoise(x, h, denoise_type = 0, option = None):
     option = [0, 3.0, 0, 0, 0, 0]
   if (option == None and denoise_type == 1):
     option = [0, 3.6, 0, 1, 0, 0]
+  if (type(option) != list):
+    option = list(option)
   mx = x.shape[0]
   nx = 1
-  if (len(x.shape)):
+  if (len(x.shape) > 1):
     nx = x.shape[1]
   dim = min(mx, nx)
   n = dim
   if (dim == 1):
     n = max(mx, nx)
   if (option[4] == 0):
-    L = np.floor(np.log2(n))
+    L = np.int(np.floor(np.log2(n)))
   else:
     L = option[4]
   if (denoise_type == 0):
     xd = dwt(x, h, L)[0]
     if (option[5] == 0):
       if (nx > 1):
-        tmp = x[floor(mx/2):mx, floor(nx/2):nx]
+        tmp = x[np.floor(mx/2):mx, np.floor(nx/2):nx]
       else:
-        tmp = x[floor(mx/2):mx]
+        tmp = x[np.floor(mx/2):mx]
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
-      elif (option[2] == 0):
+      elif (option[2] == 1):
         thld = option[1] * np.std(tmp)
     else:
       thld = option[5]
@@ -244,8 +246,8 @@ def denoise(x, h, denoise_type = 0, option = None):
     xd = idwt(xd, h, L)[0]
   elif (denoise_type == 1):
     easter_egg = 23
-  option[5] = thld
-  option[6] = denoise_type
+  option.append(thld)
+  option.append(denoise_type)
   xn = x - xd
   return xd, xn, option
 
