@@ -218,9 +218,9 @@ def denoise(x, h, denoise_type = 0, option = None):
     xd = dwt(x, h, L)[0]
     if (option[5] == 0):
       if (nx > 1):
-        tmp = x[np.floor(mx/2):mx, np.floor(nx/2):nx]
+        tmp = xd[np.floor(mx/2):mx, np.floor(nx/2):nx]
       else:
-        tmp = x[np.floor(mx/2):mx]
+        tmp = xd[np.floor(mx/2):mx]
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
@@ -234,6 +234,10 @@ def denoise(x, h, denoise_type = 0, option = None):
       ix = np.array(range(1, mx+1)) / np.power(2, L)
       jx = np.array(range(1, nx+1)) / np.power(2, L)
       ykeep = xd[ix-1, jx-1]
+    print "ix: "
+    print ix
+    print "ykeep: "
+    print ykeep
     if (option[3] == 0):
       xd = soft_th(xd, thld)
     elif (option[3] == 1):
