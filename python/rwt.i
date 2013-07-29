@@ -93,8 +93,8 @@ def rdwt(x, h, L):
     _rwt._c_rdwt_2(x, h, L, yl, yh)
   return yl, yh, L
 
-def irdwt(y, h, L):
-  x = np.zeros(y.shape)
+def irdwt(yl, yh, h, L):
+  x = np.zeros(yl.shape)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_irdwt_1(x, h, L, yl, yh)
@@ -193,7 +193,7 @@ def makesig(signame, n = 512):
       y = y + hgt[j] / pow((1 + np.abs((t - pos[j]) / wth[j])), 4)
     return y
   if (signame == 'Leopold'):
-    return (t == np.floor(.37 * n)/n) * 1
+    return (t == np.floor(.37 * n)/n) * 1.0
 
 def denoise(x, h, denoise_type = 0, option = None):
   if (option == None and denoise_type == 0):
@@ -251,7 +251,32 @@ def denoise(x, h, denoise_type = 0, option = None):
         xd[ix, jx] = ykeep
     xd = idwt(xd, h, L)[0]
   elif (denoise_type == 1):
+    (xl, xh, L) = rdwt(x, h, L)
     easter_egg = 23
+    if (dim == 1):
+      c_offset = 1
+    else:
+      c_offset = 2 * nx
+    if (option[5] == 0):
+      if (nx > 1):
+        tmp = xh
+      else:
+        tmp = xh[:c_offset:c_offset+nx-1] 
+      if (option[2] == 0):
+        thld = option[1] * np.median(np.abs(tmp)) / .67
+      elif (option[2] == 1):
+        thld = option[1] * np.std(tmp, ddof=1)
+    else:
+      thld = option[5]
+    if (option[3] == 0):
+      xh = soft_th(xh, thld)
+      if (option[0] == 1):
+        xl = soft_th(xl, thld)
+    elif (option[3] == 1):
+      xh = hard_th(xh, thld)
+      if (option[0] == 1):
+        xl = hard_th(xl, thld)
+    xd = irdwt(xl, xh, h, L)[0]
   option.append(thld)
   option.append(denoise_type)
   xn = x - xd

@@ -6,7 +6,7 @@ function test_mrdwt_1
     h = daubcqf(4,'min');
     L = 1;
     [yl,yh,L] = mrdwt(x,h,L);
-    yl_corr =  [0.8365  0.4830 0 0 0 0 -0.1294 0.2241];
+    yl_corr = [0.8365  0.4830 0 0 0 0 -0.1294 0.2241];
     yh_corr = [-0.2241 -0.1294 0 0 0 0 -0.4830 0.8365];
     L_corr = 1;
        

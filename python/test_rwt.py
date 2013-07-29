@@ -42,6 +42,34 @@ class TestRWT(unittest.TestCase):
     x_new, L = idwt(y, h, L)
     self.assertTrue(allclose(x, x_new, 0.0005))
 
+  def test_rdwt(self):
+    x = makesig('Leopold', 8)
+    h = daubcqf(4, 'min')[0]
+    L = 1
+    (yl, yh, L) = rdwt(x, h, L)
+    yl_corr = [0.8365,  0.4830, 0, 0, 0, 0, -0.1294, 0.2241]
+    yh_corr = [-0.2241, -0.1294, 0, 0, 0, 0, -0.4830, 0.8365]
+    L_corr = 1
+    self.assertTrue(allclose(yl, yl_corr, 0.0005))
+    self.assertTrue(allclose(yh, yh_corr, 0.0005))
+    self.assertTrue(allclose(L, L_corr, 0.0005))
+
+  def test_irdwt(self):
+    xin = makesig('Leopold',8)
+    h = daubcqf(4, 'min')[0]
+    Lin = 1
+    (yl, yh, L) = rdwt(xin, h, Lin) 
+    (x, L) = irdwt(yl, yh, h, L)
+    self.assertTrue(allclose(x, xin, 0.0005))
+       
+  def test_irdwt_2d(self):
+    x = loadmat('../tests/lena512.mat')['lena512'] * 1.0
+    h = daubcqf(6)[0]
+    L = 9
+    (yl, yh, L) = rdwt(x, h, L)
+    (x_new, L) = irdwt(yl, yh, h, L)
+    self.assertTrue(allclose(x, x_new, 0.0005))
+
   def test_makesig_heavisine(self):
     x = makesig('HeaviSine', 8)
     y = array([4.0000, 0.0000, -6.0000, -2.0000, 2.0000, 0.0000, -4.0000, -0.0000])
