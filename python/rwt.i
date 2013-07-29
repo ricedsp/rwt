@@ -224,29 +224,31 @@ def denoise(x, h, denoise_type = 0, option = None):
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
-        thld = option[1] * np.std(tmp)
+        thld = option[1] * np.std(tmp, ddof=1)
     else:
       thld = option[5]
     if (dim == 1):
-      ix = np.array(range(1, n+1)) / np.power(2, L)
-      ykeep = xd[ix - 1]
+      ix = np.array(range(0, (n/(np.power(2, L)))))
+      if (ix.size == 1):
+        ix = ix[0]
+      ykeep = xd[ix]
     else:
-      ix = np.array(range(1, mx+1)) / np.power(2, L)
-      jx = np.array(range(1, nx+1)) / np.power(2, L)
-      ykeep = xd[ix-1, jx-1]
-    print "ix: "
-    print ix
-    print "ykeep: "
-    print ykeep
+      ix = np.array(range(0, (mx/(np.power(2,L)))))
+      jx = np.array(range(0, (nx/(np.power(2,L)))))
+      if (ix.size == 1):
+        ix = ix[0]
+      if (jx.size == 1):
+        jx = jx[0]
+      ykeep = xd[ix, jx]
     if (option[3] == 0):
       xd = soft_th(xd, thld)
     elif (option[3] == 1):
       xd = hard_th(xd, thld)
     if (option[0] == 0):
       if (dim == 1):
-        xd[ix - 1] = ykeep
+        xd[ix] = ykeep
       else:
-        xd[ix-1, jx-1] = ykeep
+        xd[ix, jx] = ykeep
     xd = idwt(xd, h, L)[0]
   elif (denoise_type == 1):
     easter_egg = 23
