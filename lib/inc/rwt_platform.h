@@ -6,13 +6,22 @@
 
 #include "rwt_common.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+
 
 /*! For MATLAB we address 2d inputs and outputs in column-major order */
 /*! For Python we address 2d inputs and outputs in row-major order */
 #ifdef MATLAB_MEX_FILE
+  #include "matrix.h"
+  #include "mex.h"
   #define mat(a, i, j, m, n) (*(a + (m*(j)+i)))
+  #define mat_offset(a, i, j, m, n) (m*(j)+i)
+  #define rwt_printf(fmt, ...) mexPrintf(fmt, ##__VA_ARGS__)
 #else
   #define mat(a, i, j, m, n) (*(a + (n*(i)+j)))
+  #define mat_offset(a, i, j, m, n) (n*(i)+j)
+  #define rwt_printf(fmt, ...) printf(fmt, ##__VA_ARGS__)
 #endif
 
 #ifdef __cplusplus

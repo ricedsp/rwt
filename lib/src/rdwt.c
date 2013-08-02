@@ -144,6 +144,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     n = m;
     m = 1;
   }  
+
   /* analysis lowpass and highpass */
   
   actual_m = 2*m;
@@ -178,9 +179,9 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++){    
-	  ic = ic + sample_f;
-	  mat(yl, ir, ic, m, n) = y_dummy_low_low[i];  
-	  mat(yh, ir, column_of_a+ic, m, n) = y_dummy_high_high[i];  
+          ic = ic + sample_f;
+          mat(yl, ir, ic, m, n) = y_dummy_low_low[i];
+          mat(yh, ir, column_of_a+ic, m, n) = y_dummy_high_high[i];  
 	} 
       }
     }

@@ -85,11 +85,12 @@ def idwt(y, h, L):
 
 def rdwt(x, h, L):
   yl = np.zeros(x.shape)
-  yh = np.zeros(x.shape)
   dim = len(x.shape)
   if (dim == 1):
+    yh = np.zeros(x.shape[0] * L)
     _rwt._c_rdwt_1(x, h, L, yl, yh)
   if (dim == 2):
+    yh = np.zeros(x.shape[0] * L * 3)
     _rwt._c_rdwt_2(x, h, L, yl, yh)
   return yl, yh, L
 
