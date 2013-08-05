@@ -90,7 +90,7 @@ def rdwt(x, h, L):
     yh = np.zeros(x.shape[0] * L)
     _rwt._c_rdwt_1(x, h, L, yl, yh)
   if (dim == 2):
-    yh = np.zeros(x.shape[0] * L * 3)
+    yh = np.zeros((x.shape[0], x.shape[1] * L * 3))
     _rwt._c_rdwt_2(x, h, L, yl, yh)
   return yl, yh, L
 

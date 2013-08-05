@@ -54,6 +54,19 @@ class TestRWT(unittest.TestCase):
     self.assertTrue(allclose(yh, yh_corr, 0.0005))
     self.assertTrue(allclose(L, L_corr, 0.0005))
 
+  def test_rdwt_2d(self):
+    x = makesig('Doppler', 8)
+    x2 = vstack([x*.5, x*1.5, x*2.7, x*.4])
+    h = daubcqf(4, 'min')[0]
+    L = 2
+    [yl, yh, L] = rdwt(x2, h, L)
+    yl_slice =  yl[0,:]
+    yl_slice_corr = [-0.3749, -0.1749, 0.3773, 0.5764, 0.7591, 0.5591, 0.0069, -0.1922]
+    yh_slice = yh[0,0:5]
+    yh_slice_corr = [0.0914, 0.0587, -0.4528, -0.3521, 0.5165]
+    self.assertTrue(allclose(yl_slice, yl_slice_corr, 0.0027))
+    self.assertTrue(allclose(yh_slice, yh_slice_corr, 0.01))
+
   def test_irdwt(self):
     xin = makesig('Leopold',8)
     h = daubcqf(4, 'min')[0]

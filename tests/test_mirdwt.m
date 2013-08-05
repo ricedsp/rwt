@@ -1,8 +1,6 @@
 function test_suite = test_mirdwt
 initTestSuite;
 
-
-
 function test_mirdwt_1     
        xin = makesig('Leopold',8);
        h = daubcqf(4,'min');
