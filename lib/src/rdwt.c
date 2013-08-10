@@ -205,10 +205,17 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
+            #ifdef MATLAB_MEX_FILE
 	    mat(yl, ir, ic,                           m, n) = y_dummy_low_low[i];  
 	    mat(yh, ir, column_of_a+ic,               m, n) = y_dummy_low_high[i];  
 	    mat(yh, ir, column_of_a+n+ic,             m, n) = y_dummy_high_low[i];  
-	    mat(yh, ir, column_of_a_plus_double_n+ic, m, n) = y_dummy_high_high[i];  
+	    mat(yh, ir, column_of_a_plus_double_n+ic, m, n) = y_dummy_high_high[i];
+            #else
+	    mat(yl,                           ir, ic, m, n) = y_dummy_low_low[i];  
+	    mat(yh + m * (column_of_a      ), ir, ic, m, n) = y_dummy_low_high[i];  
+	    mat(yh + m * (column_of_a +   n), ir, ic, m, n) = y_dummy_high_low[i];  
+	    mat(yh + m * (column_of_a + 2*n), ir, ic, m, n) = y_dummy_high_high[i];  
+            #endif
 	  }
 	}
       }
