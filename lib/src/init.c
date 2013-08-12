@@ -154,7 +154,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels)))
     return params;
   /*! Read the scaling coefficients, h, from the input and find their length, lh. 
-   *  In the case of the redundant transform, the scalings are found further one position to the right, 
+   *  In the case of the redundant transform, the scalings are found one further position to the right, 
    *  and also we check for matching dimensions in the low and high inputs
    */
   if (transform_type == INVERSE_REDUNDANT_DWT) {

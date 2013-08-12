@@ -133,7 +133,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
   long i;
   int actual_L, actual_m, actual_n, column_of_a, ir, n_c, n_cb;
-  int ic, n_r, n_rb, column_of_a_plus_double_n, sample_f;
+  int ic, n_r, n_rb, column_of_a_plus_n, column_of_a_plus_double_n, sample_f;
 
   rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
     &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
@@ -162,7 +162,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
       column_of_a = n*(actual_L-1);
     else
       column_of_a = 3*n*(actual_L-1);
-    column_of_a_plus_double_n = column_of_a + 2*n;
+    column_of_a_plus_n = column_of_a + n;
+    column_of_a_plus_double_n = column_of_a_plus_n + n;
     
     /* go by rows */
     n_cb = n/actual_n;                 /* # of column blocks per row */
@@ -205,17 +206,10 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  ir = -sample_f + n_r;
 	  for (i=0; i<actual_m; i++){    
 	    ir = ir + sample_f;
-            #ifdef MATLAB_MEX_FILE
-	    mat(yl, ir, ic,                           m, n) = y_dummy_low_low[i];  
-	    mat(yh, ir, column_of_a+ic,               m, n) = y_dummy_low_high[i];  
-	    mat(yh, ir, column_of_a+n+ic,             m, n) = y_dummy_high_low[i];  
-	    mat(yh, ir, column_of_a_plus_double_n+ic, m, n) = y_dummy_high_high[i];
-            #else
 	    mat(yl,                           ir, ic, m, n) = y_dummy_low_low[i];  
 	    mat(yh + m * (column_of_a      ), ir, ic, m, n) = y_dummy_low_high[i];  
-	    mat(yh + m * (column_of_a +   n), ir, ic, m, n) = y_dummy_high_low[i];  
-	    mat(yh + m * (column_of_a + 2*n), ir, ic, m, n) = y_dummy_high_high[i];  
-            #endif
+	    mat(yh + m * (column_of_a_plus_n), ir, ic, m, n) = y_dummy_high_low[i];  
+	    mat(yh + m * (column_of_a_plus_double_n), ir, ic, m, n) = y_dummy_high_high[i];  
 	  }
 	}
       }
