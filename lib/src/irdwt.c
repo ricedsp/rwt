@@ -65,13 +65,14 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
   double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;
-  int actual_L, actual_m, actual_n, column_of_a, ir, n_c, n_cb, lh_minus_one;
-  int ic, n_r, n_rb, column_of_a_plus_double_n, sample_f;
+  int actual_L, actual_m, actual_n, column_of_a, ir, n_c, column_blocks_per_row, lh_minus_one;
+  int ic, n_r, row_blocks_per_column, column_of_a_plus_double_n, sample_f;
 
   irdwt_allocate(m, n, lh, &x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, 
     &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
   irdwt_coefficients(lh, h, &g0, &g1);
-  
+ 
+ 
   if (n==1){
     n = m;
     m = 1;
@@ -79,18 +80,19 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
   /* analysis lowpass and highpass */
   
   lh_minus_one = lh - 1;
-  /* 2^L */
+  /*! we calculate sample_f = 2^(L - 1) with a loop since that is actually the recommended method for whole numbers */
   sample_f = 1;
   for (i=1; i<L; i++)
     sample_f = sample_f*2;
+
   actual_m = m/sample_f;
   actual_n = n/sample_f;
   /* restore y_low in x */
-  for (i=0;i<m*n;i++)
+  for (i=0; i<m*n; i++)
     x[i] = y_low[i];
   
   /* main loop */
-  for (actual_L=L; actual_L >= 1; actual_L--){
+  for (actual_L=L; actual_L >= 1; actual_L--) {
     /* actual (level dependent) column offset */
     if (m==1)
       column_of_a = n*(actual_L-1);
@@ -99,13 +101,13 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
     column_of_a_plus_double_n = column_of_a + 2*n;
     
     /* go by columns in case of a 2D signal*/
-    if (m>1){
-      n_rb = m/actual_m;                 /* # of row blocks per column */
-      for (ic=0; ic<n; ic++){            /* loop over column */
-	for (n_r=0; n_r<n_rb; n_r++){    /* loop within one column */
+    if (m>1) {
+      row_blocks_per_column = m/actual_m;                /* # of row blocks per column */
+      for (ic=0; ic<n; ic++) {                           /* loop over column */
+	for (n_r=0; n_r<row_blocks_per_column; n_r++) {  /* loop within one column */
 	  /* store in dummy variables */
 	  ir = -sample_f + n_r;
-	  for (i=0; i<actual_m; i++){    
+	  for (i=0; i<actual_m; i++) {    
 	    ir = ir + sample_f;
 	    y_dummy_low_low[i+lh_minus_one]   = mat(x,                                  ir, ic, m, n);  
 	    y_dummy_low_high[i+lh_minus_one]  = mat(y_high + m * (column_of_a        ), ir, ic, m, n);  
@@ -117,22 +119,23 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	  irdwt_convolution(x_dummy_high, actual_m, g0, g1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* store dummy variables in matrices */
 	  ir = -sample_f + n_r;
-	  for (i=0; i<actual_m; i++){    
+	  for (i=0; i<actual_m; i++) {
 	    ir = ir + sample_f;
-	    mat(x,      ir, ic, m, n) = x_dummy_low[i];  
-	    mat(x_high, ir, ic, m, n) = x_dummy_high[i];  
+	    mat(x,      ir, ic, m, n) = x_dummy_low[i];
+	    mat(x_high, ir, ic, m, n) = x_dummy_high[i];
+            //rwt_printf("ir ic low high %d %d %d %d\n", ir, ic, x_dummy_low[i], x_dummy_high[i]);
 	  }
 	}
       }
     }
     
     /* go by rows */
-    n_cb = n/actual_n;                 /* # of column blocks per row */
-    for (ir=0; ir<m; ir++){            /* loop over rows */
-      for (n_c=0; n_c<n_cb; n_c++){    /* loop within one row */      
+    column_blocks_per_row = n/actual_n;                /* # of column blocks per row */
+    for (ir=0; ir<m; ir++) {                           /* loop over rows */
+      for (n_c=0; n_c<column_blocks_per_row; n_c++) {  /* loop within one row */      
 	/* store in dummy variable */
 	ic = -sample_f + n_c;
-	for  (i=0; i<actual_n; i++){    
+	for  (i=0; i<actual_n; i++) {    
 	  ic = ic + sample_f;
 	  y_dummy_low_low[i+lh_minus_one] = mat(x, ir, ic, m, n);  
 	  if (m>1)
@@ -144,7 +147,7 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	irdwt_convolution(x_dummy_low, actual_n, g0, g1, lh, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	ic = -sample_f + n_c;
-	for (i=0; i<actual_n; i++){    
+	for (i=0; i<actual_n; i++) {    
 	  ic = ic + sample_f;
 	  mat(x, ir, ic, m, n) = x_dummy_low[i];  
 	}

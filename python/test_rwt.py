@@ -78,9 +78,9 @@ class TestRWT(unittest.TestCase):
   def test_irdwt_2d(self):
     x = loadmat('../tests/lena512.mat')['lena512'] * 1.0
     h = daubcqf(6)[0]
-    L = 9
-    (yl, yh, L) = rdwt(x, h, L)
-    (x_new, L) = irdwt(yl, yh, h, L)
+    L = 9 
+    yl, yh, L = rdwt(x, h, L)
+    x_new, L = irdwt(yl, yh, h, L)
     self.assertTrue(allclose(x, x_new, 0.0005))
 
   def test_makesig_heavisine(self):
