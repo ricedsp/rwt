@@ -255,14 +255,14 @@ def denoise(x, h, denoise_type = 0, option = None):
     (xl, xh, L) = rdwt(x, h, L)
     easter_egg = 23
     if (dim == 1):
-      c_offset = 1
+      c_offset = 0
     else:
       c_offset = 2 * nx
     if (option[5] == 0):
       if (nx > 1):
         tmp = xh
       else:
-        tmp = xh[:c_offset:c_offset+nx-1] 
+        tmp = xh[c_offset:c_offset+mx:1] 
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
