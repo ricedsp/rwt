@@ -30,7 +30,7 @@ function [xd,xn,option] = denoise(x,h,type,option)
 %                   0 --> MAD (mean absolute deviation)
 %                   1 --> STD (classical numerical std estimate)
 %       option(4) : Type of thresholding
-%                   0 --> Soft thresholding
+%                   2 --> Soft thresholding
 %                   1 --> Hard thresholding
 %       option(5) : Number of levels, L, in wavelet decomposition. By
 %                   setting this to the default value '0' a maximal
@@ -93,7 +93,7 @@ if(isempty(type)),
   type = 0;
 end;
 if(type == 0),
-  default_opt = [0 3.0 0 0 0 0];
+  default_opt = [0 3.0 0 2 0 0];
 elseif(type == 1),
   default_opt = [0 3.6 0 1 0 0];
 else
@@ -135,12 +135,12 @@ if(type == 0), 			% Denoising by DWT
     jx = 1:nx/(2^L);
     ykeep = xd(ix,jx);
   end;
-  if(option(4) == 0),
+  if(option(4) == 2),
     xd = SoftTh(xd,thld);
   elseif(option(4) == 1),
     xd = HardTh(xd,thld);
   else
-    error('Unknown threshold rule. Use either Soft (0) or Hard (1)');
+    error('Unknown threshold rule. Use either Soft (2) or Hard (1)');
   end;
   if (option(1) == 0),
     if(dim == 1),
@@ -169,7 +169,7 @@ elseif(type == 1), 			% Denoising by UDWT
   else
     thld = option(6);
   end;
-  if(option(4) == 0),
+  if(option(4) == 2),
     xh = SoftTh(xh,thld);
     if(option(1) == 1),
       xl = SoftTh(xl,thld);
@@ -180,7 +180,7 @@ elseif(type == 1), 			% Denoising by UDWT
       xl = HardTh(xl,thld);
     end;
   else
-    error('Unknown threshold rule. Use either Soft (0) or Hard (1)');
+    error('Unknown threshold rule. Use either Soft (2) or Hard (1)');
   end;
   xd = mirdwt(xl,xh,h,L);
 else 					% Denoising by unknown method

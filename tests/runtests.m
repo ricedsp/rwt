@@ -6,3 +6,4 @@ test_mirdwt
 test_mrdwt
 test_makesig
 test_denoise
+test_setopt

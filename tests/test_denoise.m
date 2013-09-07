@@ -1,6 +1,20 @@
 function test_suite = test_denoise
 initTestSuite;
 
+% We could throw an exception if someone specified zero for SoftTH vs HardTH but currently we don't
+
+%function test_denoise_old_invalid_arg_dwt
+%  signal = makesig('Doppler', 32);
+%  h = daubcqf(6);
+%  badarg_handle = @() denoise(signal, h, 0, [0 3.0 0 0 0 0]);
+%assertExceptionThrown(badarg_handle, '');
+ 
+%function test_denoise_old_invalid_arg_udwt
+%  signal = makesig('Doppler', 32);
+%  h = daubcqf(6);
+%  badarg_handle = @() denoise(signal, h, 1, [0 3.6 0 0 0 0]);
+%assertExceptionThrown(badarg_handle, '');
+  
 function test_denoise_default
   signal = makesig('Doppler', 32);
   noise = [1.54421189550395 0.0859311331754255 -1.49159031063761 -0.742301837259857 -1.06158173331999 2.35045722400204 -0.615601881466894 0.748076783703985 -0.192418510588264 0.888610425420721 -0.764849236567874 -1.40226896933876 -1.42237592509150 0.488193909859941 -0.177375156618825 -0.196053487807333 1.41931015064255 0.291584373984183 0.197811053464361 1.58769908997406 -0.804465956349547 0.696624415849607 0.835088165072682 -0.243715140377952 0.215670086403744 -1.16584393148205 -1.14795277889859 0.104874716016494 0.722254032225002 2.58549125261624 -0.666890670701386 0.187331024578940];
