@@ -278,7 +278,7 @@ def denoise(x, h, denoise_type = 0, option = None):
       if (option[0] == 1):
         xl = hard_th(xl, thld)
     xd = irdwt(xl, xh, h, L)[0]
-  option.append(thld)
+  option[5] = (thld)
   option.append(denoise_type)
   xn = x - xd
   return xd, xn, option
