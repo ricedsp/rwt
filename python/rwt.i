@@ -198,7 +198,7 @@ def makesig(signame, n = 512):
 
 def denoise(x, h, denoise_type = 0, option = None):
   if (option == None and denoise_type == 0):
-    option = [0, 3.0, 0, 0, 0, 0]
+    option = [0, 3.0, 0, 2, 0, 0]
   if (option == None and denoise_type == 1):
     option = [0, 3.6, 0, 1, 0, 0]
   if (type(option) != list):
@@ -241,7 +241,7 @@ def denoise(x, h, denoise_type = 0, option = None):
       if (jx.size == 1):
         jx = jx[0]
       ykeep = xd[ix, jx]
-    if (option[3] == 0):
+    if (option[3] == 2):
       xd = soft_th(xd, thld)
     elif (option[3] == 1):
       xd = hard_th(xd, thld)
@@ -269,7 +269,7 @@ def denoise(x, h, denoise_type = 0, option = None):
         thld = option[1] * np.std(tmp, ddof=1)
     else:
       thld = option[5]
-    if (option[3] == 0):
+    if (option[3] == 2):
       xh = soft_th(xh, thld)
       if (option[0] == 1):
         xl = soft_th(xl, thld)
