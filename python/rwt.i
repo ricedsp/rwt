@@ -260,13 +260,19 @@ def denoise(x, h, denoise_type = 0, option = None):
       c_offset = 2 * nx
     if (option[5] == 0):
       if (nx > 1):
-        tmp = xh
+        tmp = xh[:,c_offset:c_offset+mx] 
       else:
         tmp = xh[c_offset:c_offset+mx:1] 
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
         thld = option[1] * np.std(tmp, ddof=1)
+      #print "c_offset is"
+      #print c_offset
+      #print "xh is"
+      #print xh
+      #print "tmp is"
+      #print tmp
     else:
       thld = option[5]
     if (option[3] == 2):

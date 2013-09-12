@@ -9,19 +9,23 @@ function test_mrdwt_1
   yl_corr = [0.8365  0.4830 0 0 0 0 -0.1294 0.2241];
   yh_corr = [-0.2241 -0.1294 0 0 0 0 -0.4830 0.8365];
   L_corr = 1;
-assertVectorsAlmostEqual(yl, yl_corr,'relative',0.001);
-assertVectorsAlmostEqual(yh, yh_corr,'relative',0.001);
-assertEqual(L,L_corr);
+assertVectorsAlmostEqual(yl, yl_corr, 'relative', 0.001);
+assertVectorsAlmostEqual(yh, yh_corr, 'relative', 0.001);
+assertEqual(L, L_corr);
 
 function test_mrdwt_2
-  x = makesig('Doppler', 8);
-  x2 = [x*.5;x*1.5;x*2.7;x*.4];
-  h = daubcqf(4,'min');
-  L = 2;
-  [yl, yh, L] = mrdwt(x2, h, L);
-  yl_slice =  yl(1,:);
-  yl_slice_corr = [-0.3749 -0.1749 0.3773 0.5764 0.7591 0.5591 0.0069 -0.1922];
-  yh_slice = yh(1,1:12);
-  yh_slice_corr = [0.0914 0.0587 -0.4528 -0.3521 0.5165 0.6673 0.1996 -0.0192 0.4201 -0.3404 -0.5793 0.5879];
-assertVectorsAlmostEqual(yl_slice, yl_slice_corr,'relative',0.001);
-assertVectorsAlmostEqual(yh_slice, yh_slice_corr,'relative',0.001);
+  x = [1 3 5 2; 3 4 8 1; 3 9 2 0; 1 2 3 0];
+  h = daubcqf(4, 'min');
+  [yl, yh, L] = mrdwt(x, h, 1);
+  yl_corr = [
+      9.0111   10.7799    5.8795    4.1107;
+     11.1393    8.7766    2.5502    4.9130;
+      6.9465    5.7578    1.6630    2.8517;
+      4.8182    7.7611    4.9922    2.0494];
+  yh_corr = [
+      4.5724    0.4285   -1.8828    2.2611    4.8714   -3.1026   -1.7978    0.0290   -2.9620   -1.1818   -1.1295    5.2733;
+     -2.4441   -2.4318   -1.4465   -1.4587    1.8861   -4.2488   -1.9776    4.3403   -0.0233    0.0356    0.9498   -0.9620;
+     -1.7488   -0.5870    0.5592   -0.6026    1.1663   -2.3550   -1.7398    2.9285   -0.6965    1.8583   -0.7120   -0.4498;
+     -0.3795    2.5903    2.7700   -0.1998    4.1516   -1.2087   -1.5601   -1.3828    3.6818   -0.7120    0.8917   -3.8615];
+assertVectorsAlmostEqual(yl, yl_corr, 'relative', 0.001);
+assertVectorsAlmostEqual(yh, yh_corr, 'relative', 0.001);
