@@ -154,7 +154,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   
   /* main loop */
   sample_f = 1;
-  for (actual_L=1; actual_L <= L; actual_L++){
+  for (actual_L=1; actual_L <= L; actual_L++) {
     actual_m = actual_m/2;
     actual_n = actual_n/2;
     /* actual (level dependent) column offset */
@@ -167,11 +167,11 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     
     /* go by rows */
     n_cb = n/actual_n;                 /* # of column blocks per row */
-    for (ir=0; ir<m; ir++){            /* loop over rows */
-      for (n_c=0; n_c<n_cb; n_c++){    /* loop within one row */      
+    for (ir=0; ir<m; ir++) {           /* loop over rows */
+      for (n_c=0; n_c<n_cb; n_c++) {   /* loop within one row */      
 	/* store in dummy variable */
 	ic = -sample_f + n_c;
-	for (i=0; i<actual_n; i++){    
+	for (i=0; i<actual_n; i++) {
 	  ic = ic + sample_f;
 	  x_dummy_low[i] = mat(yl, ir, ic, m, n);  
 	}
@@ -181,8 +181,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++) {
           ic = ic + sample_f;
-          mat(yl, ir, ic, m, n) = y_dummy_low_low[i];
-          mat(yh + m*column_of_a, ir, ic, m, n) = y_dummy_high_high[i];  
+          mat(yl,                   ir, ic, m, n) = y_dummy_low_low[i];
+          mat(yh + m * column_of_a, ir, ic, m, n) = y_dummy_high_high[i];  
 	} 
       }
     }
@@ -191,12 +191,12 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     if (m>1){
       n_rb = m/actual_m;                 /* # of row blocks per column */
       for (ic=0; ic<n; ic++){            /* loop over column */
-	for (n_r=0; n_r<n_rb; n_r++){    /* loop within one column */
+	for (n_r=0; n_r<n_rb; n_r++) {   /* loop within one column */
 	  /* store in dummy variables */
 	  ir = -sample_f + n_r;
-	  for (i=0; i<actual_m; i++){    
+	  for (i=0; i<actual_m; i++) {    
 	    ir = ir + sample_f;
-	    x_dummy_low[i]  = mat(yl, ir, ic,             m, n);  
+	    x_dummy_low[i]  = mat(yl,                   ir, ic, m, n);  
 	    x_dummy_high[i] = mat(yh + m * column_of_a, ir, ic, m, n);  
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
@@ -204,7 +204,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  rdwt_convolution(x_dummy_high, actual_m, h0, h1, lh, y_dummy_high_low, y_dummy_high_high); 
 	  /* restore dummy variables in matrices */
 	  ir = -sample_f + n_r;
-	  for (i=0; i<actual_m; i++){    
+	  for (i=0; i<actual_m; i++) {
 	    ir = ir + sample_f;
 	    mat(yl,                                 ir, ic, m, n) = y_dummy_low_low[i];  
 	    mat(yh + m * column_of_a,               ir, ic, m, n) = y_dummy_low_high[i];  
