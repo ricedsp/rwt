@@ -72,7 +72,6 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
     &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
   irdwt_coefficients(lh, h, &g0, &g1);
  
- 
   if (n==1){
     n = m;
     m = 1;

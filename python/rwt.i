@@ -269,6 +269,8 @@ def denoise(x, h, denoise_type = 0, option = None):
         thld = option[1] * np.std(tmp, ddof=1)
       #print "c_offset is"
       #print c_offset
+      #print "xl is"
+      #print xl
       #print "xh is"
       #print xh
       #print "tmp is"

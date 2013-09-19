@@ -64,6 +64,7 @@ void rdwt_allocate(int m, int n, int lh, double **x_dummy_low, double **x_dummy_
   *h1                = (double *) rwt_calloc(lh,            sizeof(double));
 }
 
+
 /*!
  * Free memory that we allocated for dwt
  *
@@ -140,7 +141,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 
   rdwt_coefficients(lh, h, &h0, &h1);
 
-  if (n==1){
+  if (n==1) {
     n = m;
     m = 1;
   }  
@@ -188,7 +189,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     }
       
     /* go by columns in case of a 2D signal*/
-    if (m>1){
+    if (m>1) {
       n_rb = m/actual_m;                 /* # of row blocks per column */
       for (ic=0; ic<n; ic++){            /* loop over column */
 	for (n_r=0; n_r<n_rb; n_r++) {   /* loop within one column */
