@@ -12,12 +12,12 @@
  * @param lx the length of x
  * @param h0 the low pass coefficients
  * @param h1 the high pass coefficients
- * @param lh_minus_one one less than the number of scaling coefficients
+ * @param lh the number of scaling coefficients
  * @param x_out_low low pass results
  * @param x_out_high high pass results
  * 
  */
-void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_h) {
+void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_high) {
   int i, j;
   double x0, x1;
 
@@ -31,7 +31,7 @@ void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, doub
       x1 = x1 + x_in[j+i]*h1[lh-1-j];
     }
     x_out_low[i] = x0;
-    x_out_h[i] = x1;
+    x_out_high[i] = x1;
   }
 }
 
@@ -219,5 +219,3 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   }
   rdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
 }
-
-
