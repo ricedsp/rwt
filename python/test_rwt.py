@@ -68,8 +68,8 @@ class TestRWT(unittest.TestCase):
       [-2.4441, -2.4318, -1.4465, -1.4587, 1.8861, -4.2488, -1.9776, 4.3403, -0.0233, 0.0356, 0.9498, -0.9620],
       [-1.7488, -0.5870, 0.5592, -0.6026, 1.1663, -2.3550, -1.7398, 2.9285, -0.6965, 1.8583, -0.7120, -0.4498],
       [-0.3795, 2.5903, 2.7700, -0.1998, 4.1516, -1.2087, -1.5601, -1.3828, 3.6818, -0.7120, 0.8917, -3.8615]])
-    self.assertTrue(allclose(yl, yl_corr, 0.0005))
-    self.assertTrue(allclose(yh, yh_corr, 0.0005))
+    self.assertTrue(allclose(yl, yl_corr, 0.001))
+    self.assertTrue(allclose(yh, yh_corr, 0.001))
 
   def test_irdwt(self):
     xin = makesig('Leopold',8)
