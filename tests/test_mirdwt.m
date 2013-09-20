@@ -11,7 +11,7 @@ function test_mirdwt_1
 assertEqual(L,Lin);
 assertVectorsAlmostEqual(x, xin,'relative',0.0001);
 
-function test_midwt_2D
+function test_mirdwt_2D
        load lena512; 
        x = lena512;
        h = daubcqf(6);

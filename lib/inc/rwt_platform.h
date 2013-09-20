@@ -12,6 +12,7 @@
 /*! For MATLAB we address 2d inputs and outputs in column-major order */
 /*! For Python we address 2d inputs and outputs in row-major order */
 #ifdef MATLAB_MEX_FILE
+  #define COLUMN_MAJOR_ORDER 1
   #include "matrix.h"
   #include "mex.h"
   #define mat(a, i, j, m, n) (*(a + (m*(j)+i)))
@@ -20,6 +21,7 @@
   #define offset_row(offset, m, n) (offset % m)
   #define offset_col(offset, m, n) ((offset - (offset % m)) / m)
 #else
+  #define ROW_MAJOR_ORDER 1
   #define mat(a, i, j, m, n) (*(a + (n*(i)+j)))
   #define mat_offset(a, i, j, m, n) (n*(i)+j)
   #define rwt_printf(fmt, ...) printf(fmt, ##__VA_ARGS__)
