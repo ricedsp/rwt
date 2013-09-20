@@ -184,7 +184,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	ic = -sample_f + n_c;
 	for  (i=0; i<actual_n; i++) {
           ic = ic + sample_f;
-          mat(yl, ir, ic,               m, n)        = y_dummy_low_low[i];
+          mat(yl, ir, ic,               m, n)         = y_dummy_low_low[i];
           mat(yh, ir, ic + column_of_a, m, three_n_L) = y_dummy_high_high[i];  
 	} 
       }
