@@ -26,7 +26,6 @@
 */
 
 #include "mex.h"
-#include "matrix.h"
 #include "rwt_init.h"
 #include "rwt_transforms.h"
 

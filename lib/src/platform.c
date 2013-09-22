@@ -7,7 +7,6 @@
 #include "rwt_platform.h"
 
 #ifdef MATLAB_MEX_FILE
-  #include "matrix.h"
   void *rwt_malloc(size_t size) {
     return mxMalloc(size);
   }

@@ -26,7 +26,6 @@
 % see also: mdwt, midwt, mrdwt
 */
 
-#include "matrix.h"
 #include "mex.h"
 #include "rwt_init.h"
 #include "rwt_transforms.h"

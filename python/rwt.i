@@ -1,5 +1,7 @@
 %module rwt
 
+/* The C functions for the transforms are not suitable for direct use from python so let's rename them. */
+
 %rename(_c_dwt)     dwt;
 %rename(_c_idwt)   idwt;
 %rename(_c_rdwt)   rdwt;
@@ -15,6 +17,8 @@
 %init %{
   import_array();
 %}
+
+/* Building on the numpy SWIG macros we make wrapper functions for 1D and 2D for each transform */
 
 void _c_dwt_1(  double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
 void _c_dwt_2(  double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2);
@@ -267,14 +271,6 @@ def denoise(x, h, denoise_type = 0, option = None):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
         thld = option[1] * np.std(tmp, ddof=1)
-      #print "c_offset is"
-      #print c_offset
-      #print "xl is"
-      #print xl
-      #print "xh is"
-      #print xh
-      #print "tmp is"
-      #print tmp
     else:
       thld = option[5]
     if (option[3] == 2):

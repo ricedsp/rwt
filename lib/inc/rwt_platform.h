@@ -11,10 +11,12 @@
 
 /*! For MATLAB we address 2d inputs and outputs in column-major order */
 /*! For Python we address 2d inputs and outputs in row-major order */
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(HAVE_OCTAVE)
   #define COLUMN_MAJOR_ORDER 1
-  #include "matrix.h"
   #include "mex.h"
+  #ifndef HAVE_OCTAVE
+    #include "matrix.h"
+  #endif
   #define mat(a, i, j, m, n) (*(a + (m*(j)+i)))
   #define mat_offset(a, i, j, m, n) (m*(j)+i)
   #define rwt_printf(fmt, ...) mexPrintf(fmt, ##__VA_ARGS__)

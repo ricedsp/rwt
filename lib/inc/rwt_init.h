@@ -4,8 +4,12 @@
 #ifndef RWT_INIT_H_
 #define RWT_INIT_H_
 
-#include "matrix.h"
 #include "rwt_common.h"
+
+#include "mex.h"
+#ifndef HAVE_OCTAVE
+  #include "matrix.h"
+#endif
 
 typedef struct {
   int nrows;        /*!< The number of rows in the input matrix. Output matrix will match.  */
