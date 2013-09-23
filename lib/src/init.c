@@ -4,6 +4,7 @@
 */
 
 #include "rwt_init.h"
+#include "rwt_common.h"
 #include <math.h>
 #include "mex.h"
 
@@ -18,21 +19,21 @@
 int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
   if (transform_type == INVERSE_REDUNDANT_DWT) {
     if (nrhs > 4) {
-      mexErrMsgTxt("There are at most 4 input parameters allowed!");
+      rwt_errormsg("There are at most 4 input parameters allowed!");
       return 1;
     }
     if (nrhs < 3) {
-      mexErrMsgTxt("There are at least 3 input parameters required!");
+      rwt_errormsg("There are at least 3 input parameters required!");
       return 1;
     }
   }
   else {
     if (nrhs > 3) {
-      mexErrMsgTxt("There are at most 3 input parameters allowed!");
+      rwt_errormsg("There are at most 3 input parameters allowed!");
       return 1;
     }
     if (nrhs < 2) {
-      mexErrMsgTxt("There are at least 2 input parameters required!");
+      rwt_errormsg("There are at least 2 input parameters required!");
       return 1;
     }
   }
@@ -88,7 +89,7 @@ int rwt_find_L(int m, int n) {
   else
     L = min(i, j);
   if (L == 0) {
-    mexErrMsgTxt("Maximum number of levels is zero; no decomposition can be performed!");
+    rwt_errormsg("Maximum number of levels is zero; no decomposition can be performed!");
     return -1;
   }
   else return L;
@@ -105,7 +106,7 @@ int rwt_find_L(int m, int n) {
 int rwt_check_dimensions(int length, int L) {
   double test = (double) length / pow(2.0, (double) L);
   if (!isint(test)) {
-    mexErrMsgTxt("The matrix dimensions must be of size m*2^(L) by n*2^(L)");
+    rwt_errormsg("The matrix dimensions must be of size m*2^(L) by n*2^(L)");
     return 1;
   }
   return 0;
@@ -128,7 +129,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   if (rwt_check_parameter_count(nrhs, transform_type) != 0) return params;
   /*! Check that we don't have more than two dimensions in the input since that is currently unsupported. */
   if (mxGetNumberOfDimensions(prhs[0]) > 2) {
-    mexErrMsgTxt("Matrix must have fewer than 3 dimensions!");
+    rwt_errormsg("Matrix must have fewer than 3 dimensions!");
     return params;
   }
   /*! Get the number of rows and columns in the input matrix. */
@@ -136,7 +137,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   params.ncols = mxGetN(prhs[0]);
 
   if (params.nrows == 0 && params.ncols == 0) {
-    mexErrMsgTxt("The input matrix cannot be empty");
+    rwt_errormsg("The input matrix cannot be empty");
     return params;
   }
 
@@ -147,7 +148,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   else
     params.levels = rwt_find_L(params.nrows, params.ncols);
   if (params.levels < 0) {
-    mexErrMsgTxt("The number of levels, L, must be a non-negative integer");
+    rwt_errormsg("The number of levels, L, must be a non-negative integer");
     return params;
   }
   /*! Check that both the rows and columns are divisible by 2^L */
@@ -161,7 +162,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.scalings = mxGetPr(prhs[2]);
     params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
     if (!rwt_check_yl_matches_yh(prhs, params.nrows, params.ncols, params.levels)) {
-      mexErrMsgTxt("Dimensions of first two input matrices not consistent!");
+      rwt_errormsg("Dimensions of first two input matrices not consistent!");
       return params;
     }
   }

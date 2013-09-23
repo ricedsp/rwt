@@ -4,11 +4,13 @@
 #ifndef RWT_INIT_H_
 #define RWT_INIT_H_
 
-#include "rwt_common.h"
+#include "rwt_platform.h"
 
-#include "mex.h"
-#ifndef HAVE_OCTAVE
-  #include "matrix.h"
+#ifdef MATLAB_MEX_FILE
+  #include "mex.h"
+  #ifndef HAVE_OCTAVE
+    #include "matrix.h"
+  #endif
 #endif
 
 typedef struct {
@@ -25,7 +27,9 @@ typedef enum {NORMAL_DWT, REDUNDANT_DWT, INVERSE_DWT, INVERSE_REDUNDANT_DWT} tra
 extern "C" {
 #endif
 
-rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
+#ifdef MATLAB_MEX_FILE
+  rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
+#endif
 
 #ifdef __cplusplus
 }
