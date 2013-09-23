@@ -11,6 +11,7 @@
 
 /*! For MATLAB we address 2d inputs and outputs in column-major order */
 /*! For Python we address 2d inputs and outputs in row-major order */
+/*! The offset macros are for debugging */
 #if defined(MATLAB_MEX_FILE) || defined(HAVE_OCTAVE)
   #define COLUMN_MAJOR_ORDER 1
   #include "mex.h"

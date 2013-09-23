@@ -125,7 +125,6 @@ void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, dou
 	    ir = ir + sample_f;
 	    mat(x,      ir, ic, m, n) = x_dummy_low[i];
 	    mat(x_high, ir, ic, m, n) = x_dummy_high[i];
-            //rwt_printf("ir ic low high %d %d %d %d\n", ir, ic, x_dummy_low[i], x_dummy_high[i]);
 	  }
 	}
       }

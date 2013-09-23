@@ -21,19 +21,19 @@ assertVectorsAlmostEqual(y, y_corr, 'relative', 0.001);
 function test_mdwt_compute_L1
   x = [1 2];
   h = daubcqf(4, 'min');
-  [~, L] = mdwt(x, h);
+  [y, L] = mdwt(x, h);
 assertEqual(L, 1);
 
 function test_mdwt_compute_L2
   x = [1 2 3 4];
   h = daubcqf(4, 'min');
-  [~, L] = mdwt(x, h);
+  [y, L] = mdwt(x, h);
 assertEqual(L, 2);
 
 function test_mdwt_compute_L3
   x = [1 2 3 4 5 6 7 8];
   h = daubcqf(4, 'min');
-  [~, L] = mdwt(x, h);
+  [y, L] = mdwt(x, h);
 assertEqual(L, 3);
 
 function test_mdwt_compute_bad_L
