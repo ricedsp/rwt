@@ -27,3 +27,4 @@ python/_rwt.so
 python/rwt.py
 python/rwt.pyc
 python/rwtPYTHON_wrap.cxx
+octave/*.mex

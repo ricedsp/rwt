@@ -118,7 +118,7 @@ void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
 void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int actual_L, actual_m, actual_n, row_of_a, column_of_a, ir, ic, lh_minus_one, lh_halved_minus_one, sample_f;
+  int current_level, current_rows, current_cols, row_of_a, column_of_a, ir, ic, lh_minus_one, lh_halved_minus_one, sample_f;
 
   idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
   idwt_coefficients(lh, h, &g0, &g1);
@@ -136,22 +136,22 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     sample_f = sample_f*2;
   
   if (m>1)
-    actual_m = m/sample_f;
+    current_rows = m/sample_f;
   else 
-    actual_m = 1;
-  actual_n = n/sample_f;
+    current_rows = 1;
+  current_cols = n/sample_f;
 
   for (i=0; i<(m*n); i++)
     x[i] = y[i];
   
   /* main loop */
-  for (actual_L=L; actual_L >= 1; actual_L--){
-    row_of_a = actual_m/2;
-    column_of_a = actual_n/2;
+  for (current_level=L; current_level >= 1; current_level--){
+    row_of_a = current_rows/2;
+    column_of_a = current_cols/2;
     
     /* go by columns in case of a 2D signal*/
     if (m>1){
-      for (ic=0; ic<actual_n; ic++){            /* loop over column */
+      for (ic=0; ic<current_cols; ic++){            /* loop over column */
 	/* store in dummy variables */
 	ir = row_of_a;
 	for (i=0; i<row_of_a; i++){    
@@ -161,12 +161,12 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/* perform filtering lowpass and highpass*/
 	idwt_convolution(xdummy, row_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
-	for (i=0; i<actual_m; i++)
+	for (i=0; i<current_rows; i++)
 	  mat(x, i, ic, m, n) = xdummy[i];  
       }
     }
     /* go by rows */
-    for (ir=0; ir<actual_m; ir++){            /* loop over rows */
+    for (ir=0; ir<current_rows; ir++){            /* loop over rows */
       /* store in dummy variable */
       ic = column_of_a;
       for  (i=0; i<column_of_a; i++){    
@@ -176,14 +176,14 @@ void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       /* perform filtering lowpass and highpass*/
       idwt_convolution(xdummy, column_of_a, g0, g1, lh_minus_one, lh_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
-      for (i=0; i<actual_n; i++)
+      for (i=0; i<current_cols; i++)
         mat(x, ir, i, m, n) = xdummy[i];  
     }  
     if (m==1)
-      actual_m = 1;
+      current_rows = 1;
     else
-      actual_m = actual_m*2;
-    actual_n = actual_n*2;
+      current_rows = current_rows*2;
+    current_cols = current_cols*2;
   }
   idwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
 }

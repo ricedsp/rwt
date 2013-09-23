@@ -136,8 +136,8 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
 void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int actual_L, lh_minus_one;
-  int actual_m, actual_n, row_of_a, column_of_a, idx_rows, idx_columns;
+  int current_level, lh_minus_one;
+  int current_rows, current_cols, row_of_a, column_of_a, idx_rows, idx_columns;
 
   if (n==1) { /*! If passed a 1d column vector, just treat it as a row vector */
     n = m;
@@ -145,29 +145,29 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   }
   
   dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
-  dwt_coefficients(lh, h, &h0, &h1); /*! For performance, precalculate what we can outside the loops */
+  dwt_coefficients(lh, h, &h0, &h1); /*! For performance, calculate what we can outside the loops */
   lh_minus_one = lh - 1;
-  actual_m = 2*m;
-  actual_n = 2*n;
+  current_rows = 2*m; /*! current_rows and current_cols start at 2x since we divide by 2 at the start of the loop */
+  current_cols = 2*n;
  
-  for (actual_L=1; actual_L<=L; actual_L++) {
+  for (current_level=1; current_level<=L; current_level++) {
     if (m==1)
-      actual_m = 1;
+      current_rows = 1;
     else{
-      actual_m = actual_m/2;
-      row_of_a = actual_m/2;     
+      current_rows = current_rows/2;
+      row_of_a = current_rows/2;     
     }
-    actual_n = actual_n/2;
-    column_of_a = actual_n/2;
+    current_cols = current_cols/2;
+    column_of_a = current_cols/2;
 
-    for (idx_rows=0; idx_rows<actual_m; idx_rows++) {
-      for (i=0; i<actual_n; i++)
-	if (actual_L==1)  
+    for (idx_rows=0; idx_rows<current_rows; idx_rows++) {
+      for (i=0; i<current_cols; i++)
+	if (current_level==1)  
 	  xdummy[i] = mat(x, idx_rows, i, m, n);  
 	else 
 	  xdummy[i] = mat(y, idx_rows, i, m, n);  
       /*! Perform filtering lowpass and highpass*/
-      dwt_convolution(xdummy, actual_n, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+      dwt_convolution(xdummy, current_cols, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /*! Restore dummy variables in matrices */
       idx_columns = column_of_a;
       for (i=0; i<column_of_a; i++) {    
@@ -178,12 +178,12 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
     
     /*! For the 2d transform, we go through each of the columns after having gone through the rows */
     if (m>1) {
-      for (idx_columns=0; idx_columns<actual_n; idx_columns++) { /* loop over columns */
+      for (idx_columns=0; idx_columns<current_cols; idx_columns++) { /* loop over columns */
 	/*! Store in dummy variables */
-	for (i=0; i<actual_m; i++)
+	for (i=0; i<current_rows; i++)
 	  xdummy[i] = mat(y, i, idx_columns, m, n);  
 	/*! Perform filtering lowpass and highpass*/
-	dwt_convolution(xdummy, actual_m, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+	dwt_convolution(xdummy, current_rows, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
 	/*! Restore dummy variables in matrix */
 	idx_rows = row_of_a;
 	for (i=0; i<row_of_a; i++) {

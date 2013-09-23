@@ -36,6 +36,8 @@ IF (UNIX)
    bin/*.mexmaci64
    src/*.mexa64
    src/*.mexmaci64
+   src/*.o
+   lib/src/*.o
    tests/*.mexa64
    tests/*.mexmaci64
    python/rwtPYTHON_wrap.cxx
