@@ -71,6 +71,8 @@ int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int lev
  * @param m the number of rows in the input
  * @param n the number of columns in the input
  *
+ * L is the exponent of the largest power of 2 that is a factor of all input dimensions
+ * 
  */
 int rwt_find_L(int m, int n) {
   int i, j, L;
@@ -147,13 +149,18 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
     params.levels = rwt_find_L(params.nrows, params.ncols);
-  if (params.levels < 0) {
-    rwt_errormsg("The number of levels, L, must be a non-negative integer");
+
+  if (params.levels < 1) {
+    rwt_errormsg("The number of levels, L, must be a positive integer");
     return params;
   }
+
   /*! Check that both the rows and columns are divisible by 2^L */
-  if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels)))
+  if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels))) {
+    rwt_errormsg("All dimensions must be divisible by 2^L");
     return params;
+  }
+
   /*! Read the scaling coefficients, h, from the input and find their length, lh. 
    *  In the case of the redundant transform, the scalings are found one further position to the right, 
    *  and also we check for matching dimensions in the low and high inputs
