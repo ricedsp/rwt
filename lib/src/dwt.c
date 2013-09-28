@@ -122,20 +122,17 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  *
  * The discrete wavelet transform begins with a set of samples of a signal whose length
  * is a power of 2. This exponent we shall call 'L' as it corresponds to the number of
- * levels in the filter bank for the calculation of the wavelet transform. 
- *
- * We shall use the name 'a' to refer to the approximation coefficients.
- * However, the actual implementation will not store this information separately, 
- * but rather will place it in the available space in the output array.
+ * levels in the filter bank for the calculation of the wavelet transform. We may only
+ * perform the transform up to a certain number of levels.
  *
  */
 void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int current_level, lh_minus_one;
-  int current_rows, current_cols, row_of_a, column_of_a, idx_rows, idx_columns;
+  int current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
 
-  if (n==1) { /*! If passed a 1d column vector, just treat it as a row vector */
+  if (n==1) { /*! Accept either column vectors or row vectors. Store the length in the variable n */
     n = m;
     m = 1;
   }
@@ -151,10 +148,10 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       current_rows = 1;
     else{
       current_rows = current_rows/2;
-      row_of_a = current_rows/2;     
+      row_cursor = current_rows/2;     
     }
     current_cols = current_cols/2;
-    column_of_a = current_cols/2;
+    column_cursor = current_cols/2;
 
     for (idx_rows=0; idx_rows<current_rows; idx_rows++) {
       for (i=0; i<current_cols; i++)
@@ -165,8 +162,8 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
       /*! Perform filtering lowpass and highpass*/
       dwt_convolution(xdummy, current_cols, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
       /*! Restore dummy variables in matrices */
-      idx_columns = column_of_a;
-      for (i=0; i<column_of_a; i++) {    
+      idx_columns = column_cursor;
+      for (i=0; i<column_cursor; i++) {    
 	mat(y, idx_rows, i,             m, n) = y_dummy_low[i];  
 	mat(y, idx_rows, idx_columns++, m, n) = y_dummy_high[i];  
       } 
@@ -181,8 +178,8 @@ void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
 	/*! Perform filtering lowpass and highpass*/
 	dwt_convolution(xdummy, current_rows, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
 	/*! Restore dummy variables in matrix */
-	idx_rows = row_of_a;
-	for (i=0; i<row_of_a; i++) {
+	idx_rows = row_cursor;
+	for (i=0; i<row_cursor; i++) {
 	  mat(y, i,          idx_columns, m, n) = y_dummy_low[i];  
 	  mat(y, idx_rows++, idx_columns, m, n) = y_dummy_high[i];  
 	}

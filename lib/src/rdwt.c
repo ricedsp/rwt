@@ -133,9 +133,9 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
   double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
   long i;
-  int current_level, current_rows, current_cols, column_of_a;
+  int current_level, current_rows, current_cols, column_cursor;
   int idx_cols, n_c, n_cb, idx_rows, n_r, n_rb;
-  int column_of_a_plus_n, column_of_a_plus_double_n, sample_f;
+  int column_cursor_plus_n, column_cursor_plus_double_n, sample_f;
   int three_n_L;
 
   rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
@@ -163,11 +163,11 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
     current_cols = current_cols/2;
     /* actual (level dependent) column offset */
     if (m==1)
-      column_of_a = n*(current_level-1);
+      column_cursor = n*(current_level-1);
     else
-      column_of_a = 3*n*(current_level-1);
-    column_of_a_plus_n = column_of_a + n;
-    column_of_a_plus_double_n = column_of_a_plus_n + n;
+      column_cursor = 3*n*(current_level-1);
+    column_cursor_plus_n = column_cursor + n;
+    column_cursor_plus_double_n = column_cursor_plus_n + n;
     
     /* go by rows */
     n_cb = n/current_cols;                 /* # of column blocks per row */
@@ -185,8 +185,8 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	idx_cols = -sample_f + n_c;
 	for  (i=0; i<current_cols; i++) {
           idx_cols = idx_cols + sample_f;
-          mat(yl, idx_rows, idx_cols,               m, n)         = y_dummy_low_low[i];
-          mat(yh, idx_rows, idx_cols + column_of_a, m, three_n_L) = y_dummy_high_high[i];  
+          mat(yl, idx_rows, idx_cols,                 m, n)         = y_dummy_low_low[i];
+          mat(yh, idx_rows, idx_cols + column_cursor, m, three_n_L) = y_dummy_high_high[i];  
 	} 
       }
     }
@@ -201,7 +201,7 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  for (i=0; i<current_rows; i++) {    
 	    idx_rows = idx_rows + sample_f;
 	    x_dummy_low[i]  = mat(yl, idx_rows, idx_cols,               m, n);
-	    x_dummy_high[i] = mat(yh, idx_rows, idx_cols + column_of_a, m, three_n_L);
+	    x_dummy_high[i] = mat(yh, idx_rows, idx_cols + column_cursor, m, three_n_L);
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
 	  rdwt_convolution(x_dummy_low,  current_rows, h0, h1, lh, y_dummy_low_low,  y_dummy_low_high);
@@ -210,10 +210,10 @@ void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double 
 	  idx_rows = -sample_f + n_r;
 	  for (i=0; i<current_rows; i++) {
 	    idx_rows = idx_rows + sample_f;
-	    mat(yl, idx_rows, idx_cols,                             m, n)         = y_dummy_low_low[i];
-	    mat(yh, idx_rows, idx_cols + column_of_a,               m, three_n_L) = y_dummy_low_high[i];
-	    mat(yh, idx_rows, idx_cols + column_of_a_plus_n,        m, three_n_L) = y_dummy_high_low[i];
-	    mat(yh, idx_rows, idx_cols + column_of_a_plus_double_n, m, three_n_L) = y_dummy_high_high[i];
+	    mat(yl, idx_rows, idx_cols,                               m, n)         = y_dummy_low_low[i];
+	    mat(yh, idx_rows, idx_cols + column_cursor,               m, three_n_L) = y_dummy_low_high[i];
+	    mat(yh, idx_rows, idx_cols + column_cursor_plus_n,        m, three_n_L) = y_dummy_high_low[i];
+	    mat(yh, idx_rows, idx_cols + column_cursor_plus_double_n, m, three_n_L) = y_dummy_high_high[i];
 	  }
 	}
       }
