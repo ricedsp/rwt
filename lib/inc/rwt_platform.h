@@ -1,10 +1,9 @@
 /*! \file rwt_platform.h
-    \brief Header for memory allocation wrapper functions in platform.c
+    \brief Abstract away environment differences and provide some common macros
 */
 #ifndef RWT_PLATFORM_H
 #define RWT_PLATFORM_H
 
-#include "rwt_common.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -33,6 +32,10 @@
   #define rwt_printf(fmt, ...) printf(fmt, ##__VA_ARGS__)
   #define rwt_errormsg(msg) printf("\033[91m%s\033[0m\n", msg);
 #endif
+
+#define max(A,B) (A > B ? A : B)
+#define min(A,B) (A < B ? A : B)
+#define even(x)  ((x & 1) ? 0 : 1)
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,10 +1,6 @@
 /*! \file dwt.c
     \brief Implementation of the discrete wavelet transform
 
-    This file actually implements the wavelet transform. 
-    It references rwt_platform.h and does not use any matlab-specific functions, 
-    though it does use the mat() macro which describes the in-memory layout of 
-    1D and 2D matrices in matlab
 */
 
 #include "rwt_platform.h"

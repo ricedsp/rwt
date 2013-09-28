@@ -4,7 +4,6 @@
 */
 
 #include "rwt_init.h"
-#include "rwt_common.h"
 #include <math.h>
 
 
