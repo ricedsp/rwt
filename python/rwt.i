@@ -7,11 +7,16 @@
 %rename(_c_rdwt)   rdwt;
 %rename(_c_irdwt) irdwt;
 
+%rename(_find_levels) rwt_find_levels;
+%rename(_check_levels) rwt_check_levels;
+
 %{
   #define SWIG_FILE_WITH_INIT
   #include "../lib/inc/rwt_transforms.h"
+  #include "../lib/inc/rwt_init.h"
 %}
 
+%include "../lib/inc/rwt_init.h"
 %include "numpy.i"
 
 %init %{
@@ -69,7 +74,22 @@ void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, i
 
 import numpy as np
 
-def dwt(x, h, L):
+def _levels(x, L):
+  dim = len(x.shape)
+  m = x.shape[0]
+  if (dim == 2):
+    n = x.shape[1]
+  else:
+    n = 1
+  if (L == 0):
+    L = _find_levels(m, n)
+  _check_levels(L, m, n)
+  return L
+
+def dwt(x, h, L = 0):
+  if (x.dtype != 'float'):
+    x = x * 1.0
+  L = _levels(x, L)
   y = np.zeros(x.shape)
   dim = len(x.shape)
   if (dim == 1):
@@ -78,7 +98,10 @@ def dwt(x, h, L):
     _rwt._c_dwt_2(x, h, L, y)
   return y, L
 
-def idwt(y, h, L):
+def idwt(y, h, L = 0):
+  if (y.dtype != 'float'):
+    y = y * 1.0
+  L = _levels(y, L)
   x = np.zeros(y.shape)
   dim = len(x.shape)
   if (dim == 1):
@@ -87,7 +110,10 @@ def idwt(y, h, L):
     _rwt._c_idwt_2(x, h, L, y)
   return x, L
 
-def rdwt(x, h, L):
+def rdwt(x, h, L = 0):
+  if (x.dtype != 'float'):
+    x = x * 1.0
+  L = _levels(x, L)
   yl = np.zeros(x.shape)
   dim = len(x.shape)
   if (dim == 1):
@@ -98,7 +124,12 @@ def rdwt(x, h, L):
     _rwt._c_rdwt_2(x, h, L, yl, yh)
   return yl, yh, L
 
-def irdwt(yl, yh, h, L):
+def irdwt(yl, yh, h, L = 0):
+  if (yl.dtype != 'float'):
+    yl = yl * 1.0
+  if (yh.dtype != 'float'):
+    yh = yh * 1.0
+  L = _levels(yl, L)
   x = np.zeros(yl.shape)
   dim = len(x.shape)
   if (dim == 1):

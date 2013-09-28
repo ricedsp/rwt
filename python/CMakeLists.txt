@@ -21,5 +21,5 @@ SET(CMAKE_SWIG_FLAGS "")
 
 SET_SOURCE_FILES_PROPERTIES(rwt.i PROPERTIES CPLUSPLUS ON)
 #SET_SOURCE_FILES_PROPERTIES(rwt.i PROPERTIES SWIG_FLAGS "-includeall")
-SWIG_ADD_MODULE(rwt python rwt.i ../lib/src/dwt.c ../lib/src/idwt.c ../lib/src/rdwt.c ../lib/src/irdwt.c ../lib/src/platform.c)
+SWIG_ADD_MODULE(rwt python rwt.i ../lib/src/dwt.c ../lib/src/idwt.c ../lib/src/rdwt.c ../lib/src/irdwt.c ../lib/src/platform.c ../lib/src/init.c)
 SWIG_LINK_LIBRARIES(rwt ${PYTHON_LIBRARIES})

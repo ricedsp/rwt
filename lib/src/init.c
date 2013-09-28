@@ -6,9 +6,9 @@
 #include "rwt_init.h"
 #include "rwt_common.h"
 #include <math.h>
-#include "mex.h"
 
 
+#ifdef MATLAB_MEX_FILE
 /*!
  * Checks for correct # of input variables based on type of transform.
  *
@@ -63,6 +63,7 @@ int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int lev
   }
   return 1;
 }
+#endif
 
 
 /*!
@@ -74,7 +75,7 @@ int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int lev
  * L is the exponent of the largest power of 2 that is a factor of all input dimensions
  * 
  */
-int rwt_find_L(int m, int n) {
+int rwt_find_levels(int m, int n) {
   int i, j, L;
   i = n ; j = 0;
   while (even(i)) {
@@ -107,14 +108,38 @@ int rwt_find_L(int m, int n) {
  */
 int rwt_check_dimensions(int length, int L) {
   double test = (double) length / pow(2.0, (double) L);
-  if (!isint(test)) {
-    rwt_errormsg("The matrix dimensions must be of size m*2^(L) by n*2^(L)");
-    return 1;
+  if ((test - floor(test)) > 0.0) {
+    return -1;
   }
   return 0;
 }
 
 
+/*!
+ * Sanity check the levels parameter
+ *
+ * @param levels the number of levels specified or calculated for the input
+ * @param rows the number of rows of input
+ * @param cols the number of columns of input
+ *
+ */
+int rwt_check_levels(int levels, int rows, int cols) {
+  if (levels < 1) {
+    rwt_errormsg("The number of levels, L, must be a positive integer");
+    return -1;
+  }
+
+  /*! Check that both the rows and columns are divisible by 2^L */
+  if ((rows > 1 && rwt_check_dimensions(rows, levels)) || (cols > 1 && rwt_check_dimensions(cols, levels))) {
+    rwt_errormsg("All dimensions must be divisible by 2^L");
+    return -1;
+  }
+
+  return 0;
+}
+
+
+#ifdef MATLAB_MEX_FILE
 /*!
  * Parse input from MATLAB and do some sanity checking
  *
@@ -143,21 +168,14 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     return params;
   }
 
-  /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Make sure L > 0 */
+  /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Sanity check L */
   int argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
   if ((argNumL + 1) == nrhs)
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else
-    params.levels = rwt_find_L(params.nrows, params.ncols);
+    params.levels = rwt_find_levels(params.nrows, params.ncols);
 
-  if (params.levels < 1) {
-    rwt_errormsg("The number of levels, L, must be a positive integer");
-    return params;
-  }
-
-  /*! Check that both the rows and columns are divisible by 2^L */
-  if ((params.nrows > 1 && rwt_check_dimensions(params.nrows, params.levels)) || (params.ncols > 1 && rwt_check_dimensions(params.ncols, params.levels))) {
-    rwt_errormsg("All dimensions must be divisible by 2^L");
+  if (rwt_check_levels(params.levels, params.nrows, params.ncols)) {
     return params;
   }
 
@@ -181,5 +199,4 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);
   return params;
 }
-
-
+#endif
