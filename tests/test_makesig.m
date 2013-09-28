@@ -43,8 +43,8 @@ assertVectorsAlmostEqual(x, y, 'relative', 0.0001);
 
 function test_makesig_losine
   x = makesig('LoSine', 8);
-  y = [0.8660    0.8661    0.0003   -0.8658   -0.8663   -0.0006    0.8657    0.8664];
-assertVectorsAlmostEqual(x, y, 'relative', 0.0001);
+  y = [0.865973039158459   0.866130104544730   0.000314159260191  -0.865815888304075  -0.866287084447387  -0.000628318489377   0.865658651997088   0.866443978850937];
+assertVectorsAlmostEqual(x, y, 'relative', 0.0000001);
 
 function test_makesig_linchirp
   x = makesig('LinChirp', 8);

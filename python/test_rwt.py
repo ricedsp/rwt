@@ -15,8 +15,8 @@ class TestRWT(unittest.TestCase):
     h = daubcqf(4, 'min')[0]
     L = 2
     y, L = dwt(x, h, L)
-    y_corr = array([1.1097, 0.8767, 0.8204, -0.5201, -0.0339, 0.1001, 0.2201, -0.1401])
-    self.assertTrue(allclose(y, y_corr, 0.00082))
+    y_corr = array([1.109692262737501,0.876661822959323,0.820391852106669,-0.520074093642583,-0.033927668247206,0.100110695461285,0.220088240246095,-0.140081604397608])
+    self.assertTrue(allclose(y, y_corr, 0.0001))
 
   def test_dwt_2d(self):
     x = array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16.0]])
@@ -150,13 +150,13 @@ class TestRWT(unittest.TestCase):
   
   def test_makesig_losine(self):
     x = makesig('LoSine', 8)
-    y = array([0.8660, 0.8661, 0.0003, -0.8658, -0.8663, -0.0006, 0.8657, 0.8664])
-    self.assertTrue(allclose(x, y, 0.0472))
+    y = array([0.865973039158459,0.866130104544730,0.000314159260191,-0.865815888304075,-0.866287084447387,-0.000628318489377,0.865658651997088,0.866443978850937])
+    self.assertTrue(allclose(x, y, 0.0005))
   
   def test_makesig_linchirp(self):
     x = makesig('LinChirp', 8)
-    y = array([0.0491, 0.1951, 0.4276, 0.7071, 0.9415, 0.9808, 0.6716, 0.0000])
-    self.assertTrue(allclose(x, y, 0.0007))
+    y = array([0.049067674327418,0.195090322016128,0.427555093430282,0.707106781186547,0.941544065183021,0.980785280403230,0.671558954847019,0.000000000000000])
+    self.assertTrue(allclose(x, y, 0.0001))
   
   def test_makesig_twochirp(self):
     x = makesig('TwoChirp', 8)
@@ -165,8 +165,8 @@ class TestRWT(unittest.TestCase):
   
   def test_makesig_quadchirp(self):
     x = makesig('QuadChirp', 8)
-    y = array([0.0164, 0.1305, 0.4276, 0.8660, 0.8895, -0.3827, -0.6217, 0.8660])
-    self.assertTrue(allclose(x, y, 0.0024))
+    y = array([0.016361731626487,0.130526192220052,0.427555093430282,0.866025403784439,0.889516075421856,-0.382683432365090,-0.621660573370077,0.866025403784439])
+    self.assertTrue(allclose(x, y, 0.0001))
   
   def test_makesig_mishmash(self):
     x = makesig('MishMash', 8)
