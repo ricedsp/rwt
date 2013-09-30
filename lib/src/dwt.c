@@ -21,6 +21,8 @@
  * Normally we can describe the calculation of a convolution as
  * \f$ (\textbf{w} * \textbf{z})_k = \frac{1}{N} \sum\limits_{l=0}^{2N-1} w_{k-l} \cdot z_{l} \f$
  *
+ * Our actual implementation resembles this
+ *
  */
 void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
   size_t i, j, ind;
@@ -29,14 +31,14 @@ void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_min
     x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length lh_minus_one */
   }
   ind = 0;
-  for (i=0; i<(lx); i+=2) {
+  for (i=0; i<(lx); i+=2) { /*! Step through the input values, moving right 2 values each loop */
     x0 = 0;
     x1 = 0;
-    for (j=0; j<=lh_minus_one; j++) {
-      x0 = x0 + x_in[i+j] * h0[lh_minus_one-j];
+    for (j=0; j<=lh_minus_one; j++) { /*! Take the high and low filters in reverse order */
+      x0 = x0 + x_in[i+j] * h0[lh_minus_one-j];  /*! Sum the product of the next lh values of x_in with the filter coefficients */
       x1 = x1 + x_in[i+j] * h1[lh_minus_one-j];
     }
-    x_out_low[ind] = x0;
+    x_out_low[ind] = x0; /*! Place these calculated sums in the next position of the output */
     x_out_high[ind++] = x1;
   }
 }
