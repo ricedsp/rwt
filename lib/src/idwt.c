@@ -18,23 +18,25 @@
  * @param x_in_high
  * 
  */
-void idwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh_minus_one, int lh_halved_minus_one, double *x_in_low, double *x_in_high) {
-  int i, j, ind, tj;
+void idwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int lh_minus_one, int lh_halved_minus_one, double *x_in_low, double *x_in_high) {
+  int k;
+  size_t i, j, ind, tj;
   double x0, x1;
 
-  for (i=lh_halved_minus_one-1; i > -1; i--){
-    x_in_low[i] = x_in_low[lx+i];
-    x_in_high[i] = x_in_high[lx+i];
+  for (k=lh_halved_minus_one-1; k > -1; k--) {
+    x_in_low[k]  = x_in_low[lx+k];
+    x_in_high[k] = x_in_high[lx+k];
   }
+
   ind = 0;
-  for (i=0; i<(lx); i++){
+  for (i=0; i<(lx); i++) {
     x0 = 0;
     x1 = 0;
-    tj = -2;
-    for (j=0; j<=lh_halved_minus_one; j++){
-      tj+=2;
-      x0 = x0 + x_in_low[i+j]*g0[lh_minus_one-1-tj] + x_in_high[i+j]*g1[lh_minus_one-1-tj] ;
-      x1 = x1 + x_in_low[i+j]*g0[lh_minus_one-tj] + x_in_high[i+j]*g1[lh_minus_one-tj] ;
+    tj = 0;
+    for (j=0; j<=lh_halved_minus_one; j++) {
+      x0 = x0 + x_in_low[i+j]*g0[lh_minus_one-1-tj] + x_in_high[i+j]*g1[lh_minus_one-1-tj];
+      x1 = x1 + x_in_low[i+j]*g0[lh_minus_one-tj] + x_in_high[i+j]*g1[lh_minus_one-tj];
+      tj += 2;
     }
     x_out[ind++] = x0;
     x_out[ind++] = x1;
@@ -55,7 +57,7 @@ void idwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh_minu
  * @param g1
  *
  */
-void idwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
+void idwt_allocate(size_t m, size_t n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
   *xdummy       = (double *) rwt_calloc(max(m,n),        sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
   *y_dummy_high = (double *) rwt_calloc(max(m,n)+lh/2-1, sizeof(double));
@@ -115,10 +117,11 @@ void idwt_coefficients(int lh, double *h, double **g0, double **g1) {
  * @param y  the input signal
  *
  */
-void idwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void idwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int current_level, current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols, lh_minus_one, lh_halved_minus_one, sample_f;
+  int current_level, lh_minus_one, lh_halved_minus_one, sample_f;
+  size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols;
 
   idwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
   idwt_coefficients(lh, h, &g0, &g1);

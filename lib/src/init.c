@@ -47,10 +47,10 @@ int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
  * @param params
  *
  */
-int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int levels) {
-  int mh = mxGetM(prhs[1]);
-  int nh = mxGetN(prhs[1]);
-  if (min(nrows, ncols) > 1){
+int rwt_check_yl_matches_yh(const mxArray *prhs[], size_t nrows, size_t ncols, int levels) {
+  size_t mh = mxGetM(prhs[1]);
+  size_t nh = mxGetN(prhs[1]);
+  if (min(nrows, ncols) > 1) {
     if ((nrows != mh) | (3 * ncols * levels != nh)) {
       return 0;
     }
@@ -74,8 +74,8 @@ int rwt_check_yl_matches_yh(const mxArray *prhs[], int nrows, int ncols, int lev
  * L is the exponent of the largest power of 2 that is a factor of all input dimensions
  * 
  */
-int rwt_find_levels(int m, int n) {
-  int i, j, L;
+int rwt_find_levels(size_t m, size_t n) {
+  size_t i, j, L;
   i = n ; j = 0;
   while (even(i)) {
     i = (i >> 1);
@@ -105,7 +105,7 @@ int rwt_find_levels(int m, int n) {
  * @param L the number of levels
  *
  */
-int rwt_check_dimensions(int length, int L) {
+int rwt_check_dimensions(size_t length, int L) {
   double test = (double) length / pow(2.0, (double) L);
   if ((test - floor(test)) > 0.0) {
     return -1;
@@ -122,7 +122,7 @@ int rwt_check_dimensions(int length, int L) {
  * @param cols the number of columns of input
  *
  */
-int rwt_check_levels(int levels, int rows, int cols) {
+int rwt_check_levels(int levels, size_t rows, size_t cols) {
   if (levels < 1) {
     rwt_errormsg("The number of levels, L, must be a positive integer");
     return -1;

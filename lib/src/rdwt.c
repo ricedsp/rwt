@@ -17,8 +17,8 @@
  * @param x_out_high high pass results
  * 
  */
-void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_high) {
-  int i, j;
+void rdwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_high) {
+  size_t i, j;
   double x0, x1;
 
   for (i=lx; i < lx+lh-1; i++)
@@ -52,7 +52,7 @@ void rdwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh, doub
  * @param h1
  *
  */
-void rdwt_allocate(int m, int n, int lh, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
+void rdwt_allocate(size_t m, size_t n, int lh, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
   double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
   *x_dummy_low       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
   *x_dummy_high      = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
@@ -129,14 +129,13 @@ void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * @param yh
  *
  */
-void rdwt(double *x, int m, int n, double *h, int lh, int L, double *yl, double *yh) {
-  double  *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
-  double *y_dummy_high_high, *x_dummy_low , *x_dummy_high;
+void rdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *yl, double *yh) {
+  double *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
+  double *y_dummy_high_high, *x_dummy_low, *x_dummy_high;
   long i;
-  int current_level, current_rows, current_cols, column_cursor;
-  int idx_cols, n_c, n_cb, idx_rows, n_r, n_rb;
-  int column_cursor_plus_n, column_cursor_plus_double_n, sample_f;
-  int three_n_L;
+  int current_level, three_n_L, sample_f;
+  size_t current_rows, current_cols, idx_rows, idx_cols, n_c, n_cb, n_r, n_rb;
+  size_t column_cursor, column_cursor_plus_n, column_cursor_plus_double_n;
 
   rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
     &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);

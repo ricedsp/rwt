@@ -22,8 +22,8 @@
  * \f$ (\textbf{w} * \textbf{z})_k = \frac{1}{N} \sum\limits_{l=0}^{2N-1} w_{k-l} \cdot z_{l} \f$
  *
  */
-void dwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
-  int i, j, ind;
+void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
+  size_t i, j, ind;
   double x0, x1;
   for (i=lx; i<lx+lh_minus_one; i++) { 
     x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length lh_minus_one */
@@ -58,7 +58,7 @@ void dwt_convolution(double *x_in, int lx, double *h0, double *h1, int lh_minus_
  * For the output storage area we will need as much space as the input: m*n
  * For the input storage area we will need the same plus one less than the length of the coeffiecients
  */
-void dwt_allocate(int m, int n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
+void dwt_allocate(size_t m, size_t n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
   *xdummy       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n),      sizeof(double));
   *y_dummy_high = (double *) rwt_calloc(max(m,n),      sizeof(double));
@@ -126,11 +126,11 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * perform the transform up to a certain number of levels.
  *
  */
-void dwt(double *x, int m, int n, double *h, int lh, int L, double *y) {
+void dwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int current_level, lh_minus_one;
-  int current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
+  size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
 
   if (n==1) { /*! Accept either column vectors or row vectors. Store the length in the variable n */
     n = m;

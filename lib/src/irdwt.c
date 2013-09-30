@@ -5,13 +5,14 @@
 
 #include "rwt_platform.h"
 
-void irdwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
-  int i, j;
+void irdwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int lh, double *x_inl, double *x_inh) {
+  int k;
+  size_t i, j;
   double x0;
 
-  for (i=lh-2; i > -1; i--){
-    x_inl[i] = x_inl[lx+i];
-    x_inh[i] = x_inh[lx+i];
+  for (k=lh-2; k > -1; k--) {
+    x_inl[k] = x_inl[lx+k];
+    x_inh[k] = x_inh[lx+k];
   }
   for (i=0; i<lx; i++){
     x0 = 0;
@@ -23,7 +24,7 @@ void irdwt_convolution(double *x_out, int lx, double *g0, double *g1, int lh, do
 }
 
 
-void irdwt_allocate(int m, int n, int lh, double **x_high, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
+void irdwt_allocate(size_t m, size_t n, int lh, double **x_high, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
   double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **g0, double **g1) {
   *x_high            = (double *) rwt_calloc(m*n,           sizeof(double));
   *x_dummy_low       = (double *) rwt_calloc(max(m,n),      sizeof(double));
@@ -61,14 +62,14 @@ void irdwt_coefficients(int lh, double *h, double **g0, double **g1) {
 }
 
 
-void irdwt(double *x, int m, int n, double *h, int lh, int L, double *y_low, double *y_high) {
+void irdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y_low, double *y_high) {
   double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;
-  int current_level, current_rows, current_cols, column_cursor, column_blocks_per_row, lh_minus_one;
-  int idx_rows, idx_cols, n_r, n_c;
-  int row_blocks_per_column, column_cursor_plus_n, column_cursor_plus_double_n, sample_f;
-  int three_n_L;
+  int current_level, three_n_L, lh_minus_one, sample_f;
+  size_t current_rows, current_cols, column_cursor, column_blocks_per_row;
+  size_t idx_rows, idx_cols, n_r, n_c;
+  size_t row_blocks_per_column, column_cursor_plus_n, column_cursor_plus_double_n;
 
   irdwt_allocate(m, n, lh, &x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, 
     &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
