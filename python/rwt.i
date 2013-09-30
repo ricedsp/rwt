@@ -153,11 +153,10 @@ def daubcqf(n, dtype = 'min'):
   q = np.sort(np.roots(q))
   qt = q[0:k-1]
   if (dtype == 'mid'):
-    raise Exception("Not implemented") # MATLAB code for this is opaque
-    #if (k % 2 == 1):
-    #  qt = np.hstack((q[0:n-2:4], q[1:n-2:4]))
-    #else:
-    #  qt = np.hstack((q[0], q[3:k-1:4], q[4:k-1:4], q[n-4:k-1:-4], q[n-5:k-1:-4]))
+    if (k % 2 == 1):
+      qt = np.hstack((q[0:n-2:4], q[1:n-2:4]))
+    else:
+      qt = np.hstack((q[0], q[3:k-1:4], q[4:k-1:4], q[n-4:k:-4], q[n-5:k:-4]))
   h_0 = np.convolve(h_0, np.real(np.poly(qt)))
   h_0 = np.sqrt(2)*h_0 / sum(h_0)
   if (dtype == 'max'):

@@ -7,3 +7,4 @@ test_mrdwt
 test_makesig
 test_denoise
 test_setopt
+test_daubcqf
