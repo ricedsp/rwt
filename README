@@ -15,7 +15,7 @@ tool for learning about how the wavelet transform is calculated.
 
 Version 1.1 (August 30, 1993) was the first officially released RWT.  Version 
 2.01 (April 18, 1994) had several significant enhancements. Functions 
-omitted in Version 3.0 can be found in the Version 2.01 distribution.
+omitted in later versions can be found in the Version 2.01 distribution.
 
 Older versions are available in the 'dist' directory.
 
