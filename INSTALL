@@ -32,12 +32,12 @@ Octave path.
 =  Python Installation Instructions                                           =
 ================================================================================
 
-Python installation requires cmake. To install the python bindings, execute the
+Python installation requires CMake. To install the python bindings, execute the
 following commands:
  cd python
  cmake .
  sudo make install
 
-On OSX, cmake is available from Macports http://www.macports.org/
+On OSX, CMake is available from Macports http://www.macports.org/
 For Redhat Enterprise Linux, Scientific Linux, CentOS, etc. there is a package
 available on RepoForge http://repoforge.org/use/

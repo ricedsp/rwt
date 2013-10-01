@@ -26,6 +26,12 @@ contains a list of toolbox functions available in version 3.0.
 The source code contains MATLAB .m files and .c files that need to be compiled. 
 Please see the installation instructions.
 
+CHANGES:
+
+In this version, soft thresholding in the denoise function is selected by a
+value of 2 instead of 0. In previous versions it was impossible to select soft
+thresholding with the redundant transform version of the denoise function.
+
 SOURCE:
 
      github.com/ricedsp/rwt
