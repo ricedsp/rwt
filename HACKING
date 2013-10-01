@@ -42,7 +42,13 @@ Witness how all of these tests pass. Take care that this is still true after
 any changes you make. Now of course you have an IQ that must be measured using
 2-byte integers and have never once introduced a bug into computer software,
 but these tests are important so that mortals can come along later and know
-whether a change they made broke some function of the software or not. 
+whether a change they made broke some function of the software or not. When 
+making changes its best if you live in the tests directory, compile the code
+into MEX files in the test directory, and do not have a copy of the MEX files
+in the bin directory. Set your path thusly:
+  path('../bin', path)
+This will help you avoid changing directories a lot or accidentally testing
+a version other than the one generated from the latest version of the code.
 
 There are also Python tests at python/test_rwt.py and these are mostly the same
 as the MATLAB tests. If you are feeling adventurous you might look into unifying
