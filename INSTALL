@@ -1,31 +1,28 @@
-In order to install this distribution of Rice Wavelet Tools version 3.0
-released - <Aug 6 2012>
+================================================================================
+=  MATLAB Installation Instructions                                            =
+================================================================================
 
-1. Properly set up your system to create MEX-files. Please refer to the
-   "Matlab Application Program Guide" to properly set up of your matlab
-   and C-compiler to be able to compile C-mex files on your system.
-   All reference documentations are available on the MathWorks web page:
-   www.mathworks.com
+1. Make sure you have the latest source code. See the GitHub page at
+   https://github.com/ricedsp/rwt
+   If you have the command line git tool installed you should be able to run:
+   git clone https://github.com/ricedsp/rwt.git
 
-2. Make a toolbox directory and uncompress/extract all the files.
-   For example, in the unix environment,
+2. Properly set up your system to create MEX-files. Refer to the MATLAB 
+   documentation section "Build MEX-Files" at 
+   http://www.mathworks.com/help/matlab/matlab_external/building-mex-files.html
 
-        gunzip rwt.tar.gz
-        tar xvf rwt.tar
+3. Run MATLAB and change to the "bin" subdirectory containing the .m files
 
-3. Run MATLAB and change to the "bin" subdirectory containing the .m 
-   files. 
-
-4. Compile the toolbox by executing the Matlab command 
-
-        compile
+4. Compile the toolbox by executing the Matlab command: compile
 
 5. Add the toolbox "bin" subdirectory to your Matlab path.
 
-6. High-level tests can be found in the "tests" subdirectory.  Using 
-   them requires recursively adding the "tests" directory and all of
-   its subdirectories to the MATLAB search path.
 
-7. For further instructions, please refer to the README file.
+================================================================================
+=  Octave Installation Instructions                                            =
+================================================================================
 
-
+For octave, you must compile the sources from the octave directory using the
+compile.m script there. Otherwise the installation follows the same procedure
+as the MATLAB instructions above. Add the toolbox "bin" subdirectory to your
+Octave path.

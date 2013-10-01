@@ -22,7 +22,7 @@ lib/src/Makefile
 lib/src/cmake_install.cmake
 lib/src/*.a
 lib/src/*.o
-src/*.o
+*/*.o
 python/_rwt.so
 python/rwt.py
 python/rwt.pyc

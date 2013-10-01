@@ -32,14 +32,9 @@ IF (UNIX)
    doc/latex
    core core.*
    gmon.out
-   bin/*.mexa64
-   bin/*.mexmaci64
-   src/*.mexa64
-   src/*.mexmaci64
-   src/*.o
+   */*.mex*
+   */*.o
    lib/src/*.o
-   tests/*.mexa64
-   tests/*.mexmaci64
    python/rwtPYTHON_wrap.cxx
    python/rwt.py
    python/rwt.pyc

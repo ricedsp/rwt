@@ -6,8 +6,7 @@
 #include "rwt_init.h"
 #include <math.h>
 
-
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 /*!
  * Checks for correct # of input variables based on type of transform.
  *
@@ -138,7 +137,7 @@ int rwt_check_levels(int levels, size_t rows, size_t cols) {
 }
 
 
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 /*!
  * Parse input from MATLAB and do some sanity checking
  *

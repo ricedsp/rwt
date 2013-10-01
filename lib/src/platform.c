@@ -6,7 +6,7 @@
 
 #include "rwt_platform.h"
 
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   void *rwt_malloc(size_t size) {
     return mxMalloc(size);
   }

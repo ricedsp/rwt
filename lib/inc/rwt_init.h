@@ -6,9 +6,9 @@
 
 #include "rwt_platform.h"
 
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   #include "mex.h"
-  #ifndef HAVE_OCTAVE
+  #ifndef OCTAVE_MEX_FILE
     #include "matrix.h"
   #endif
   typedef struct {
@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-#ifdef MATLAB_MEX_FILE
+#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
 #else
   int rwt_find_levels(size_t m, size_t n);
