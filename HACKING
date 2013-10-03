@@ -9,6 +9,9 @@ supercomputers they use to like, do physics,
 and look for oil and stuff?
 
 -Hackers (1995)
+
+================================================================================
+= INTRODUCTION
 ================================================================================
 
 There are a number of ways in which wavelet toolbox might be expanded or
@@ -19,6 +22,10 @@ changes, this document will be your launching point. All of this applies to the
 state of the code as of the 3.0 release - if this sentence hasn't been updated
 but the code has then you may assume that some of the rest of this text may be
 outdated.
+
+================================================================================
+= DEVELOPER DOCUMENTATION
+================================================================================
 
 You will likely want to begin by building the documentation files. You'll need
 CMake and Doxygen. Hopefully you are on Linux, OSX, or some other Unix flavor.
@@ -34,6 +41,10 @@ If you haven't used Doxygen before, here's what you need to know: put a ! after
 the opening /* in a comment to include that comment in the generated docs, look
 at the top of some existing functions to see how function parameters are shown,
 and note that you can use latex formulas.
+
+================================================================================
+= UNIT TESTS
+================================================================================
 
 Before changing anything you should make your way over to the tests directory
 from the MATLAB prompt and run:
@@ -59,6 +70,10 @@ should take the safe route and run both test scripts, and possibly the Octave
 tests as well. Unfortunately Octave lacks a lot of things that would be needed
 to run MATLAB xUnit.
 
+================================================================================
+= TOUR OF THE C CODE
+================================================================================
+
 As of version 3.0, all MATLAB-specific C code has been isolated to a few places.
 The files in the mex/ directory are MATLAB MEX wrappers for the transforms and
 these files are intended to be as short as possible. All the initialization
@@ -75,10 +90,14 @@ To understand the code for the transforms themselves, start with lib/src/dwt.c
 which is the best documented of the transforms. The rest of them are written
 and structured in a very similar fashion.
 
-The HardTh, SoftTh, daubcqf, and denoise functions are implemeted twice - once
-in MATLAB and once in Python. This was simpler than rewriting them in C. If you
-change any of these you will be glad to see that MATLAB and numpy are extremely
-similar.
+================================================================================
+= PYTHON / NUMPY
+================================================================================
+
+The HardTh, SoftTh, daubcqf, denoise, and makesig functions are implemeted twice 
+- once in MATLAB and once in Python. This was simpler than rewriting them in C.
+If you change any of these you will be glad to see that MATLAB and numpy are 
+extremely similar.
 
 Here follows the differences you may need to know. MATLAB indexes start at 1 and
 numpy starts at 0. For three part indexes the order changes - a[b:c:d] in MATLAB
@@ -91,6 +110,10 @@ a separate variable - Python does not.
 A quick look over the SWIG/numpy documentation might lead you to think that you
 could use OUTPUT_ARRAY or INPLACE_FARRAY or some other macro to change how the
 python bindings work to be more reasonable. You are probably wrong. Probably.
+
+================================================================================
+= THE BUILD SYSTEM
+================================================================================
 
 The CMake build system was selected for its license similarity to Wavelet 
 Toolbox itself, though this is not strictly necessary. CMake also allows for
