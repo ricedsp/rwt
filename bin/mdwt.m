@@ -72,3 +72,4 @@ function [y,L] = mdwt(x,h,L);
 %    See also: midwt, mrdwt, mirdwt
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
+error('You must compile wavelet toolbox before use')

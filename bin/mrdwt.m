@@ -65,3 +65,4 @@ function [yl,yh,L] = mrdwt(x,h,L);
 %    Warning! min(size(x))/2^L should be greater than length(h)
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
+error('You must compile wavelet toolbox before use')
