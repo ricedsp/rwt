@@ -133,7 +133,7 @@ The coefficients in output y are arranged as follows
    L = 1
    y,L = dwt(test_image,h,L)
 
-2D Example's  output and explanation:
+2D Example's output and explanation:
 
    The coefficients in y are arranged as follows.
 
@@ -170,6 +170,36 @@ The coefficients in output y are arranged as follows
   return y, L
 
 def idwt(y, h, L = 0):
+  """
+Function computes the inverse discrete wavelet transform x for a 1D or
+2D input signal y using the scaling filter h.
+
+Input:
+   y : finite length 1D or 2D input signal (implicitly periodized)
+       (see function mdwt to find the structure of y)
+   h : scaling filter
+   L : number of levels. In the case of a 1D signal, length(x) must be
+       divisible by 2^L; in the case of a 2D signal, the row and the
+       column dimension must be divisible by 2^L.  If no argument is
+       specified, a full inverse DWT is returned for maximal possible
+       L.
+
+Output:
+   x : periodic reconstructed signal
+   L : number of decomposition levels
+
+1D Example:
+   xin = makesig('LinChirp', 8)
+   h = daubcqf(4, 'min')[0]
+   L = 1
+   y, L = mdwt(xin, h, L)
+   x, L = midwt(y, h, L)
+
+1D Example's output:
+
+   x = array([0.0491,0.1951,0.4276,0.7071,0.9415,0.9808,0.6716,0.0000])
+   L = 1
+  """
   if (y.dtype != 'float'):
     y = y * 1.0
   L = _levels(y, L)
@@ -182,6 +212,41 @@ def idwt(y, h, L = 0):
   return x, L
 
 def rdwt(x, h, L = 0):
+  """
+Function computes the redundant discrete wavelet transform y
+for a 1D  or 2D input signal. (Redundant means here that the
+sub-sampling after each stage is omitted.) yl contains the
+lowpass and yh the highpass components. In the case of a 2D
+signal, the ordering in yh is 
+[lh hl hh lh hl ... ] (first letter refers to row, second to
+column filtering). 
+
+Input:
+   x : finite length 1D or 2D signal (implicitly periodized)
+   h : scaling filter
+   L : number of levels. In the case of a 1D 
+       length(x) must be  divisible by 2^L;
+       in the case of a 2D signal, the row and the
+       column dimension must be divisible by 2^L.
+       If no argument is
+       specified, a full DWT is returned for maximal possible L.
+
+Output:
+   yl : lowpass component
+   yh : highpass components
+   L  : number of levels
+
+Example:
+  x = makesig('Leopold', 8)
+  h = daubcqf(4, 'min')[0]
+  L = 1
+  yl, yh, L = mrdwt(x,h,L)
+
+Example's output:
+  yl =  0.8365  0.4830 0 0 0 0 -0.1294 0.2241
+  yh = -0.2241 -0.1294 0 0 0 0 -0.4830 0.8365
+  L = 1
+  """
   if (x.dtype != 'float'):
     x = x * 1.0
   L = _levels(x, L)
@@ -196,6 +261,40 @@ def rdwt(x, h, L = 0):
   return yl, yh, L
 
 def irdwt(yl, yh, h, L = 0):
+  """
+Function computes the inverse redundant discrete wavelet
+transform x  for a 1D or 2D input signal. (Redundant means here
+that the sub-sampling after each stage of the forward transform
+has been omitted.) yl contains the lowpass and yl the highpass
+components as computed, e.g., by mrdwt. In the case of a 2D
+signal, the ordering in
+yh is [lh hl hh lh hl ... ] (first letter refers to row, second
+to column filtering).  
+
+Input:
+   yl : lowpass component
+   yh : highpass components
+   h  : scaling filter
+   L  : number of levels. In the case of a 1D signal, 
+        length(yl) must  be divisible by 2^L;
+        in the case of a 2D signal, the row and
+        the column dimension must be divisible by 2^L.
+
+Output:
+        x : finite length 1D or 2D signal
+        L : number of levels
+
+Example:
+  xin = makesig('Leopold', 8)
+  h = daubcqf(4, 'min')[0]
+  L = 1
+  yl, yh, L = mrdwt(xin, h, L)
+  x, L = mirdwt(yl, yh, h, L)
+
+Example Output:
+  x = array([0.0000,1.0000,0.0000,-0.0000,0,0,0,-0.0000])
+  L = 1
+  """
   if (yl.dtype != 'float'):
     yl = yl * 1.0
   if (yh.dtype != 'float'):
@@ -210,6 +309,31 @@ def irdwt(yl, yh, h, L = 0):
   return x, L
 
 def daubcqf(n, dtype = 'min'):
+  """
+Function computes the Daubechies' scaling and wavelet filters
+(normalized to sqrt(2)).
+
+Input: 
+   N    : Length of filter (must be even)
+   TYPE : Optional parameter that distinguishes the minimum phase,
+          maximum phase and mid-phase solutions ('min', 'max', or
+          'mid'). If no argument is specified, the minimum phase
+          solution is used.
+
+Output: 
+   h_0 : Minimal phase Daubechies' scaling filter 
+   h_1 : Minimal phase Daubechies' wavelet filter 
+
+Example:
+   N = 4;
+   TYPE = 'min';
+   [h_0,h_1] = daubcqf(N,TYPE)
+   h_0 = 0.4830 0.8365 0.2241 -0.1294
+   h_1 = 0.1294 0.2241 -0.8365 0.4830
+
+Reference: \"Orthonormal Bases of Compactly Supported Wavelets\",
+            CPAM, Oct.89 
+  """
   if (n % 2 != 0):
     raise Exception("No Daubechies filter exists for ODD length")
   k = n / 2
@@ -239,13 +363,86 @@ def daubcqf(n, dtype = 'min'):
   return h_0, h_1
 
 def hard_th(y, thld):
+  """
+HARDTH hard thresholds the input signal y with the threshold value
+thld.
+
+Input:  
+   y    : 1D or 2D signal to be thresholded
+   thld : threshold value
+
+Output: 
+   x : Hard thresholded output (x = (abs(y)>thld) * y)
+
+Example:
+   y = makesig('WernerSorrows', 8)
+   thld = 1
+   x = HardTh(y, thld)
+
+Example Output:
+  x = array([1.5545,5.3175,0,1.6956,-1.2678,0,1.7332,0])
+  """
   return (np.abs(y) > thld) * y
 
 def soft_th(y, thld):
+  """
+Soft thresholds the input signal y with the threshold value thld.
+
+Input:  
+   y    : 1D or 2D signal to be thresholded
+   thld : Threshold value
+
+Output: 
+   x : Soft thresholded output (sign(y) * (x >= thld) * (x - thld))
+
+Example:
+   y = makesig('Doppler', 8)
+   thld = 0.2
+   x = soft_th(y, thld)
+
+Example Output:
+   x = array([0,0,0,-0.0703,0,0.2001,0.0483,0])
+
+Reference: 
+   \"De-noising via Soft-Thresholding\" Tech. Rept. Statistics,
+   Stanford, 1992. D.L. Donoho.
+  """
   x = np.abs(y)
   return np.sign(y) * (x >= thld) * (x - thld)
 
 def makesig(signame, n = 512):
+  """
+Creates artificial test signal identical to the standard test 
+signals proposed and used by D. Donoho and I. Johnstone in
+WaveLab (- a matlab toolbox developed by Donoho et al. the statistics
+department at Stanford University).
+
+Input:  signame - Name of the desired signal
+                    'HeaviSine'
+                    'Bumps'
+                    'Blocks'
+                    'Doppler'
+                    'Ramp'
+                    'Cusp'
+                    'Sing'
+                    'HiSine'
+                    'LoSine'
+                    'LinChirp'
+                    'TwoChirp'
+                    'QuadChirp'
+                    'MishMash'
+                    'WernerSorrows' (Heisenberg)
+                    'Leopold' (Kronecker)
+        n       - Length in samples of the desired signal (Default 512)
+
+Output: x   - resulting test signal
+
+References:
+        WaveLab can be accessed at
+        www_url: http://playfair.stanford.edu/~wavelab/
+        Also see various articles by D.L. Donoho et al. at
+        web_url: http://playfair.stanford.edu/
+  """
   t = np.array(range(1, n + 1)) / float(n)
   if (signame == 'HeaviSine'):
     y = 4 * np.sin(4 * np.pi * t)
@@ -302,6 +499,73 @@ def makesig(signame, n = 512):
     return (t == np.floor(.37 * n)/n) * 1.0
 
 def denoise(x, h, denoise_type = 0, option = None):
+  """
+DENOISE is a generic routine for wavelet based denoising.
+The routine will denoise the signal x using the 2-band wavelet
+system described by the filter h using either the traditional 
+discrete wavelet transform (DWT) or the linear shift invariant 
+discrete wavelet transform (also known as the undecimated DWT
+(UDWT)). 
+
+Input:  
+   x         : 1D or 2D signal to be denoised
+   h         : Scaling filter to be applied
+   type      : Type of transform (Default: type = 0)
+               0 --> Discrete wavelet transform (DWT)
+               1 --> Undecimated DWT (UDWT)
+   option    : Default settings is marked with '*':
+               *type = 0 --> option = [0 3.0 0 0 0 0]
+               type = 1 --> option = [0 3.6 0 1 0 0]
+   option(1) : Whether to threshold low-pass part
+               0 --> Don't threshold low pass component 
+               1 --> Threshold low pass component
+   option(2) : Threshold multiplier, c. The threshold is
+               computed as: 
+                 thld = c*MAD(noise_estimate)). 
+               The default values are:
+                 c = 3.0 for the DWT based denoising
+                 c = 3.6 for the UDWT based denoising
+   option(3) : Type of variance estimator
+               0 --> MAD (mean absolute deviation)
+               1 --> STD (classical numerical std estimate)
+   option(4) : Type of thresholding
+               2 --> Soft thresholding
+               1 --> Hard thresholding
+   option(5) : Number of levels, L, in wavelet decomposition. By
+               setting this to the default value '0' a maximal
+               decomposition is used.
+   option(6) : Actual threshold to use (setting this to
+               anything but 0 will mean that option(3)
+               is ignored)
+
+Output: 
+   xd     : Estimate of noise free signal 
+   xn     : The estimated noise signal (x-xd)
+   option : A vector of actual parameters used by the
+            routine. The vector is configured the same way as
+            the input option vector with one added element
+            option(7) = type.
+
+Example 1: 
+   from numpy.random import randn
+   N = 16
+   h = daubcqf(6)[0]
+   s = makesig('Doppler', N)
+   n = randn(1,N)
+   x = s + n/10 # (approximately 10dB SNR)
+   %Denoise x with the default method based on the DWT
+   xd, xn, opt1 = denoise(x,h)
+   %Denoise x using the undecimated (LSI) wavelet transform
+   yd, yn, opt2 = denoise(x,h,1)
+
+Example 2: (on an image)  
+   from scipy.io import loadmat
+   from numpy.random import random_sample
+   lena = loadmat('../tests/lena512.mat')['lena512']
+   h = daubcqf(6)[0]
+   noisyLena = lena + 25 * random_sample(lena.shape)
+   denoisedLena, xn, opt1 = denoise(noisyLena, h)
+  """
   if (option == None and denoise_type == 0):
     option = [0, 3.0, 0, 2, 0, 0]
   if (option == None and denoise_type == 1):
