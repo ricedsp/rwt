@@ -108,64 +108,64 @@ void idwt_coefficients(int ncoeff, double *h, double **g0, double **g1) {
 /*!
  * Perform the inverse discrete wavelet transform
  *
- * @param x  the output signal with the inverse wavelet transform applied
- * @param m  number of rows in the input
- * @param n  number of columns in the input
- * @param h  wavelet scaling coefficients
- * @param ncoeff length of h / the number of scaling coefficients
- * @param L  the number of levels
- * @param y  the input signal
+ * @param x      the output signal with the inverse wavelet transform applied
+ * @param nrows  number of rows in the input
+ * @param ncols  number of columns in the input
+ * @param h      wavelet scaling coefficients
+ * @param ncoeff the number of scaling coefficients
+ * @param levels the number of levels
+ * @param y      the input signal
  *
  */
-void idwt(double *x, size_t m, size_t n, double *h, int ncoeff, int L, double *y) {
+void idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y) {
   double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
   int current_level, ncoeff_minus_one, ncoeff_halved_minus_one, sample_f;
   size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols;
 
-  idwt_allocate(m, n, ncoeff, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
+  idwt_allocate(nrows, ncols, ncoeff, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
   idwt_coefficients(ncoeff, h, &g0, &g1);
 
-  if (n==1) {
-    n = m;
-    m = 1;
+  if (ncols==1) {
+    ncols = nrows;
+    nrows = 1;
   }
   
   ncoeff_minus_one = ncoeff - 1;
   ncoeff_halved_minus_one = ncoeff/2 - 1;
-  /* 2^L */
+  /* 2^levels */
   sample_f = 1;
-  for (i=1; i<L; i++)
+  for (i=1; i<levels; i++)
     sample_f = sample_f*2;
   
-  if (m>1)
-    current_rows = m/sample_f;
+  if (nrows>1)
+    current_rows = nrows/sample_f;
   else 
     current_rows = 1;
-  current_cols = n/sample_f;
+  current_cols = ncols/sample_f;
 
-  for (i=0; i<(m*n); i++)
+  for (i=0; i<(nrows*ncols); i++)
     x[i] = y[i];
   
   /* main loop */
-  for (current_level=L; current_level >= 1; current_level--) {
+  for (current_level=levels; current_level >= 1; current_level--) {
     row_cursor = current_rows/2;
     column_cursor = current_cols/2;
     
     /* go by columns in case of a 2D signal*/
-    if (m>1) {
+    if (nrows>1) {
       for (idx_cols=0; idx_cols<current_cols; idx_cols++) {         /* loop over columns */
 	/* store in dummy variables */
 	idx_rows = row_cursor;
 	for (i=0; i<row_cursor; i++){    
-	  y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, i,          idx_cols, m, n);  
-	  y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows++, idx_cols, m, n);  
+	  y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, i,          idx_cols, nrows, ncols);  
+	  y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows++, idx_cols, nrows, ncols);  
 	}
 	/* perform filtering lowpass and highpass*/
 	idwt_convolution(xdummy, row_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<current_rows; i++)
-	  mat(x, i, idx_cols, m, n) = xdummy[i];  
+	  mat(x, i, idx_cols, nrows, ncols) = xdummy[i];  
       }
     }
     /* go by rows */
@@ -173,16 +173,16 @@ void idwt(double *x, size_t m, size_t n, double *h, int ncoeff, int L, double *y
       /* store in dummy variable */
       idx_cols = column_cursor;
       for  (i=0; i<column_cursor; i++){    
-	y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, idx_rows, i,          m, n);  
-	y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows, idx_cols++, m, n);  
+	y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, idx_rows, i,          nrows, ncols);  
+	y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows, idx_cols++, nrows, ncols);  
       } 
       /* perform filtering lowpass and highpass*/
       idwt_convolution(xdummy, column_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<current_cols; i++)
-        mat(x, idx_rows, i, m, n) = xdummy[i];  
+        mat(x, idx_rows, i, nrows, ncols) = xdummy[i];  
     }  
-    if (m==1)
+    if (nrows==1)
       current_rows = 1;
     else
       current_rows = current_rows*2;
