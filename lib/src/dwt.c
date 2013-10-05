@@ -31,10 +31,10 @@ void dwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_h
     x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length ncoeff_minus_one */
   }
   ind = 0;
-  for (i=0; i<(lx); i+=2) { /*! Step through the input values, moving right 2 values each loop */
+  for (i=0; i<(lx); i+=2) {   /*! Step through the input values, moving right 2 values each loop */
     x0 = 0;
     x1 = 0;
-    for (j=0; j<=ncoeff_minus_one; j++) { /*! Take the high and low filters in reverse order */
+    for (j=0; j<=ncoeff_minus_one; j++) {                   /*! Take the high and low filters in reverse order */
       x0 = x0 + x_in[i+j] * coeff_low[ncoeff_minus_one-j];  /*! Sum the product of the next ncoeff values of x_in with the filter coefficients */
       x1 = x1 + x_in[i+j] * coeff_high[ncoeff_minus_one-j];
     }
