@@ -177,13 +177,13 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     return params;
   }
 
-  /*! Read the scaling coefficients, h, from the input and find their length, lh. 
+  /*! Read the scaling coefficients, h, from the input and find their length, ncoeff. 
    *  In the case of the redundant transform, the scalings are found one further position to the right, 
    *  and also we check for matching dimensions in the low and high inputs
    */
   if (transform_type == INVERSE_REDUNDANT_DWT) {
     params.scalings = mxGetPr(prhs[2]);
-    params.lh = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
+    params.ncoeff = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
     if (!rwt_check_yl_matches_yh(prhs, params.nrows, params.ncols, params.levels)) {
       rwt_errormsg("Dimensions of first two input matrices not consistent!");
       return params;
@@ -191,7 +191,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   }
   else {
     params.scalings = mxGetPr(prhs[1]);
-    params.lh = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
+    params.ncoeff = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
   /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
   plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);

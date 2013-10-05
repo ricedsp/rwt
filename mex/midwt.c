@@ -38,6 +38,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   x = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[1]) = params.levels;
-  idwt(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, y);
+  idwt(x, params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, y);
 }
 

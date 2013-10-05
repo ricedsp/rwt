@@ -12,23 +12,23 @@
  * @param lx the length of x
  * @param h0 the low pass coefficients
  * @param h1 the high pass coefficients
- * @param lh the number of scaling coefficients
+ * @param ncoeff the number of scaling coefficients
  * @param x_out_low low pass results
  * @param x_out_high high pass results
  * 
  */
-void rdwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh, double *x_out_low, double *x_out_high) {
+void rdwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int ncoeff, double *x_out_low, double *x_out_high) {
   size_t i, j;
   double x0, x1;
 
-  for (i=lx; i < lx+lh-1; i++)
+  for (i=lx; i < lx+ncoeff-1; i++)
     x_in[i] = x_in[i-lx];
   for (i=0; i<lx; i++){
     x0 = 0;
     x1 = 0;
-    for (j=0; j<lh; j++){
-      x0 = x0 + x_in[j+i]*h0[lh-1-j];
-      x1 = x1 + x_in[j+i]*h1[lh-1-j];
+    for (j=0; j<ncoeff; j++){
+      x0 = x0 + x_in[j+i]*h0[ncoeff-1-j];
+      x1 = x1 + x_in[j+i]*h1[ncoeff-1-j];
     }
     x_out_low[i] = x0;
     x_out_high[i] = x1;
@@ -41,7 +41,7 @@ void rdwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh, d
  *
  * @param m the number of rows of the input matrix
  * @param n the number of columns of the input matrix
- * @param lh the number of scaling coefficients
+ * @param ncoeff the number of scaling coefficients
  * @param x_dummy_low
  * @param x_dummy_high
  * @param y_dummy_low_low
@@ -52,16 +52,16 @@ void rdwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh, d
  * @param h1
  *
  */
-void rdwt_allocate(size_t m, size_t n, int lh, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
+void rdwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
   double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **h0, double **h1) {
-  *x_dummy_low       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
-  *x_dummy_high      = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
-  *y_dummy_low_low   = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *y_dummy_low_high  = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *y_dummy_high_low  = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *y_dummy_high_high = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *h0                = (double *) rwt_calloc(lh,            sizeof(double));
-  *h1                = (double *) rwt_calloc(lh,            sizeof(double));
+  *x_dummy_low       = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
+  *x_dummy_high      = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
+  *y_dummy_low_low   = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *y_dummy_low_high  = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *y_dummy_high_low  = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *y_dummy_high_high = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *h0                = (double *) rwt_calloc(ncoeff,            sizeof(double));
+  *h1                = (double *) rwt_calloc(ncoeff,            sizeof(double));
 }
 
 
@@ -94,24 +94,24 @@ void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low
 /*!
  * Put the scaling coeffients into a form ready for use in the convolution function
  *
- * @param lh length of h / the number of scaling coefficients
+ * @param ncoeff length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
  * @param h0 the high pass coefficients - reversed h
  * @param h1 the high pass coefficients - forward h, even values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
- * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
+ * \f$ g\left[ncoeff - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  * This is identical to dwt_coefficients() 
  *
  */
-void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
+void rdwt_coefficients(int ncoeff, double *h, double **h0, double **h1) {
   int i;
-  for (i=0; i<lh; i++) {
-    (*h0)[i] = h[(lh-i)-1];
+  for (i=0; i<ncoeff; i++) {
+    (*h0)[i] = h[(ncoeff-i)-1];
     (*h1)[i] = h[i];
   }
-  for (i=0; i<lh; i+=2)
+  for (i=0; i<ncoeff; i+=2)
     (*h1)[i] = -((*h1)[i]);
 }
 
@@ -123,13 +123,13 @@ void rdwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * @param m  number of rows in the input
  * @param n  number of columns in the input
  * @param h  wavelet scaling coefficients
- * @param lh length of h / the number of scaling coefficients
+ * @param ncoeff length of h / the number of scaling coefficients
  * @param L  the number of levels
  * @param yl
  * @param yh
  *
  */
-void rdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *yl, double *yh) {
+void rdwt(double *x, size_t m, size_t n, double *h, int ncoeff, int L, double *yl, double *yh) {
   double *h0, *h1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low, *x_dummy_high;
   long i;
@@ -137,10 +137,10 @@ void rdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *yl, d
   size_t current_rows, current_cols, idx_rows, idx_cols, n_c, n_cb, n_r, n_rb;
   size_t column_cursor, column_cursor_plus_n, column_cursor_plus_double_n;
 
-  rdwt_allocate(m, n, lh, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
+  rdwt_allocate(m, n, ncoeff, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, 
     &y_dummy_high_low, &y_dummy_high_high, &h0, &h1);
 
-  rdwt_coefficients(lh, h, &h0, &h1);
+  rdwt_coefficients(ncoeff, h, &h0, &h1);
 
   if (n==1) {
     n = m;
@@ -179,7 +179,7 @@ void rdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *yl, d
 	  x_dummy_low[i] = mat(yl, idx_rows, idx_cols, m, n);  
 	}
 	/* perform filtering lowpass/highpass */
-	rdwt_convolution(x_dummy_low, current_cols, h0, h1, lh, y_dummy_low_low, y_dummy_high_high); 
+	rdwt_convolution(x_dummy_low, current_cols, h0, h1, ncoeff, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matridx_colses */
 	idx_cols = -sample_f + n_c;
 	for  (i=0; i<current_cols; i++) {
@@ -203,8 +203,8 @@ void rdwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *yl, d
 	    x_dummy_high[i] = mat(yh, idx_rows, idx_cols + column_cursor, m, three_n_L);
 	  }
 	  /* perform filtering: first LL/LH, then HL/HH */
-	  rdwt_convolution(x_dummy_low,  current_rows, h0, h1, lh, y_dummy_low_low,  y_dummy_low_high);
-	  rdwt_convolution(x_dummy_high, current_rows, h0, h1, lh, y_dummy_high_low, y_dummy_high_high);
+	  rdwt_convolution(x_dummy_low,  current_rows, h0, h1, ncoeff, y_dummy_low_low,  y_dummy_low_high);
+	  rdwt_convolution(x_dummy_high, current_rows, h0, h1, ncoeff, y_dummy_high_low, y_dummy_high_high);
 	  /* restore dummy variables in matrices */
 	  idx_rows = -sample_f + n_r;
 	  for (i=0; i<current_rows; i++) {

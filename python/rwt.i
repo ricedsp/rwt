@@ -30,47 +30,47 @@ wavelet and filter bank design, analysis, and processing."
 
 /* Building on the numpy SWIG macros we make wrapper functions for 1D and 2D for each transform */
 
-void _c_dwt_1(  double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
-void _c_dwt_2(  double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2);
-void _c_idwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1);
-void _c_idwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2);
-void _c_rdwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1);
-void _c_rdwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
-void _c_irdwt_1(double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1);
-void _c_irdwt_2(double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int L, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+void _c_dwt_1(  double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY1, int DIM1);
+void _c_dwt_2(  double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+void _c_idwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY1, int DIM1);
+void _c_idwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+void _c_rdwt_1( double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1);
+void _c_rdwt_2( double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
+void _c_irdwt_1(double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY1, int DIM1,           double* INPLACE_ARRAY1, int DIM1);
+void _c_irdwt_2(double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY1, int DIM1, int levels, double* INPLACE_ARRAY2, int DIM1, int DIM2, double* INPLACE_ARRAY2, int DIM1, int DIM2);
 
 %inline %{
 
-void _c_dwt_1(double *x, int m, double *h, int lh, int L, double *y, int toss1) {
-  dwt(x, m, 1, h, lh, L, y);
+void _c_dwt_1(double *x, int nrows, double *h, int ncoeff, int levels, double *y, int toss1) {
+  dwt(x, nrows, 1, h, ncoeff, levels, y);
 }
 
-void _c_idwt_1(double *x, int m, double *h, int lh, int L, double *y, int toss1) {
-  idwt(x, m, 1, h, lh, L, y);
+void _c_idwt_1(double *x, int nrows, double *h, int ncoeff, int levels, double *y, int toss1) {
+  idwt(x, nrows, 1, h, ncoeff, levels, y);
 }
 
-void _c_rdwt_1(double *x, int m, double *h, int lh, int L, double *yl, int toss1, double *yh, int toss2) {
-  rdwt(x, m, 1, h, lh, L, yl, yh);
+void _c_rdwt_1(double *x, int nrows, double *h, int ncoeff, int levels, double *yl, int toss1, double *yh, int toss2) {
+  rdwt(x, nrows, 1, h, ncoeff, levels, yl, yh);
 }
 
-void _c_irdwt_1(double *x, int m, double *h, int lh, int L, double *yl, int toss1, double *yh, int toss2) {
-  irdwt(x, m, 1, h, lh, L, yl, yh);
+void _c_irdwt_1(double *x, int nrows, double *h, int ncoeff, int levels, double *yl, int toss1, double *yh, int toss2) {
+  irdwt(x, nrows, 1, h, ncoeff, levels, yl, yh);
 }
 
-void _c_dwt_2(double *x, int m, int n, double *h, int lh, int L, double *y, int toss1, int toss2) {
-  dwt(x, m, n, h, lh, L, y);
+void _c_dwt_2(double *x, int nrows, int ncols, double *h, int ncoeff, int levels, double *y, int toss1, int toss2) {
+  dwt(x, nrows, ncols, h, ncoeff, levels, y);
 }
 
-void _c_idwt_2(double *x, int m, int n, double *h, int lh, int L, double *y, int toss1, int toss2) {
-  idwt(x, m, n, h, lh, L, y);
+void _c_idwt_2(double *x, int nrows, int ncols, double *h, int ncoeff, int levels, double *y, int toss1, int toss2) {
+  idwt(x, nrows, ncols, h, ncoeff, levels, y);
 }
 
-void _c_rdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, int toss1, int toss2, double *yh, int toss3, int toss4) {
-  rdwt(x, m, n, h, lh, L, yl, yh);
+void _c_rdwt_2(double *x, int nrows, int ncols, double *h, int ncoeff, int levels, double *yl, int toss1, int toss2, double *yh, int toss3, int toss4) {
+  rdwt(x, nrows, ncols, h, ncoeff, levels, yl, yh);
 }
 
-void _c_irdwt_2(double *x, int m, int n, double *h, int lh, int L, double *yl, int toss1, int toss2, double *yh, int toss3, int toss4) {
-  irdwt(x, m, n, h, lh, L, yl, yh);
+void _c_irdwt_2(double *x, int nrows, int ncols, double *h, int ncoeff, int levels, double *yl, int toss1, int toss2, double *yh, int toss3, int toss4) {
+  irdwt(x, nrows, ncols, h, ncoeff, levels, yl, yh);
 }
 
 %}

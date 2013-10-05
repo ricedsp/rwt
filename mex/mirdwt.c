@@ -9,7 +9,7 @@
 % 1D or  2D input signal. redundant means here that the subsampling after
 % each stage of the forward transform has been omitted. y_low contains the
 % lowpass and y_low the highpass components as computed, e.g., by mrdwt. In
-% case of a 2D signal the ordering in y_high is [lh hl hh lh hl ... ] (first
+% case of a 2D signal the ordering in y_high is [ncoeff hl hh ncoeff hl ... ] (first
 % letter refers to row, second to column filtering).  
 %
 %    Input:
@@ -47,6 +47,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   x = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[1]) = params.levels;
-  irdwt(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
+  irdwt(x, params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, yl, yh);
 }
 

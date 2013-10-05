@@ -12,7 +12,7 @@
  * @param lx the length of x
  * @param h0 the low pass coefficients
  * @param h1 the high pass coefficients
- * @param lh_minus_one one less than the number of scaling coefficients
+ * @param ncoeff_minus_one one less than the number of scaling coefficients
  * @param x_out_low low pass results
  * @param x_out_high high pass results
  * 
@@ -24,19 +24,19 @@
  * Our actual implementation resembles this
  *
  */
-void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_minus_one, double *x_out_low, double *x_out_high) {
+void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int ncoeff_minus_one, double *x_out_low, double *x_out_high) {
   size_t i, j, ind;
   double x0, x1;
-  for (i=lx; i<lx+lh_minus_one; i++) { 
-    x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length lh_minus_one */
+  for (i=lx; i<lx+ncoeff_minus_one; i++) { 
+    x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length ncoeff_minus_one */
   }
   ind = 0;
   for (i=0; i<(lx); i+=2) { /*! Step through the input values, moving right 2 values each loop */
     x0 = 0;
     x1 = 0;
-    for (j=0; j<=lh_minus_one; j++) { /*! Take the high and low filters in reverse order */
-      x0 = x0 + x_in[i+j] * h0[lh_minus_one-j];  /*! Sum the product of the next lh values of x_in with the filter coefficients */
-      x1 = x1 + x_in[i+j] * h1[lh_minus_one-j];
+    for (j=0; j<=ncoeff_minus_one; j++) { /*! Take the high and low filters in reverse order */
+      x0 = x0 + x_in[i+j] * h0[ncoeff_minus_one-j];  /*! Sum the product of the next ncoeff values of x_in with the filter coefficients */
+      x1 = x1 + x_in[i+j] * h1[ncoeff_minus_one-j];
     }
     x_out_low[ind] = x0; /*! Place these calculated sums in the next position of the output */
     x_out_high[ind++] = x1;
@@ -49,7 +49,7 @@ void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_min
  *
  * @param m the number of rows of the input matrix
  * @param n the number of columns of the input matrix
- * @param lh the number of scaling coefficients
+ * @param ncoeff the number of scaling coefficients
  * @param xdummy
  * @param y_dummy_low
  * @param y_dummy_high
@@ -60,12 +60,12 @@ void dwt_convolution(double *x_in, size_t lx, double *h0, double *h1, int lh_min
  * For the output storage area we will need as much space as the input: m*n
  * For the input storage area we will need the same plus one less than the length of the coeffiecients
  */
-void dwt_allocate(size_t m, size_t n, int lh, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
-  *xdummy       = (double *) rwt_calloc(max(m,n)+lh-1, sizeof(double));
-  *y_dummy_low  = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *y_dummy_high = (double *) rwt_calloc(max(m,n),      sizeof(double));
-  *h0           = (double *) rwt_calloc(lh,            sizeof(double));
-  *h1           = (double *) rwt_calloc(lh,            sizeof(double));
+void dwt_allocate(size_t m, size_t n, int ncoeff, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **h0, double **h1) {
+  *xdummy       = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
+  *y_dummy_low  = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *y_dummy_high = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *h0           = (double *) rwt_calloc(ncoeff,            sizeof(double));
+  *h1           = (double *) rwt_calloc(ncoeff,            sizeof(double));
 }
 
 
@@ -91,22 +91,22 @@ void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, doub
 /*!
  * Put the scaling coeffients into a form ready for use in the convolution function
  *
- * @param lh length of h / the number of scaling coefficients
+ * @param ncoeff length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
  * @param h0 the low pass coefficients - reversed h
  * @param h1 the high pass coefficients - forward h, even values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
- * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
+ * \f$ g\left[ncoeff - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  */
-void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
+void dwt_coefficients(int ncoeff, double *h, double **h0, double **h1) {
   int i;
-  for (i=0; i<lh; i++) {
-    (*h0)[i] = h[(lh-i)-1];
+  for (i=0; i<ncoeff; i++) {
+    (*h0)[i] = h[(ncoeff-i)-1];
     (*h1)[i] = h[i];
   }
-  for (i=0; i<lh; i+=2)
+  for (i=0; i<ncoeff; i+=2)
     (*h1)[i] = -((*h1)[i]);
 }
 
@@ -118,7 +118,7 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * @param m  number of rows in the input
  * @param n  number of columns in the input
  * @param h  wavelet scaling coefficients
- * @param lh length of h / the number of scaling coefficients
+ * @param ncoeff length of h / the number of scaling coefficients
  * @param L  the number of levels
  * @param y  the output signal with the wavelet transform applied
  *
@@ -128,10 +128,10 @@ void dwt_coefficients(int lh, double *h, double **h0, double **h1) {
  * perform the transform up to a certain number of levels.
  *
  */
-void dwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
+void dwt(double *x, size_t m, size_t n, double *h, int ncoeff, int L, double *y) {
   double  *h0, *h1, *y_dummy_low, *y_dummy_high, *xdummy;
   long i;
-  int current_level, lh_minus_one;
+  int current_level, ncoeff_minus_one;
   size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
 
   if (n==1) { /*! Accept either column vectors or row vectors. Store the length in the variable n */
@@ -139,9 +139,9 @@ void dwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
     m = 1;
   }
   
-  dwt_allocate(m, n, lh, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
-  dwt_coefficients(lh, h, &h0, &h1); /*! For performance, calculate what we can outside the loops */
-  lh_minus_one = lh - 1;
+  dwt_allocate(m, n, ncoeff, &xdummy, &y_dummy_low, &y_dummy_high, &h0, &h1);
+  dwt_coefficients(ncoeff, h, &h0, &h1); /*! For performance, calculate what we can outside the loops */
+  ncoeff_minus_one = ncoeff - 1;
   current_rows = 2*m; /*! current_rows and current_cols start at 2x since we divide by 2 at the start of the loop */
   current_cols = 2*n;
  
@@ -162,7 +162,7 @@ void dwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
 	else 
 	  xdummy[i] = mat(y, idx_rows, i, m, n);  
       /*! Perform filtering lowpass and highpass*/
-      dwt_convolution(xdummy, current_cols, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+      dwt_convolution(xdummy, current_cols, h0, h1, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
       /*! Restore dummy variables in matrices */
       idx_columns = column_cursor;
       for (i=0; i<column_cursor; i++) {    
@@ -178,7 +178,7 @@ void dwt(double *x, size_t m, size_t n, double *h, int lh, int L, double *y) {
 	for (i=0; i<current_rows; i++)
 	  xdummy[i] = mat(y, i, idx_columns, m, n);  
 	/*! Perform filtering lowpass and highpass*/
-	dwt_convolution(xdummy, current_rows, h0, h1, lh_minus_one, y_dummy_low, y_dummy_high); 
+	dwt_convolution(xdummy, current_rows, h0, h1, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
 	/*! Restore dummy variables in matrix */
 	idx_rows = row_cursor;
 	for (i=0; i<row_cursor; i++) {

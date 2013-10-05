@@ -8,7 +8,7 @@
 % function computes the redundant discrete wavelet transform y for a 1D or
 % 2D input signal . redundant means here that the subsampling after each
 % stage is omitted. yl contains the lowpass and yl the highpass
-% components. In case of a 2D signal the ordering in yh is [lh hl hh lh hl
+% components. In case of a 2D signal the ordering in yh is [ncoeff hl hh ncoeff hl
 % ... ] (first letter refers to row, second to column filtering). 
 %
 %    Input:
@@ -50,6 +50,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   yh = mxGetPr(plhs[1]);
   plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[2]) = params.levels;
-  rdwt(x, params.nrows, params.ncols, params.scalings, params.lh, params.levels, yl, yh);
+  rdwt(x, params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, yl, yh);
 }
 
