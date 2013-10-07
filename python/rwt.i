@@ -314,22 +314,24 @@ Function computes the Daubechies' scaling and wavelet filters
 (normalized to sqrt(2)).
 
 Input: 
-   N    : Length of filter (must be even)
-   TYPE : Optional parameter that distinguishes the minimum phase,
-          maximum phase and mid-phase solutions ('min', 'max', or
-          'mid'). If no argument is specified, the minimum phase
-          solution is used.
+   n     : Length of filter (must be even)
+   dtype : Optional parameter that distinguishes the minimum phase,
+           maximum phase and mid-phase solutions ('min', 'max', or
+           'mid'). If no argument is specified, the minimum phase
+           solution is used.
 
 Output: 
    h_0 : Minimal phase Daubechies' scaling filter 
    h_1 : Minimal phase Daubechies' wavelet filter 
 
 Example:
-   N = 4;
-   TYPE = 'min';
-   [h_0,h_1] = daubcqf(N,TYPE)
-   h_0 = 0.4830 0.8365 0.2241 -0.1294
-   h_1 = 0.1294 0.2241 -0.8365 0.4830
+   n = 4
+   dtype = 'min'
+   h_0, h_1 = daubcqf(n, dtype)
+
+Example Result:
+   h_0 = array([0.4830, 0.8365, 0.2241, -0.1294])
+   h_1 = array([0.1294, 0.2241, -0.8365, 0.4830])
 
 Reference: \"Orthonormal Bases of Compactly Supported Wavelets\",
             CPAM, Oct.89 
@@ -380,7 +382,7 @@ Example:
    x = HardTh(y, thld)
 
 Example Output:
-  x = array([1.5545,5.3175,0,1.6956,-1.2678,0,1.7332,0])
+  x = array([1.5545, 5.3175, 0, 1.6956, -1.2678, 0, 1.7332, 0])
   """
   return (np.abs(y) > thld) * y
 
@@ -401,7 +403,7 @@ Example:
    x = soft_th(y, thld)
 
 Example Output:
-   x = array([0,0,0,-0.0703,0,0.2001,0.0483,0])
+   x = array([0, 0, 0, -0.0703, 0, 0.2001, 0.0483, 0])
 
 Reference: 
    \"De-noising via Soft-Thresholding\" Tech. Rept. Statistics,
@@ -508,43 +510,43 @@ discrete wavelet transform (also known as the undecimated DWT
 (UDWT)). 
 
 Input:  
-   x         : 1D or 2D signal to be denoised
-   h         : Scaling filter to be applied
-   type      : Type of transform (Default: type = 0)
-               0 --> Discrete wavelet transform (DWT)
-               1 --> Undecimated DWT (UDWT)
-   option    : Default settings is marked with '*':
-               *type = 0 --> option = [0 3.0 0 0 0 0]
-               type = 1 --> option = [0 3.6 0 1 0 0]
-   option(1) : Whether to threshold low-pass part
-               0 --> Don't threshold low pass component 
-               1 --> Threshold low pass component
-   option(2) : Threshold multiplier, c. The threshold is
-               computed as: 
-                 thld = c*MAD(noise_estimate)). 
-               The default values are:
-                 c = 3.0 for the DWT based denoising
-                 c = 3.6 for the UDWT based denoising
-   option(3) : Type of variance estimator
-               0 --> MAD (mean absolute deviation)
-               1 --> STD (classical numerical std estimate)
-   option(4) : Type of thresholding
-               2 --> Soft thresholding
-               1 --> Hard thresholding
-   option(5) : Number of levels, L, in wavelet decomposition. By
-               setting this to the default value '0' a maximal
-               decomposition is used.
-   option(6) : Actual threshold to use (setting this to
-               anything but 0 will mean that option(3)
-               is ignored)
+   x            : 1D or 2D signal to be denoised
+   h            : Scaling filter to be applied
+   denoise_type : Type of transform (Default: type = 0)
+                  0 --> Discrete wavelet transform (DWT)
+                  1 --> Undecimated DWT (UDWT)
+   option       : Default settings is marked with '*':
+                  *type = 0 --> option = [0 3.0 0 0 0 0]
+                  type = 1 --> option = [0 3.6 0 1 0 0]
+   option(1)    : Whether to threshold low-pass part
+                  0 --> Don't threshold low pass component 
+                  1 --> Threshold low pass component
+   option(2)    : Threshold multiplier, c. The threshold is
+                  computed as: 
+                    thld = c*MAD(noise_estimate)). 
+                  The default values are:
+                    c = 3.0 for the DWT based denoising
+                    c = 3.6 for the UDWT based denoising
+   option(3)    : Type of variance estimator
+                  0 --> MAD (mean absolute deviation)
+                  1 --> STD (classical numerical std estimate)
+   option(4)    : Type of thresholding
+                  2 --> Soft thresholding
+                  1 --> Hard thresholding
+   option(5)    : Number of levels, L, in wavelet decomposition. By
+                  setting this to the default value '0' a maximal
+                  decomposition is used.
+   option(6)    : Actual threshold to use (setting this to
+                  anything but 0 will mean that option(3)
+                  is ignored)
 
 Output: 
-   xd     : Estimate of noise free signal 
-   xn     : The estimated noise signal (x-xd)
-   option : A vector of actual parameters used by the
-            routine. The vector is configured the same way as
-            the input option vector with one added element
-            option(7) = type.
+   xd           : Estimate of noise free signal 
+   xn           : The estimated noise signal (x-xd)
+   option       : A vector of actual parameters used by the
+                  routine. The vector is configured the same way as
+                  the input option vector with one added element
+                  option(7) = type.
 
 Example 1: 
    from numpy.random import randn
