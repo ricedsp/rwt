@@ -97,7 +97,7 @@ void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, doub
  * @param coeff_high the high pass coefficients - forward h, even values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
- * \f$ g\left[ncoeff - 1 - n \right] = (-1)^n * h\left[n\right] \f$
+ * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  */
 void dwt_coefficients(int ncoeff, double *h, double **coeff_low, double **coeff_high) {

@@ -100,7 +100,7 @@ void rdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low
  * @param coeff_high the high pass coefficients - forward h, even values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
- * \f$ g\left[ncoeff - 1 - n \right] = (-1)^n * h\left[n\right] \f$
+ * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  * This is identical to dwt_coefficients() 
  *

@@ -80,15 +80,15 @@ void _c_irdwt_2(double *x, int nrows, int ncols, double *h, int ncoeff, int leve
 import numpy as np
 
 def _levels(x, L):
-  dim = len(x.shape)
+  dim = len(x.shape) # Determine the dimensions of our input
   m = x.shape[0]
   if (dim == 2):
     n = x.shape[1]
   else:
     n = 1
-  if (L == 0):
+  if (L == 0): # If the number of levels was not specified then use the max
     L = _find_levels(m, n)
-  _check_levels(L, m, n)
+  _check_levels(L, m, n) # Sanity check the number of levels
   return L
 
 def dwt(x, h, L = 0):

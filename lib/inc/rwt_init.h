@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-  rwt_init_params rwt_matlab_init(int nlhs, mxArray *pncoeffs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
+  rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t dwtType);
 #else
   int rwt_find_levels(size_t m, size_t n);
   int rwt_check_levels(int levels, size_t rows, size_t cols);

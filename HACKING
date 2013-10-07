@@ -28,10 +28,10 @@ outdated.
 ================================================================================
 
 You will likely want to begin by building the documentation files. You'll need
-CMake and Doxygen. Hopefully you are on Linux, OSX, or some other Unix flavor.
-If you are using Windows as your primary development platform, take this time
-to stop and think about your life and where it's going. Ok, so to build the
-documentation run:
+CMake, Doxygen, and GraphViz. Hopefully you are on Linux, OSX, or some other 
+Unix flavor. If you are using Windows as your primary development platform, take 
+this time to stop and think about your life and where it's going. Ok, so to 
+build the documentation run:
   cmake .
   make doc
 After this you should see HTML documentation in doc/html and a pdf with the
@@ -89,6 +89,22 @@ very useful if you need to change any of the code that uses the mat() macro.
 To understand the code for the transforms themselves, start with lib/src/dwt.c
 which is the best documented of the transforms. The rest of them are written
 and structured in a very similar fashion.
+
+The flow of the code is as follows. One of the transforms is called from MATLAB.
+This invokes one of the wrappers from the mex directory. The function here calls
+rwt_matlab_init in lib/src/init.c which calls other init functions. From here 
+the mex wrapper calls the transform in lib/src. For example, the mdwt function
+for the discrete wavlet transform calls dwt() in the lib/src/dwt.c file. This
+function has a few helpers in the same file. It allocates memory necessary for
+the transform in dwt_allocate(), calculates the high and low pass coefficients
+in dwt_coefficients(), performs the convolution in dwt_convolution, and frees
+the allocated memory in the dwt_free() function.
+
+In the case of Python, a python wrapper function in python/rwt.i calls some of
+the same initialization code in lib/src/init.c then decides if the input is 1D
+or 2D and calls a matching C wrapper function, also found in the python/rwt.i
+file. Finally, this wrapper function calls the transform function found in the
+lib/src directory.
 
 ================================================================================
 = PYTHON / NUMPY
