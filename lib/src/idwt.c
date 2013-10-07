@@ -50,15 +50,15 @@ void idwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int ncoe
  * @param m the number of rows of the input matrix
  * @param n the number of columns of the input matrix
  * @param ncoeff the number of scaling coefficients
- * @param xdummy
+ * @param x_dummy
  * @param y_dummy_low
  * @param y_dummy_high
  * @param g0
  * @param g1
  *
  */
-void idwt_allocate(size_t m, size_t n, int ncoeff, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
-  *xdummy       = (double *) rwt_calloc(max(m,n),            sizeof(double));
+void idwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
+  *x_dummy      = (double *) rwt_calloc(max(m,n),            sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n)+ncoeff/2-1, sizeof(double));
   *y_dummy_high = (double *) rwt_calloc(max(m,n)+ncoeff/2-1, sizeof(double));
   *g0           = (double *) rwt_calloc(ncoeff,              sizeof(double));
@@ -69,15 +69,15 @@ void idwt_allocate(size_t m, size_t n, int ncoeff, double **xdummy, double **y_d
 /*!
  * Free memory we allocated for idwt
  *
- * @param xdummy
+ * @param x_dummy
  * @param y_dummy_low
  * @param y_dummy_high
  * @param g0
  * @param g1
  *
  */
-void idwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
-  rwt_free(*xdummy);
+void idwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **g0, double **g1) {
+  rwt_free(*x_dummy);
   rwt_free(*y_dummy_low);
   rwt_free(*y_dummy_high);
   rwt_free(*g0);
@@ -118,12 +118,12 @@ void idwt_coefficients(int ncoeff, double *h, double **g0, double **g1) {
  *
  */
 void idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y) {
-  double  *g0, *g1, *y_dummy_low, *y_dummy_high, *xdummy;
+  double  *g0, *g1, *y_dummy_low, *y_dummy_high, *x_dummy;
   long i;
   int current_level, ncoeff_minus_one, ncoeff_halved_minus_one, sample_f;
   size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols;
 
-  idwt_allocate(nrows, ncols, ncoeff, &xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
+  idwt_allocate(nrows, ncols, ncoeff, &x_dummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
   idwt_coefficients(ncoeff, h, &g0, &g1);
 
   if (ncols==1) {
@@ -162,10 +162,10 @@ void idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int leve
 	  y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows++, idx_cols, nrows, ncols);  
 	}
 	/* perform filtering lowpass and highpass*/
-	idwt_convolution(xdummy, row_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
+	idwt_convolution(x_dummy, row_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
 	/* restore dummy variables in matrix */
 	for (i=0; i<current_rows; i++)
-	  mat(x, i, idx_cols, nrows, ncols) = xdummy[i];  
+	  mat(x, i, idx_cols, nrows, ncols) = x_dummy[i];  
       }
     }
     /* go by rows */
@@ -177,10 +177,10 @@ void idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int leve
 	y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows, idx_cols++, nrows, ncols);  
       } 
       /* perform filtering lowpass and highpass*/
-      idwt_convolution(xdummy, column_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
+      idwt_convolution(x_dummy, column_cursor, g0, g1, ncoeff_minus_one, ncoeff_halved_minus_one, y_dummy_low, y_dummy_high); 
       /* restore dummy variables in matrices */
       for (i=0; i<current_cols; i++)
-        mat(x, idx_rows, i, nrows, ncols) = xdummy[i];  
+        mat(x, idx_rows, i, nrows, ncols) = x_dummy[i];  
     }  
     if (nrows==1)
       current_rows = 1;
@@ -188,6 +188,6 @@ void idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int leve
       current_rows = current_rows*2;
     current_cols = current_cols*2;
   }
-  idwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
+  idwt_free(&x_dummy, &y_dummy_low, &y_dummy_high, &g0, &g1);
 }
 

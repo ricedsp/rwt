@@ -9,7 +9,7 @@
  * Perform convolution for dwt
  *
  * @param x_in input signal values
- * @param lx the length of x
+ * @param lx the length of x_in
  * @param coeff_low the low pass coefficients
  * @param coeff_high the high pass coefficients
  * @param ncoeff_minus_one one less than the number of scaling coefficients
@@ -47,21 +47,21 @@ void dwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_h
 /*!
  * Allocate memory for dwt
  *
- * @param m the number of rows of the input matrix
- * @param n the number of columns of the input matrix
+ * @param m      the number of rows of the input matrix
+ * @param n      the number of columns of the input matrix
  * @param ncoeff the number of scaling coefficients
- * @param xdummy
- * @param y_dummy_low
- * @param y_dummy_high
- * @param coeff_low
- * @param coeff_high
+ * @param x_dummy      storage space for input data being passed to the convolution
+ * @param y_dummy_low  storage space for low pass convolution results
+ * @param y_dummy_high storage space for high pass convolution results
+ * @param coeff_low    storage space for the low pass coefficients
+ * @param coeff_high   storage space for the high pass coefficients
  *
  * The low pass and high pass filter coefficients are the same size as the scaling coefficients
  * For the output storage area we will need as much space as the input: m*n
  * For the input storage area we will need the same plus one less than the length of the coeffiecients
  */
-void dwt_allocate(size_t m, size_t n, int ncoeff, double **xdummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
-  *xdummy       = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
+void dwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
+  *x_dummy      = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
   *y_dummy_low  = (double *) rwt_calloc(max(m,n),          sizeof(double));
   *y_dummy_high = (double *) rwt_calloc(max(m,n),          sizeof(double));
   *coeff_low    = (double *) rwt_calloc(ncoeff,            sizeof(double));
@@ -72,15 +72,15 @@ void dwt_allocate(size_t m, size_t n, int ncoeff, double **xdummy, double **y_du
 /*!
  * Free memory that we allocated for dwt
  *
- * @param xdummy
- * @param y_dummy_low
- * @param y_dummy_high
- * @param coeff_low
- * @param coeff_high
+ * @param x_dummy      storage space for input data being passed to the convolution
+ * @param y_dummy_low  storage space for low pass convolution results
+ * @param y_dummy_high storage space for high pass convolution results
+ * @param coeff_low    storage space for the low pass coefficients
+ * @param coeff_high   storage space for the high pass coefficients
  *
  */
-void dwt_free(double **xdummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
-  rwt_free(*xdummy);
+void dwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
+  rwt_free(*x_dummy);
   rwt_free(*y_dummy_low);
   rwt_free(*y_dummy_high);
   rwt_free(*coeff_low);
@@ -128,7 +128,7 @@ void dwt_coefficients(int ncoeff, double *h, double **coeff_low, double **coeff_
  *
  */
 void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y) {
-  double  *coeff_low, *coeff_high, *y_dummy_low, *y_dummy_high, *xdummy;
+  double  *coeff_low, *coeff_high, *y_dummy_low, *y_dummy_high, *x_dummy;
   long i;
   int current_level, ncoeff_minus_one;
   size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
@@ -138,7 +138,7 @@ void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int level
     nrows = 1;
   }
   
-  dwt_allocate(nrows, ncols, ncoeff, &xdummy, &y_dummy_low, &y_dummy_high, &coeff_low, &coeff_high);
+  dwt_allocate(nrows, ncols, ncoeff, &x_dummy, &y_dummy_low, &y_dummy_high, &coeff_low, &coeff_high);
   dwt_coefficients(ncoeff, h, &coeff_low, &coeff_high); /*! For performance, calculate what we can outside the loops */
   ncoeff_minus_one = ncoeff - 1;
   current_rows = 2*nrows; /*! current_rows and current_cols start at 2x since we divide by 2 at the start of the loop */
@@ -157,11 +157,11 @@ void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int level
     for (idx_rows=0; idx_rows<current_rows; idx_rows++) {
       for (i=0; i<current_cols; i++)
 	if (current_level==1)  
-	  xdummy[i] = mat(x, idx_rows, i, nrows, ncols);  
+	  x_dummy[i] = mat(x, idx_rows, i, nrows, ncols);  
 	else 
-	  xdummy[i] = mat(y, idx_rows, i, nrows, ncols);  
+	  x_dummy[i] = mat(y, idx_rows, i, nrows, ncols);  
       /*! Perform filtering lowpass and highpass*/
-      dwt_convolution(xdummy, current_cols, coeff_low, coeff_high, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
+      dwt_convolution(x_dummy, current_cols, coeff_low, coeff_high, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
       /*! Restore dummy variables in matrices */
       idx_columns = column_cursor;
       for (i=0; i<column_cursor; i++) {    
@@ -175,9 +175,9 @@ void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int level
       for (idx_columns=0; idx_columns<current_cols; idx_columns++) { /* loop over columns */
 	/*! Store in dummy variables */
 	for (i=0; i<current_rows; i++)
-	  xdummy[i] = mat(y, i, idx_columns, nrows, ncols);  
+	  x_dummy[i] = mat(y, i, idx_columns, nrows, ncols);  
 	/*! Perform filtering lowpass and highpass*/
-	dwt_convolution(xdummy, current_rows, coeff_low, coeff_high, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
+	dwt_convolution(x_dummy, current_rows, coeff_low, coeff_high, ncoeff_minus_one, y_dummy_low, y_dummy_high); 
 	/*! Restore dummy variables in matrix */
 	idx_rows = row_cursor;
 	for (i=0; i<row_cursor; i++) {
@@ -187,6 +187,6 @@ void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int level
       }
     }
   }
-  dwt_free(&xdummy, &y_dummy_low, &y_dummy_high, &coeff_low, &coeff_high);
+  dwt_free(&x_dummy, &y_dummy_low, &y_dummy_high, &coeff_low, &coeff_high);
 }
 
