@@ -1,4 +1,4 @@
-function [y,L] = midwt(x,h,L);
+function [y,L] = midwt(x,h,L)
 %    [x,L] = midwt(y,h,L);
 % 
 %    Function computes the inverse discrete wavelet transform x for a 1D or
@@ -33,4 +33,12 @@ function [y,L] = midwt(x,h,L);
 %    See also: mdwt, mrdwt, mirdwt
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
-error('You must compile wavelet toolbox before use')
+if exist('OCTAVE_VERSION', 'builtin')
+  if (exist('L'))
+    [y,L] = omidwt(x,h,L);
+  else  
+    [y,L] = omidwt(x,h);
+  end
+else
+  error('You must compile wavelet toolbox before use')
+end

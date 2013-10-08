@@ -1,4 +1,4 @@
-function [yl,yh,L] = mrdwt(x,h,L);
+function [yl,yh,L] = mrdwt(x,h,L)
 %    [yl,yh,L] = mrdwt(x,h,L);
 % 
 %    Function computes the redundant discrete wavelet transform y
@@ -65,4 +65,13 @@ function [yl,yh,L] = mrdwt(x,h,L);
 %    Warning! min(size(x))/2^L should be greater than length(h)
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
-error('You must compile wavelet toolbox before use')
+if exist('OCTAVE_VERSION', 'builtin')
+  x = x * 1.0;
+  if (exist('L'))
+    [yl,yh,L] = omrdwt(x,h,L);
+  else  
+    [yl,yh,L] = omrdwt(x,h);
+  end
+else
+  error('You must compile wavelet toolbox before use')
+end

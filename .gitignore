@@ -1,7 +1,6 @@
 .*.swp
 */.*.swp
-*.mexa64
-*.mexmaci64
+*.mex*
 *.c~
 *.h~
 *.m~
@@ -27,4 +26,3 @@ python/_rwt.so
 python/rwt.py
 python/rwt.pyc
 python/rwtPYTHON_wrap.cxx
-octave/*.mex

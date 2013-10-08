@@ -1,1 +1,0 @@
-Octave support is currently limited to dwt and idwt. The redundant transform and its inverse do not work properly. MATLAB xUnit does not work in Octave.

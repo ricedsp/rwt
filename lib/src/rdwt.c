@@ -23,10 +23,10 @@ void rdwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_
 
   for (i=lx; i < lx+ncoeff-1; i++)
     x_in[i] = x_in[i-lx];
-  for (i=0; i<lx; i++){
+  for (i=0; i<lx; i++) {
     x0 = 0;
     x1 = 0;
-    for (j=0; j<ncoeff; j++){
+    for (j=0; j<ncoeff; j++) {
       x0 = x0 + x_in[j+i]*coeff_low[ncoeff-1-j];
       x1 = x1 + x_in[j+i]*coeff_high[ncoeff-1-j];
     }

@@ -1,4 +1,4 @@
-function [x,L] = mirdwt(yl,yh,h,L);
+function [x,L] = mirdwt(yl,yh,h,L)
 %    function [x,L] = mirdwt(yl,yh,h,L);
 % 
 %    Function computes the inverse redundant discrete wavelet
@@ -68,4 +68,14 @@ function [x,L] = mirdwt(yl,yh,h,L);
 %    Warning! min(size(yl))/2^L should be greater than length(h)
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
-error('You must compile wavelet toolbox before use')
+if exist('OCTAVE_VERSION', 'builtin')
+  yl = yl * 1.0;
+  yh = yh * 1.0;
+  if (exist('L'))
+    [x,L] = omirdwt(yl,yh,h,L);
+  else  
+    [x,L] = omirdwt(yl,yh,h);
+  end
+else
+  error('You must compile wavelet toolbox before use')
+end

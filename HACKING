@@ -15,13 +15,12 @@ and look for oil and stuff?
 ================================================================================
 
 There are a number of ways in which wavelet toolbox might be expanded or
-improved. Arbitrary dimension handling could be implemented, or easier
-than that, 3d. Non-orthogonal wavelets. RDWT support in Octave, and porting to
-additional languages. If you are seeking to implement these or any other
-changes, this document will be your launching point. All of this applies to the
-state of the code as of the 3.0 release - if this sentence hasn't been updated
-but the code has then you may assume that some of the rest of this text may be
-outdated.
+improved. Arbitrary dimension handling or just 3d, non-orthogonal wavelets,
+support for other environments, and so on. If you are seeking to implement these
+or any other changes, this document will be your launching point. All of this 
+applies to the state of the code as of the 3.0 release - if this sentence 
+hasn't been updated but the code has then you may assume that some of the rest 
+of this text may be outdated.
 
 ================================================================================
 = DEVELOPER DOCUMENTATION

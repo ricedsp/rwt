@@ -12,7 +12,7 @@ function test_midwt_1D
 assertVectorsAlmostEqual(x, x_new,'relative',0.0001);
 
 function test_midwt_2D
-       load ../tests/lena512; 
+       load ../lena512; 
        x = lena512;
        h = daubcqf(6);
        [y,L] = mdwt(x,h);

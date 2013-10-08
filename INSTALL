@@ -22,11 +22,9 @@
 =  Octave Installation Instructions                                            =
 ================================================================================
 
-For octave, you must compile the sources from the octave directory using the
-compile.m script there. Otherwise the installation follows the same procedure
-as the MATLAB instructions above. Add the toolbox "bin" subdirectory to your
-Octave path.
-
+Octave installation is similar to the procedure for MATLAB above. On Linux you
+will need the octave-dev (Debian/Ubuntu) or octave-devel (RedHat, etc.) package
+installed.
 
 ================================================================================
 =  Python Installation Instructions                                           =

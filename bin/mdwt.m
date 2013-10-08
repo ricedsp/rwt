@@ -1,4 +1,4 @@
-function [y,L] = mdwt(x,h,L);
+function [y,L] = mdwt(x,h,L)
 %    [y,L] = mdwt(x,h,L);
 %
 %    Function computes the discrete wavelet transform y for a 1D or 2D input
@@ -72,4 +72,13 @@ function [y,L] = mdwt(x,h,L);
 %    See also: midwt, mrdwt, mirdwt
 %
 %Author: Markus Lang  <lang@jazz.rice.edu>
-error('You must compile wavelet toolbox before use')
+if exist('OCTAVE_VERSION', 'builtin')
+  x = x * 1.0;
+  if (exist('L'))
+    [y,L] = omdwt(x,h,L);
+  else  
+    [y,L] = omdwt(x,h);
+  end
+else
+  error('You must compile wavelet toolbox before use')
+end
