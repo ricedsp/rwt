@@ -5,7 +5,7 @@
 
 #include "rwt_platform.h"
 
-void irdwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int ncoeff, double *x_in_low, double *x_in_high) {
+void irdwt_convolution(double *x_out, size_t lx, double *coeff_low, double *coeff_high, int ncoeff, double *x_in_low, double *x_in_high) {
   int k;
   size_t i, j;
   double x0;
@@ -17,7 +17,7 @@ void irdwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int nco
   for (i=0; i<lx; i++){
     x0 = 0;
     for (j=0; j<ncoeff; j++)
-      x0 = x0 + (x_in_low[j+i] * g0[ncoeff-1-j]) + (x_in_high[j+i] * g1[ncoeff-1-j]);
+      x0 = x0 + (x_in_low[j+i] * coeff_low[ncoeff-1-j]) + (x_in_high[j+i] * coeff_high[ncoeff-1-j]);
 	
     x_out[i] = x0;
   }
@@ -25,7 +25,7 @@ void irdwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int nco
 
 
 void irdwt_allocate(size_t m, size_t n, int ncoeff, double **x_high, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
-  double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **g0, double **g1) {
+  double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **coeff_low, double **coeff_high) {
   *x_high            = (double *) rwt_calloc(m*n,               sizeof(double));
   *x_dummy_low       = (double *) rwt_calloc(max(m,n),          sizeof(double));
   *x_dummy_high      = (double *) rwt_calloc(max(m,n),          sizeof(double));
@@ -33,37 +33,37 @@ void irdwt_allocate(size_t m, size_t n, int ncoeff, double **x_high, double **x_
   *y_dummy_low_high  = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
   *y_dummy_high_low  = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
   *y_dummy_high_high = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
-  *g0                = (double *) rwt_calloc(ncoeff,            sizeof(double));
-  *g1                = (double *) rwt_calloc(ncoeff,            sizeof(double));
+  *coeff_low         = (double *) rwt_calloc(ncoeff,            sizeof(double));
+  *coeff_high        = (double *) rwt_calloc(ncoeff,            sizeof(double));
 }
 
 
 void irdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
-  double **y_dummy_high_low, double **y_dummy_high_high, double **g0, double **g1) {
+  double **y_dummy_high_low, double **y_dummy_high_high, double **coeff_low, double **coeff_high) {
   rwt_free(*x_dummy_low);
   rwt_free(*x_dummy_high);
   rwt_free(*y_dummy_low_low);
   rwt_free(*y_dummy_low_high);
   rwt_free(*y_dummy_high_low);
   rwt_free(*y_dummy_high_high);
-  rwt_free(*g0);
-  rwt_free(*g1);
+  rwt_free(*coeff_low);
+  rwt_free(*coeff_high);
 }
 
 /* not the same as idwt_coefficients */
-void irdwt_coefficients(int ncoeff, double *h, double **g0, double **g1) {
+void irdwt_coefficients(int ncoeff, double *h, double **coeff_low, double **coeff_high) {
   int i;
   for (i=0; i<ncoeff; i++) {
-    (*g0)[i] = h[i]/2;
-    (*g1)[i] = h[ncoeff-i-1]/2;
+    (*coeff_low)[i] = h[i]/2;
+    (*coeff_high)[i] = h[ncoeff-i-1]/2;
   }
   for (i=1; i<=ncoeff; i+=2)
-    (*g1)[i] = -((*g1)[i]);
+    (*coeff_high)[i] = -((*coeff_high)[i]);
 }
 
 
 void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y_low, double *y_high) {
-  double  *g0, *g1, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
+  double  *coeff_low, *coeff_high, *y_dummy_low_low, *y_dummy_low_high, *y_dummy_high_low;
   double *y_dummy_high_high, *x_dummy_low , *x_dummy_high, *x_high;
   long i;
   int current_level, three_n_L, ncoeff_minus_one, sample_f;
@@ -72,8 +72,8 @@ void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int lev
   size_t row_blocks_per_column, column_cursor_plus_n, column_cursor_plus_double_n;
 
   irdwt_allocate(nrows, ncols, ncoeff, &x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, 
-    &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
-  irdwt_coefficients(ncoeff, h, &g0, &g1);
+    &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &coeff_low, &coeff_high);
+  irdwt_coefficients(ncoeff, h, &coeff_low, &coeff_high);
  
   if (ncols==1) {
     ncols = nrows;
@@ -119,8 +119,8 @@ void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int lev
 	    y_dummy_high_high[i+ncoeff_minus_one] = mat(y_high, idx_rows, idx_cols + column_cursor_plus_double_n, nrows, three_n_L);
 	  }
 	  /* perform filtering and adding: first LL/LH, then HL/HH */
-	  irdwt_convolution(x_dummy_low,  current_rows, g0, g1, ncoeff, y_dummy_low_low,  y_dummy_low_high); 
-	  irdwt_convolution(x_dummy_high, current_rows, g0, g1, ncoeff, y_dummy_high_low, y_dummy_high_high); 
+	  irdwt_convolution(x_dummy_low,  current_rows, coeff_low, coeff_high, ncoeff, y_dummy_low_low,  y_dummy_low_high); 
+	  irdwt_convolution(x_dummy_high, current_rows, coeff_low, coeff_high, ncoeff, y_dummy_high_low, y_dummy_high_high); 
 	  /* store dummy variables in matrices */
 	  idx_rows = -sample_f + n_r;
 	  for (i=0; i<current_rows; i++) {
@@ -147,7 +147,7 @@ void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int lev
             y_dummy_high_high[i+ncoeff_minus_one] = mat(y_high, idx_rows, idx_cols + column_cursor, nrows, three_n_L);
 	} 
 	/* perform filtering lowpass/highpass */
-	irdwt_convolution(x_dummy_low, current_cols, g0, g1, ncoeff, y_dummy_low_low, y_dummy_high_high); 
+	irdwt_convolution(x_dummy_low, current_cols, coeff_low, coeff_high, ncoeff, y_dummy_low_low, y_dummy_high_high); 
 	/* restore dummy variables in matrices */
 	idx_cols = -sample_f + n_c;
 	for (i=0; i<current_cols; i++) {    
@@ -160,6 +160,6 @@ void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int lev
     current_rows = current_rows*2;
     current_cols = current_cols*2;
   }
-  irdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &g0, &g1);
+  irdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &coeff_low, &coeff_high);
 }
 
