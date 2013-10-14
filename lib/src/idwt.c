@@ -34,8 +34,8 @@ void idwt_convolution(double *x_out, size_t lx, double *g0, double *g1, int ncoe
     x1 = 0;
     tj = 0;
     for (j=0; j<=ncoeff_halved_minus_one; j++) {
-      x0 = x0 + x_in_low[i+j]*g0[ncoeff_minus_one-1-tj] + x_in_high[i+j]*g1[ncoeff_minus_one-1-tj];
-      x1 = x1 + x_in_low[i+j]*g0[ncoeff_minus_one-tj] + x_in_high[i+j]*g1[ncoeff_minus_one-tj];
+      x0 = x0 + (x_in_low[i+j] * g0[ncoeff_minus_one-1-tj]) + (x_in_high[i+j] * g1[ncoeff_minus_one-1-tj]);
+      x1 = x1 + (x_in_low[i+j] * g0[ncoeff_minus_one-tj])   + (x_in_high[i+j] * g1[ncoeff_minus_one-tj]);
       tj += 2;
     }
     x_out[ind++] = x0;
@@ -96,7 +96,7 @@ void idwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, do
  */
 void idwt_coefficients(int ncoeff, double *h, double **g0, double **g1) {
   int i;
-  for (i=0; i<ncoeff; i++){
+  for (i=0; i<ncoeff; i++) {
     (*g0)[i] = h[i];
     (*g1)[i] = h[ncoeff-i-1];
   }

@@ -27,8 +27,8 @@ void rdwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_
     x0 = 0;
     x1 = 0;
     for (j=0; j<ncoeff; j++) {
-      x0 = x0 + x_in[j+i]*coeff_low[ncoeff-1-j];
-      x1 = x1 + x_in[j+i]*coeff_high[ncoeff-1-j];
+      x0 = x0 + x_in[j+i] * coeff_low[ncoeff-1-j];
+      x1 = x1 + x_in[j+i] * coeff_high[ncoeff-1-j];
     }
     x_out_low[i] = x0;
     x_out_high[i] = x1;

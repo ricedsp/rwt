@@ -7,11 +7,11 @@ tools for denoising and interfaces directly with our MATLAB code for wavelet
 domain hidden Markov models and wavelet regularized deconvolution 
 (see dsp.rice.edu/software).  
 
-This version adds full support for Python and partial support for Octave as
-well as the original MATLAB bindings. It also supports 64-bit indexing in
-MATLAB version 7.3 (R2006b) and greater. The source code has been enhanced
-with comments and human readable variable names to make it more suitable as a
-tool for learning about how the wavelet transform is calculated.
+This version adds full support for Python and Octave as well as the original 
+MATLAB bindings. It also supports 64-bit indexing in MATLAB version 7.3 (R2006b)
+and greater. The source code has been enhanced with comments and human readable
+variable names to make it more suitable as a tool for learning about how the 
+wavelet transform is calculated.
 
 Version 1.1 (August 30, 1993) was the first officially released RWT.  Version 
 2.01 (April 18, 1994) had several significant enhancements. Functions 
