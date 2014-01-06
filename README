@@ -1,50 +1,35 @@
-Rice Wavelet Tools version 2.4
-Released - <Dec 1 2002>
+Rice Wavelet Tools version 3.0
 
-The Rice Wavelet Toolbox (RWT) is a collection of Matlab M-files and C 
-MEX-files for 1D and 2D wavelet and filter bank design, analysis, and 
-processing. The toolbox provides tools for denoising and interfaces directly 
-with our Matlab code for wavelet domain hidden Markov models and wavelet 
-regularized deconvolution (see dsp.rice.edu/software).  
+The Rice Wavelet Toolbox (RWT) is a collection of functions for 1D and 2D 
+wavelet and filter bank design, analysis, and processing. The toolbox provides 
+tools for denoising and interfaces directly with our MATLAB code for wavelet 
+domain hidden Markov models and wavelet regularized deconvolution 
+(see dsp.rice.edu/software).  
 
-Important Note: Earlier version of the Rice Wavelet Toolbox (upto version 2.3) 
-do NOT compile under Matlab versions 6.0 (Release 12) and above. The current 
-version (version 2.4) fixes this compatibilty issue.
+This version adds full support for Python and Octave as well as the original 
+MATLAB bindings. It also supports 64-bit indexing in MATLAB version 7.3 (R2006b)
+and greater. The source code has been enhanced with comments and human readable
+variable names to make it more suitable as a tool for learning about how the 
+wavelet transform is calculated.
 
 Version 1.1 (August 30, 1993) was the first officially released RWT.  Version 
-2.01 (April 18, 1994) had several significant enhancements.  The current 
-distribution, Version 2.4 (Dec 1, 2002) below, has been streamlined and packaged 
-for different systems, including Solaris, Linux, and Microsoft Windows.  Functions 
-omitted in Version 2.4 can be found in the Version 2.01 distribution.
+2.01 (April 18, 1994) had several significant enhancements. Functions 
+omitted in later versions can be found in the Version 2.01 distribution.
 
 Older versions are available in the 'dist' directory.
 
-The Rice Wavelet Toolbox is open source software.  See the LICENSE file. It is 
-distributed as-is, free of charge, and without warranty.  This README file also 
-contains a list of toolbox functions available in version 2.4.
+The Rice Wavelet Toolbox is open source software. See the LICENSE file. It is 
+distributed as-is, free of charge, and without warranty. This README file also 
+contains a list of toolbox functions available in version 3.0.
 
-Notes on Source Code:
-
-Version 2.4 Source Code
-
-    * Source code in gzip compressed format for UNIX users. To unpack gzip'ed files, 
-      execute "gunzip rwt.tar.gz" followed by "tar -xvf rwt.tar".
-    * Source code in PC zip compressed format for PC users
-
-The source code contains matlab .m files and .c files that need to be compiled. 
+The source code contains MATLAB .m files and .c files that need to be compiled. 
 Please see the installation instructions.
 
-Also available below are version 2.4 pre-compiled packages for:
+CHANGES:
 
-    * Linux version 7.2 compiled using Matlab 6.5 (R13) and Linux Red Hat Release 9.0
-    * Mac OS X version compiled using Matlab 6.5 (R13) and Mac OS X
-    * Solaris version 2.7 compiled using Matlab 5.3 (R11.1) and SunOS 5.7 (Solaris 2.7)
-    * Windows NT/2000/XP compiled using Matlab 6.5 (R13) and Windows XP
-    * Windows 95/98/ME compiled using Matlab 5.3 (R11) and Windows 98
-
-INSTALLATION: 
-
-To install this distribution of Rice Wavelet Tools see the INSTALL file.
+In this version, soft thresholding in the denoise function is selected by a
+value of 2 instead of 0. In previous versions it was impossible to select soft
+thresholding with the redundant transform version of the denoise function.
 
 SOURCE:
 
@@ -62,9 +47,9 @@ See the LICENSE file
 TOOLBOX FUNCTIONS:
 
  Wavelet Transforms
-     mdwt - Discrete orthogonal wavelet transform using the Mallat algorithm (1D and 2D)
+     mdwt - Discrete orthogonal wavelet transform using the Mallat algorithm
      midwt - Inverse discrete orthogonal wavelet transform
-     mrdwt - Undecimated (redundant) discrete wavelet transform (1D and 2D)
+     mrdwt - Undecimated (redundant) discrete wavelet transform
      mirdwt - Inverse undecimated discrete wavelet transform
      daubcqf - Daubechies filter coefficients
 
@@ -77,7 +62,4 @@ TOOLBOX FUNCTIONS:
      makesig - Create Donoho-Johnstone test signals
      compile - Compile the Rice Wavelet Toolbox
 
-Functions omitted in this version of toolbox can be found in 
-version 2.01.
-
-
+Functions omitted in this version of toolbox can be found in version 2.01.
