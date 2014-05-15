@@ -94,7 +94,7 @@ void dwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, dou
  * @param ncoeff length of h / the number of scaling coefficients
  * @param h  the wavelet scaling coefficients
  * @param coeff_low the low pass coefficients - reversed h
- * @param coeff_high the high pass coefficients - forward h, even values are sign flipped
+ * @param coeff_high the high pass coefficients - forward h, alternate values are sign flipped
  *
  * The coefficients of our Quadrature Mirror Filter are described by
  * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
