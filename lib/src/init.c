@@ -150,8 +150,11 @@ int rwt_check_levels(int levels, size_t rows, size_t cols) {
  */
 rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t transform_type) {
   rwt_init_params params;
+<<<<<<< HEAD
   int argNumL;
 
+=======
+>>>>>>> 06518746f325db2e5f6ff0fb4240088c9091ae97
   /*! Check for correct # of input parameters */
   if (rwt_check_parameter_count(nrhs, transform_type) != 0) return params;
   /*! Check that we don't have more than two dimensions in the input since that is currently unsupported. */
@@ -169,7 +172,11 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   }
 
   /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Sanity check L */
+<<<<<<< HEAD
   argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
+=======
+  int argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
+>>>>>>> 06518746f325db2e5f6ff0fb4240088c9091ae97
   if ((argNumL + 1) == nrhs)
     params.levels = (int) *mxGetPr(prhs[argNumL]);
   else

@@ -40,12 +40,17 @@
   #define rwt_errormsg(msg) printf("\033[91m%s\033[0m\n", msg);
 #endif
 
+<<<<<<< HEAD
 #ifndef max
   #define max(A,B) (A > B ? A : B)
 #endif
 #ifndef min
   #define min(A,B) (A < B ? A : B)
 #endif
+=======
+#define max(A,B) (A > B ? A : B)
+#define min(A,B) (A < B ? A : B)
+>>>>>>> 06518746f325db2e5f6ff0fb4240088c9091ae97
 #define even(x)  ((x & 1) ? 0 : 1)
 
 #ifdef __cplusplus
