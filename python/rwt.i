@@ -1,5 +1,9 @@
+%pythonbegin %{
+from __future__ import division
+%}
+
 %define MODDOCSTRING
-"The Rice Wavelet Toolbox (RWT) is a collection of functions for 1D and 2D 
+"The Rice Wavelet Toolbox (RWT) is a collection of functions for 1D and 2D
 wavelet and filter bank design, analysis, and processing."
 %enddef
 
@@ -161,8 +165,9 @@ The coefficients in output y are arranged as follows
   if (x.dtype != 'float'):
     x = x * 1.0
   L = _levels(x, L)
-  y = np.zeros(x.shape)
+  y = np.ascontiguousarray(np.zeros(x.shape))
   dim = len(x.shape)
+  x = np.ascontiguousarray(x)
   if (dim == 1):
     _rwt._c_dwt_1(x, h, L, y)
   if (dim == 2):
@@ -203,7 +208,8 @@ Output:
   if (y.dtype != 'float'):
     y = y * 1.0
   L = _levels(y, L)
-  x = np.zeros(y.shape)
+  x = np.ascontiguousarray(np.zeros(y.shape))
+  y = np.ascontiguousarray(y)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_idwt_1(x, h, L, y)
@@ -250,13 +256,14 @@ Example's output:
   if (x.dtype != 'float'):
     x = x * 1.0
   L = _levels(x, L)
-  yl = np.zeros(x.shape)
+  yl = np.ascontiguousarray(np.zeros(x.shape))
   dim = len(x.shape)
+  x = np.ascontiguousarray(x)
   if (dim == 1):
-    yh = np.zeros(x.shape[0] * L)
+    yh = np.ascontiguousarray(np.zeros(x.shape[0] * L))
     _rwt._c_rdwt_1(x, h, L, yl, yh)
   if (dim == 2):
-    yh = np.zeros((x.shape[0], x.shape[1] * L * 3))
+    yh = np.ascontiguousarray(np.zeros((x.shape[0], x.shape[1] * L * 3)))
     _rwt._c_rdwt_2(x, h, L, yl, yh)
   return yl, yh, L
 
@@ -300,7 +307,9 @@ Example Output:
   if (yh.dtype != 'float'):
     yh = yh * 1.0
   L = _levels(yl, L)
-  x = np.zeros(yl.shape)
+  x = np.ascontiguousarray(np.zeros(yl.shape))
+  yl = np.ascontiguousarray(yl)
+  yh = np.ascontiguousarray(yh)
   dim = len(x.shape)
   if (dim == 1):
     _rwt._c_irdwt_1(x, h, L, yl, yh)
@@ -338,7 +347,7 @@ Reference: \"Orthonormal Bases of Compactly Supported Wavelets\",
   """
   if (n % 2 != 0):
     raise Exception("No Daubechies filter exists for ODD length")
-  k = n / 2
+  k = n // 2
   a = p = q = 1
   h_0 = np.array([1, 1])
   for j in range(1, k):
@@ -353,7 +362,8 @@ Reference: \"Orthonormal Bases of Compactly Supported Wavelets\",
     if (k % 2 == 1):
       qt = np.hstack((q[0:n-2:4], q[1:n-2:4]))
     else:
-      qt = np.hstack((q[0], q[3:k-1:4], q[4:k-1:4], q[n-4:k:-4], q[n-5:k:-4]))
+      qt = np.hstack((q[0], q[3:k-1:4], q[4:k-1:4], q[n-4:k:-4],
+                      q[n-5:k:-4]))
   h_0 = np.convolve(h_0, np.real(np.poly(qt)))
   h_0 = np.sqrt(2)*h_0 / sum(h_0)
   if (dtype == 'max'):
@@ -452,14 +462,16 @@ References:
   if (signame == 'Bumps'):
     pos = np.array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
     hgt = np.array([4, 5, 3, 4, 5, 4.2, 2.1, 4.3, 3.1, 5.1, 4.2])
-    wth = np.array([.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
+    wth = np.array(
+      [.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
     y = np.zeros(n)
     for j in range(0, pos.size):
       y = y + hgt[j] / pow((1 + np.abs((t - pos[j]) / wth[j])), 4)
     return y
   if (signame == 'Blocks'):
     pos = np.array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
-    hgt = np.array([4, (-5), 3, (-4), 5, (-4.2), 2.1, 4.3, (-3.1), 2.1, (-4.2)])
+    hgt = np.array([4, (-5), 3, (-4), 5, (-4.2), 2.1, 4.3, (-3.1),
+                    2.1, (-4.2)])
     y = np.zeros(n)
     for j in range(0, pos.size):
       y = y + (1 + np.sign(t - pos[j])) * (hgt[j]/2)
@@ -493,7 +505,8 @@ References:
     y = y + np.sin(np.pi * t * (n * t))
     pos = np.array([.1, .13, .15, .23, .25, .40, .44, .65, .76, .78, .81])
     hgt = np.array([4, 5, 3, 4, 5, 4.2, 2.1, 4.3, 3.1, 5.1, 4.2])
-    wth = np.array([.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
+    wth = np.array(
+      [.005, .005, .006, .01, .01, .03, .01, .01, .005, .008, .005])
     for j in range(0, pos.size):
       y = y + hgt[j] / pow((1 + np.abs((t - pos[j]) / wth[j])), 4)
     return y
@@ -568,11 +581,11 @@ Example 2: (on an image)
    noisyLena = lena + 25 * random_sample(lena.shape)
    denoisedLena, xn, opt1 = denoise(noisyLena, h)
   """
-  if (option == None and denoise_type == 0):
+  if (option is None and denoise_type == 0):
     option = [0, 3.0, 0, 2, 0, 0]
-  if (option == None and denoise_type == 1):
+  if (option is None and denoise_type == 1):
     option = [0, 3.6, 0, 1, 0, 0]
-  if (type(option) != list):
+  if (not isinstance(option, list)):
     option = list(option)
   mx = x.shape[0]
   nx = 1
@@ -590,9 +603,9 @@ Example 2: (on an image)
     xd = dwt(x, h, L)[0]
     if (option[5] == 0):
       if (nx > 1):
-        tmp = xd[np.floor(mx/2):mx, np.floor(nx/2):nx]
+        tmp = xd[mx // 2:mx, nx // 2:nx]
       else:
-        tmp = xd[np.floor(mx/2):mx]
+        tmp = xd[mx // 2:mx]
       if (option[2] == 0):
         thld = option[1] * np.median(np.abs(tmp)) / .67
       elif (option[2] == 1):
@@ -600,13 +613,13 @@ Example 2: (on an image)
     else:
       thld = option[5]
     if (dim == 1):
-      ix = np.array(range(0, (n/(np.power(2, L)))))
+      ix = np.array(range(0, (n // (np.power(2, L)))))
       if (ix.size == 1):
         ix = ix[0]
       ykeep = xd[ix]
     else:
-      ix = np.array(range(0, (mx/(np.power(2,L)))))
-      jx = np.array(range(0, (nx/(np.power(2,L)))))
+      ix = np.array(range(0, (mx // (np.power(2, L)))))
+      jx = np.array(range(0, (nx // (np.power(2, L)))))
       if (ix.size == 1):
         ix = ix[0]
       if (jx.size == 1):
