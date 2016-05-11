@@ -29,8 +29,8 @@ installed.
 =  Python Installation Instructions                                           =
 ================================================================================
 
-Python installation requires CMake. To install the python bindings, execute the
-following commands:
+Python installation requires SWIG version 2.0.11 or greater and CMake.
+To install the python bindings, execute the following commands:
  cd python
  cmake .
  sudo make install
