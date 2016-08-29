@@ -38,8 +38,9 @@ void irdwt_allocate(size_t m, size_t n, int ncoeff, double **x_high, double **x_
 }
 
 
-void irdwt_free(double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
+void irdwt_free(double **x_high, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, double **y_dummy_low_high, 
   double **y_dummy_high_low, double **y_dummy_high_high, double **coeff_low, double **coeff_high) {
+  rwt_free(*x_high);
   rwt_free(*x_dummy_low);
   rwt_free(*x_dummy_high);
   rwt_free(*y_dummy_low_low);
@@ -160,6 +161,6 @@ void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int lev
     current_rows = current_rows*2;
     current_cols = current_cols*2;
   }
-  irdwt_free(&x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &coeff_low, &coeff_high);
+  irdwt_free(&x_high, &x_dummy_low, &x_dummy_high, &y_dummy_low_low, &y_dummy_low_high, &y_dummy_high_low, &y_dummy_high_high, &coeff_low, &coeff_high);
 }
 
