@@ -92,11 +92,6 @@ class DWT
      * Perform the discrete wavelet transform
      *
      * @param x      the input signal
-     * @param nrows  number of rows in the input
-     * @param ncols  number of columns in the input
-     * @param h      wavelet scaling coefficients
-     * @param ncoeff length of h / the number of scaling coefficients
-     * @param levels the number of levels
      * @param y      the output signal with the wavelet transform applied
      *
      * The discrete wavelet transform begins with a set of samples of a signal whose length
@@ -106,7 +101,6 @@ class DWT
      */
     void process(const data *x, data *y)
     {
-      long i;
       const int ncoeff_minus_one = ncoeff-1;
 
       size_t current_rows = 2*nrows; /*! current_rows and current_cols start at 2x since we divide by 2 at the start of the loop */
@@ -119,20 +113,20 @@ class DWT
         else
           current_rows = current_rows/2;
         current_cols = current_cols/2;
-        size_t row_cursor = current_rows/2;
-        size_t column_cursor = current_cols/2;
 
         for (size_t idx_rows=0; idx_rows<current_rows; idx_rows++) {
-          for (i=0; i<current_cols; i++)
-            if (current_level==1)
+          if (current_level==1)
+            for (size_t i=0; i<current_cols; i++)
               x_dummy[i] = mat(x, idx_rows, i, nrows, ncols);
-            else
+          else
+            for (size_t i=0; i<current_cols; i++)
               x_dummy[i] = mat(y, idx_rows, i, nrows, ncols);
           /*! Perform filtering lowpass and highpass*/
           dwt_convolution(&x_dummy[0], current_cols);
           /*! Restore dummy variables in matrices */
+          const size_t column_cursor = current_cols/2;
           size_t idx_columns = column_cursor;
-          for (i=0; i<column_cursor; i++) {
+          for (size_t i=0; i<column_cursor; i++) {
             mat(y, idx_rows, i,             nrows, ncols) = y_dummy_low[i];
             mat(y, idx_rows, idx_columns++, nrows, ncols) = y_dummy_high[i];
           }
@@ -142,13 +136,14 @@ class DWT
         if (nrows>1) {
           for (size_t idx_columns=0; idx_columns<current_cols; idx_columns++) { /* loop over columns */
             /*! Store in dummy variables */
-            for (i=0; i<current_rows; i++)
+            for (size_t i=0; i<current_rows; i++)
               x_dummy[i] = mat(y, i, idx_columns, nrows, ncols);
             /*! Perform filtering lowpass and highpass*/
             dwt_convolution(&x_dummy[0], current_rows);
             /*! Restore dummy variables in matrix */
-            size_t idx_rows = row_cursor;
-            for (i=0; i<row_cursor; i++) {
+            size_t idx_rows = current_rows/2;
+            const size_t row_cursor = current_rows/2;
+            for (size_t i=0; i<row_cursor; i++) {
               mat(y, i,          idx_columns, nrows, ncols) = y_dummy_low[i];
               mat(y, idx_rows++, idx_columns, nrows, ncols) = y_dummy_high[i];
             }
