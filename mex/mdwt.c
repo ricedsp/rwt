@@ -4,7 +4,7 @@
     This file is used to produce a MATLAB MEX binary for the discrete wavelet transform
 
 %y = mdwt(x,h,L);
-% 
+%
 % function computes the discrete wavelet transform y for a 1D or 2D input
 % signal x.
 %
@@ -38,7 +38,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   if ( mxIsDouble(prhs[0]) ) {
      dwt_double(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPr(plhs[0]));
      if ( mxIsComplex(prhs[0]) )
-       dwt_double(mxGetPi(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPi(plhs[0]));  
+       dwt_double(mxGetPi(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPi(plhs[0]));
   }else if (mxIsSingle(prhs[0] ) ) {
     dwt_float((float*)mxGetData(prhs[0]), params.nrows, params.ncols, (float*)params.scalings, params.ncoeff, params.levels, (float*)mxGetData(plhs[0]));  /*! Perform the DWT */
      if ( mxIsComplex(prhs[0]) )

@@ -17,8 +17,8 @@ extern "C" {
  */
 void   dwt_double(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
 void   dwt_float(float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y);
-void   dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
-void  idwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
+void  idwt_double(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
+void  idwt_float(float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y);
 void  rdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *yl, double *yh);
 void irdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *yl, double *yh);
 

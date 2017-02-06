@@ -79,7 +79,7 @@ addressing so you don't have to worry about row major order and column major
 order. The rwt_printf, mat_offset, offset_row, and offset_col macros will be
 very useful if you need to change any of the code that uses the mat() macro.
 
-To understand the code for the transforms themselves, start with lib/src/dwt.c
+To understand the code for the transforms themselves, start with lib/src/dwt.cc
 which is the best documented of the transforms. The rest of them are written
 and structured in a very similar fashion.
 
@@ -87,7 +87,7 @@ The flow of the code is as follows. One of the transforms is called from MATLAB.
 This invokes one of the wrappers from the mex directory. The function here calls
 rwt_matlab_init in lib/src/init.c which calls other init functions. From here 
 the mex wrapper calls the transform in lib/src. For example, the mdwt function
-for the discrete wavlet transform calls dwt() in the lib/src/dwt.c file. This
+for the discrete wavlet transform calls dwt() in the lib/src/dwt.cc file. This
 function has a few helpers in the same file. It allocates memory necessary for
 the transform in dwt_allocate(), calculates the high and low pass coefficients
 in dwt_coefficients(), performs the convolution in dwt_convolution, and frees

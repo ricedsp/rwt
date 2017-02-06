@@ -1,4 +1,4 @@
-/*! \file dwt.c
+/*! \file dwt.cc
     \brief Implementation of the discrete wavelet transform
 
 */
