@@ -11,16 +11,16 @@ function test_mdwt_1D
 assertVectorsAlmostEqual(y, y_corr, 'relative', 0.001);
 assertEqual(L, L_corr);
 
-%function test_mdwt_1Dcpx
-%  x = randn(8,2)*[1;1j];
-%  h = daubcqf(4, 'min');
-%  L = 2;  % For 8 values in x we would normally be L=2 
-%  [y, L] = mdwt(x, h, L);
-%  yr = mdwt(real(x), h, L);
-%  yi = mdwt(imag(x), h, L);
-%  L_corr = 2;
-%assertVectorsAlmostEqual(y, yr+1j*yi, 'relative', 0.001);
-%assertEqual(L, L_corr);
+function test_mdwt_1Dcpx
+  x = randn(8,2)*[1;1j];
+  h = daubcqf(4, 'min');
+  L = 2;  % For 8 values in x we would normally be L=2 
+  [y, L] = mdwt(x, h, L);
+  yr = mdwt(real(x), h, L);
+  yi = mdwt(imag(x), h, L);
+  L_corr = 2;
+assertVectorsAlmostEqual(y, yr+1j*yi, 'relative', 0.001);
+assertEqual(L, L_corr);
 
 function test_mdwt_1Ds
   x = single(makesig('LinChirp', 8));

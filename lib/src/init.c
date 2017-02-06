@@ -199,7 +199,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   }
   /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
 
-  plhs[0] = mxCreateNumericMatrix(params.nrows, params.ncols, mxGetClassID(prhs[0]),mxREAL);
+  plhs[0] = mxCreateNumericMatrix(params.nrows, params.ncols, mxGetClassID(prhs[0]), mxIsComplex(prhs[0]) ? mxCOMPLEX : mxREAL);
   return params;
 }
 #endif
