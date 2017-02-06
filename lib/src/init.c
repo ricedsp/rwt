@@ -49,7 +49,7 @@ int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
 int rwt_check_yl_matches_yh(const mxArray *prhs[], size_t nrows, size_t ncols, int levels) {
   size_t mh = mxGetM(prhs[1]);
   size_t nh = mxGetN(prhs[1]);
-  if (min(nrows, ncols) > 1) {
+  if (MIN(nrows, ncols) > 1) {
     if ((nrows != mh) | (3 * ncols * levels != nh)) {
       return 0;
     }
@@ -85,10 +85,10 @@ int rwt_find_levels(size_t m, size_t n) {
     L = (L >> 1);
     i++;
   }
-  if (min(m, n) == 1)
-    L = max(i, j);
+  if (MIN(m, n) == 1)
+    L = MAX(i, j);
   else
-    L = min(i, j);
+    L = MIN(i, j);
   if (L == 0) {
     rwt_errormsg("Maximum number of levels is zero; no decomposition can be performed!");
     return -1;
@@ -185,7 +185,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
    */
   if (transform_type == INVERSE_REDUNDANT_DWT) {
     params.scalings = mxGetPr(prhs[2]);
-    params.ncoeff = max(mxGetM(prhs[2]), mxGetN(prhs[2]));
+    params.ncoeff = MAX(mxGetM(prhs[2]), mxGetN(prhs[2]));
     if (!rwt_check_yl_matches_yh(prhs, params.nrows, params.ncols, params.levels)) {
       rwt_errormsg("Dimensions of first two input matrices not consistent!");
       return params;
@@ -195,7 +195,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     if ( mxGetClassID(prhs[0]) !=  mxGetClassID(prhs[1]) )
         rwt_errormsg("x and h must have same type");
     params.scalings = mxGetPr(prhs[1]);
-    params.ncoeff = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
+    params.ncoeff = MAX(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
   /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
 

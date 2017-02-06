@@ -101,8 +101,6 @@ class DWT
      */
     void process(const data *x, data *y)
     {
-      const int ncoeff_minus_one = ncoeff-1;
-
       size_t current_rows = 2*nrows; /*! current_rows and current_cols start at 2x since we divide by 2 at the start of the loop */
       size_t current_cols = 2*ncols;
 
