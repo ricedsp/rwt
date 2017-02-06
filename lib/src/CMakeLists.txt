@@ -1,5 +1,5 @@
 include_directories ("${PROJECT_SOURCE_DIR}/lib/inc")
-add_library(dwt dwt.c)
+add_library(dwt dwt.cc)
 add_library(idwt idwt.c)
 add_library(irdwt irdwt.c)
 add_library(rdwt rdwt.c)

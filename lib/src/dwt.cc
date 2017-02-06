@@ -4,6 +4,7 @@
 */
 
 #include "rwt_platform.h"
+#include "rwt_transforms.h"
 
 /*!
  * Perform convolution for dwt
