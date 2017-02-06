@@ -25,9 +25,10 @@
  * Our actual implementation resembles this
  *
  */
-void dwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_high, int ncoeff_minus_one, double *x_out_low, double *x_out_high) {
+template <typename data>
+void dwt_convolution(data *x_in, size_t lx, data *coeff_low, data *coeff_high, int ncoeff_minus_one, data *x_out_low, data *x_out_high) {
   size_t i, j, ind;
-  double x0, x1;
+  data x0, x1;
   for (i=lx; i<lx+ncoeff_minus_one; i++) { 
     x_in[i] = *(x_in+(i-lx)); /*! extend x_in by creating a small mirror at the end of length ncoeff_minus_one */
   }
@@ -61,12 +62,13 @@ void dwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_h
  * For the output storage area we will need as much space as the input: m*n
  * For the input storage area we will need the same plus one less than the length of the coeffiecients
  */
-void dwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
-  *x_dummy      = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
-  *y_dummy_low  = (double *) rwt_calloc(max(m,n),          sizeof(double));
-  *y_dummy_high = (double *) rwt_calloc(max(m,n),          sizeof(double));
-  *coeff_low    = (double *) rwt_calloc(ncoeff,            sizeof(double));
-  *coeff_high   = (double *) rwt_calloc(ncoeff,            sizeof(double));
+template <typename data>
+void dwt_allocate(size_t m, size_t n, int ncoeff, data **x_dummy, data **y_dummy_low, data **y_dummy_high, data **coeff_low, data **coeff_high) {
+  *x_dummy      = (data *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(data));
+  *y_dummy_low  = (data *) rwt_calloc(max(m,n),          sizeof(data));
+  *y_dummy_high = (data *) rwt_calloc(max(m,n),          sizeof(data));
+  *coeff_low    = (data *) rwt_calloc(ncoeff,            sizeof(data));
+  *coeff_high   = (data *) rwt_calloc(ncoeff,            sizeof(data));
 }
 
 
@@ -80,7 +82,8 @@ void dwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy, double **y_d
  * @param coeff_high   storage space for the high pass coefficients
  *
  */
-void dwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, double **coeff_low, double **coeff_high) {
+template <typename data>
+void dwt_free(data **x_dummy, data **y_dummy_low, data **y_dummy_high, data **coeff_low, data **coeff_high) {
   rwt_free(*x_dummy);
   rwt_free(*y_dummy_low);
   rwt_free(*y_dummy_high);
@@ -101,7 +104,8 @@ void dwt_free(double **x_dummy, double **y_dummy_low, double **y_dummy_high, dou
  * \f$ g\left[lh - 1 - n \right] = (-1)^n * h\left[n\right] \f$
  *
  */
-void dwt_coefficients(int ncoeff, double *h, double **coeff_low, double **coeff_high) {
+template <typename data>
+void dwt_coefficients(int ncoeff, data *h, data **coeff_low, data **coeff_high) {
   int i;
   for (i=0; i<ncoeff; i++) {
     (*coeff_low)[i] = h[(ncoeff-i)-1];
@@ -128,8 +132,9 @@ void dwt_coefficients(int ncoeff, double *h, double **coeff_low, double **coeff_
  * that we can perform.
  *
  */
-void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y) {
-  double  *coeff_low, *coeff_high, *y_dummy_low, *y_dummy_high, *x_dummy;
+template <typename data>
+void dwtT(data *x, size_t nrows, size_t ncols, data *h, int ncoeff, int levels, data *y) {
+  data  *coeff_low, *coeff_high, *y_dummy_low, *y_dummy_high, *x_dummy;
   long i;
   int current_level, ncoeff_minus_one;
   size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_columns;
@@ -189,5 +194,14 @@ void dwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int level
     }
   }
   dwt_free(&x_dummy, &y_dummy_low, &y_dummy_high, &coeff_low, &coeff_high);
+}
+
+void dwt_double(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y) 
+{
+    dwtT(x,nrows,ncols,h,ncoeff,levels,y);
+}
+void dwt_float(float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y) 
+{
+    dwtT(x,nrows,ncols,h,ncoeff,levels,y);
 }
 

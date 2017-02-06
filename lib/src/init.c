@@ -192,11 +192,14 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
     }
   }
   else {
+    if ( mxGetClassID(prhs[0]) !=  mxGetClassID(prhs[1]) )
+        rwt_errormsg("x and h must have same type");
     params.scalings = mxGetPr(prhs[1]);
     params.ncoeff = max(mxGetM(prhs[1]), mxGetN(prhs[1]));
   }
   /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
-  plhs[0] = mxCreateDoubleMatrix(params.nrows, params.ncols, mxREAL);
+
+  plhs[0] = mxCreateNumericMatrix(params.nrows, params.ncols, mxGetClassID(prhs[0]),mxREAL);
   return params;
 }
 #endif
