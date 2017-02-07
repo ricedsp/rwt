@@ -37,13 +37,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   *mxGetPr(plhs[1]) = params.levels;
 
   if ( mxIsDouble(prhs[0]) ) {
-      idwt_double((double*)mxGetData(plhs[0]), params.nrows, params.ncols, (double*)params.scalings, params.ncoeff, params.levels, (double*)mxGetData(prhs[0]));
+      idwt_double((double*)mxGetData(plhs[0]), (double*)mxGetData(prhs[0]), &params);
       if ( mxIsComplex(prhs[0]) )
-          idwt_double((double*)mxGetImagData(plhs[0]), params.nrows, params.ncols, (double*)params.scalings, params.ncoeff, params.levels, (double*)mxGetImagData(prhs[0]));
+          idwt_double((double*)mxGetImagData(plhs[0]), (double*)mxGetImagData(prhs[0]),&params);
   }else if (mxIsSingle(prhs[0])){
-      idwt_float((float*)mxGetData(plhs[0]), params.nrows, params.ncols, (float*)params.scalings, params.ncoeff, params.levels, (float*)mxGetData(prhs[0]));
+      idwt_float((float*)mxGetData(plhs[0]), (float*)mxGetData(prhs[0]),&params);
       if ( mxIsComplex(prhs[0]) )
-          idwt_float((float*)mxGetImagData(plhs[0]), params.nrows, params.ncols, (float*)params.scalings, params.ncoeff, params.levels, (float*)mxGetImagData(prhs[0]));
+          idwt_float((float*)mxGetImagData(plhs[0]), (float*)mxGetImagData(prhs[0]),&params);
   }else{
       rwt_errormsg("unsupported data type");
   }

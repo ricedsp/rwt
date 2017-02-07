@@ -12,10 +12,7 @@ template <typename data>
 class IDWT
 {
   private:
-    size_t nrows;
-    size_t ncols;
-    int ncoeff;
-    int levels;
+    rwt_init_params p;
     std::vector<data> x_dummy;
     std::vector<data> y_dummy_low; // low pass results of convolution
     std::vector<data> y_dummy_high;// high pass results of convolution
@@ -23,17 +20,15 @@ class IDWT
     std::vector<data> coeff_high;///< the high pass coefficients - forward h, alternate values are sign flipped
 
   public:
-    IDWT(size_t nrows_,size_t ncols_,const data * h,int ncoeff_,int levels_)
-      :nrows(nrows_),ncols(ncols_), ncoeff(ncoeff_),levels(levels_),
-      x_dummy(std::max(nrows,ncols)),
-      y_dummy_low(std::max(nrows,ncols)+ncoeff/2-1),
-      y_dummy_high(std::max(nrows,ncols)+ncoeff/2-1),
-      coeff_low(ncoeff),
-      coeff_high(ncoeff)
+    IDWT( const rwt_init_params & params)
+        :p(params),
+      x_dummy(std::max(p.nrows,p.ncols)),
+      y_dummy_low(std::max(p.nrows,p.ncols)+p.ncoeff/2-1),
+      y_dummy_high(std::max(p.nrows,p.ncols)+p.ncoeff/2-1),
+      coeff_low(p.ncoeff),
+      coeff_high(p.ncoeff)
     {
-      if (ncols==1)
-        std::swap(nrows,ncols);
-      idwt_coefficients(h);
+      idwt_coefficients((const data*)p.scalings );
     }
 
     /*!
@@ -42,18 +37,18 @@ class IDWT
      */
     void idwt_coefficients(const data *h)
     {
-      for (int i=0; i<ncoeff; i++) {
+      for (int i=0; i<p.ncoeff; i++) {
         coeff_low[i] = h[i];
-        coeff_high[i] = h[ncoeff-i-1];
+        coeff_high[i] = h[p.ncoeff-i-1];
       }
-      for (int i=1; i<=ncoeff; i+=2)
+      for (int i=1; i<=p.ncoeff; i+=2)
         coeff_high[i] = -coeff_high[i];
     }
 
     void idwt_convolution(size_t lx)
     {
-      const int ncoeff_minus_one = ncoeff - 1;
-      const int ncoeff_halved_minus_one = ncoeff/2 - 1;
+      const int ncoeff_minus_one = p.ncoeff - 1;
+      const int ncoeff_halved_minus_one = p.ncoeff/2 - 1;
       int k;
       size_t i, j, ind, tj;
       data x0, x1;
@@ -86,75 +81,80 @@ class IDWT
    */
   void process(data *x, const data *y)
   {
-    long i;
-    int current_level, sample_f;
-    size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols;
+      for (int m=0;m<p.nmats;++m) {
 
-    int ncoeff_halved_minus_one = ncoeff/2 - 1;
-    /* 2^levels */
-    sample_f = 1;
-    for (i=1; i<levels; i++)
-      sample_f = sample_f*2;
+          long i;
+          int current_level, sample_f;
+          size_t current_rows, current_cols, row_cursor, column_cursor, idx_rows, idx_cols;
 
-    if (nrows>1)
-      current_rows = nrows/sample_f;
-    else
-      current_rows = 1;
-    current_cols = ncols/sample_f;
+          int ncoeff_halved_minus_one = p.ncoeff/2 - 1;
+          /* 2^levels */
+          sample_f = 1;
+          for (i=1; i<p.levels; i++)
+              sample_f = sample_f*2;
 
-    for (i=0; i<(nrows*ncols); i++)
-      x[i] = y[i];
+          if (p.nrows>1)
+              current_rows = p.nrows/sample_f;
+          else
+              current_rows = 1;
+          current_cols = p.ncols/sample_f;
 
-    /* main loop */
-    for (current_level=levels; current_level >= 1; current_level--) {
-      row_cursor = current_rows/2;
-      column_cursor = current_cols/2;
+          for (i=0; i<(p.nrows*p.ncols); i++)
+              x[i] = y[i];
 
-      /* go by columns in case of a 2D signal*/
-      if (nrows>1) {
-        for (idx_cols=0; idx_cols<current_cols; idx_cols++) {         /* loop over columns */
-          /* store in dummy variables */
-          idx_rows = row_cursor;
-          for (i=0; i<row_cursor; i++){
-            y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, i,          idx_cols, nrows, ncols);
-            y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows++, idx_cols, nrows, ncols);
+          /* main loop */
+          for (current_level=p.levels; current_level >= 1; current_level--) {
+              row_cursor = current_rows/2;
+              column_cursor = current_cols/2;
+
+              /* go by columns in case of a 2D signal*/
+              if (p.nrows>1) {
+                  for (idx_cols=0; idx_cols<current_cols; idx_cols++) {         /* loop over columns */
+                      /* store in dummy variables */
+                      idx_rows = row_cursor;
+                      for (i=0; i<row_cursor; i++){
+                          y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, i,          idx_cols, p.nrows, p.ncols);
+                          y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows++, idx_cols, p.nrows, p.ncols);
+                      }
+                      /* perform filtering lowpass and highpass*/
+                      idwt_convolution(row_cursor);
+                      /* restore dummy variables in matrix */
+                      for (i=0; i<current_rows; i++)
+                          mat(x, i, idx_cols, p.nrows, p.ncols) = x_dummy[i];
+                  }
+              }
+              /* go by rows */
+              for (idx_rows=0; idx_rows<current_rows; idx_rows++) {           /* loop over rows */
+                  /* store in dummy variable */
+                  idx_cols = column_cursor;
+                  for  (i=0; i<column_cursor; i++){
+                      y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, idx_rows, i,          p.nrows, p.ncols);
+                      y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows, idx_cols++, p.nrows, p.ncols);
+                  }
+                  /* perform filtering lowpass and highpass*/
+                  idwt_convolution(column_cursor);
+                  /* restore dummy variables in matrices */
+                  for (i=0; i<current_cols; i++)
+                      mat(x, idx_rows, i, p.nrows, p.ncols) = x_dummy[i];
+              }
+              if (p.nrows==1)
+                  current_rows = 1;
+              else
+                  current_rows = current_rows*2;
+              current_cols = current_cols*2;
           }
-          /* perform filtering lowpass and highpass*/
-          idwt_convolution(row_cursor);
-          /* restore dummy variables in matrix */
-          for (i=0; i<current_rows; i++)
-            mat(x, i, idx_cols, nrows, ncols) = x_dummy[i];
-        }
+          x += p.nrows * p.ncols;
+          y += p.nrows * p.ncols;
       }
-      /* go by rows */
-      for (idx_rows=0; idx_rows<current_rows; idx_rows++) {           /* loop over rows */
-        /* store in dummy variable */
-        idx_cols = column_cursor;
-        for  (i=0; i<column_cursor; i++){
-          y_dummy_low[i+ncoeff_halved_minus_one]  = mat(x, idx_rows, i,          nrows, ncols);
-          y_dummy_high[i+ncoeff_halved_minus_one] = mat(x, idx_rows, idx_cols++, nrows, ncols);
-        }
-        /* perform filtering lowpass and highpass*/
-        idwt_convolution(column_cursor);
-        /* restore dummy variables in matrices */
-        for (i=0; i<current_cols; i++)
-          mat(x, idx_rows, i, nrows, ncols) = x_dummy[i];
-      }
-      if (nrows==1)
-        current_rows = 1;
-      else
-        current_rows = current_rows*2;
-      current_cols = current_cols*2;
-    }
   }
 };
 }
-void idwt_double(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y)
+void idwt_double(double *x, const double *y,const rwt_init_params * parms)
 {
-    IDWT<double>(nrows,ncols,h,ncoeff,levels).process(x,y);
+    IDWT<double>(*parms).process(x,y);
 }
 
-void idwt_float(float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y)
+void idwt_float(float *x,  const float *y,const rwt_init_params * parms)
 {
-    IDWT<float>(nrows,ncols,h,ncoeff,levels).process(x,y);
+    IDWT<float>(*parms).process(x,y);
 }
