@@ -36,13 +36,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);                                                               /*! Create the output matrix */
   *mxGetPr(plhs[1]) = params.levels;                                                  /*! The second returned item is the number of levels */
   if ( mxIsDouble(prhs[0]) ) {
-     dwt_double(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPr(plhs[0]));
+     dwt_double(mxGetPr(prhs[0]), mxGetPr(plhs[0]),&params);
      if ( mxIsComplex(prhs[0]) )
-       dwt_double(mxGetPi(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPi(plhs[0]));
+       dwt_double(mxGetPi(prhs[0]), mxGetPi(plhs[0]),&params);
   }else if (mxIsSingle(prhs[0] ) ) {
-    dwt_float((float*)mxGetData(prhs[0]), params.nrows, params.ncols, (float*)params.scalings, params.ncoeff, params.levels, (float*)mxGetData(plhs[0]));  /*! Perform the DWT */
+    dwt_float((float*)mxGetData(prhs[0]), (float*)mxGetData(plhs[0]),&params);  /*! Perform the DWT */
      if ( mxIsComplex(prhs[0]) )
-      dwt_float((float*)mxGetImagData(prhs[0]), params.nrows, params.ncols, (float*)params.scalings, params.ncoeff, params.levels, (float*)mxGetImagData(plhs[0]));
+      dwt_float((float*)mxGetImagData(prhs[0]), (float*)mxGetImagData(plhs[0]),&params);
   }else{
     rwt_errormsg("unsupported data type");
   }

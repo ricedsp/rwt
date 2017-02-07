@@ -1,5 +1,5 @@
 function [y,L] = mdwt(x,h,L)
-%    [y,L] = mdwt(x,h,L);
+%    [y,L] = mdwt(x,h[,L[,transdims]);
 %
 %    Function computes the discrete wavelet transform y for a 1D or 2D input
 %    signal x using the scaling filter h.
@@ -11,6 +11,7 @@ function [y,L] = mdwt(x,h,L)
 %           divisible by 2^L; in the case of a 2D signal, the row and the
 %           column dimension must be divisible by 2^L. If no argument is
 %           specified, a full DWT is returned for maximal possible L.
+%       transdims: 1 or 2d transform over leading dimensions, default=2 if x is a matrix
 %
 %    Output:
 %       y : the wavelet transform of the signal 

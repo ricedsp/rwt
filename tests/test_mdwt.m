@@ -57,6 +57,31 @@ function test_mdwt_compute_L3
   [y, L] = mdwt(x, h);
 assertEqual(L, 3);
 
+function test_tensor_mdwt_1D
+  x = randn(8,3,2);
+  h = daubcqf(4);
+  y1 = mdwt(x, h,[],1);
+  y2 = nan(size(x));
+  for i3=1:size(x,3)
+    for i4=1:size(x,4)
+      y2(:,:,i3,i4) = mdwt( squeeze(x(:,:,i3,i4)),h,[],1);
+    end
+  end
+assertVectorsAlmostEqual(y1, y2, 'relative', 0.001);
+
+function test_tensor_mdwt_2D
+  x = randn(8,16,3,2);
+  h = daubcqf(4);
+  y1 = mdwt(x, h);
+  y2 = nan(size(x));
+  for i3=1:size(x,3)
+    for i4=1:size(x,4)
+      y2(:,:,i3,i4) = mdwt( squeeze(x(:,:,i3,i4)),h);
+    end
+  end
+assertVectorsAlmostEqual(y1, y2, 'relative', 0.001);
+
+
 function test_mdwt_compute_bad_L
   L = -1;
   x = [1 2 3 4 5 6 7 8 9];

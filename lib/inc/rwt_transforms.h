@@ -5,6 +5,7 @@
 #define TRANSFORMS_H_
 
 #include <math.h>
+#include "rwt_init.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,8 +16,9 @@ extern "C" {
  *  In all cases it is expected that the output array has already been
  *  allocated prior to calling the transform function.
  */
-void   dwt_double(const double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
-void   dwt_float(const float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y);
+void dwt_double(const double *x, double *y,const rwt_init_params * parms);
+void dwt_float(const float *x, float * y,const rwt_init_params * parms);
+
 void  idwt_double(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *y);
 void  idwt_float(float *x, size_t nrows, size_t ncols, float *h, int ncoeff, int levels, float *y);
 void  rdwt(double *x, size_t nrows, size_t ncols, double *h, int ncoeff, int levels, double *yl, double *yh);

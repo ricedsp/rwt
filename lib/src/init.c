@@ -26,8 +26,8 @@ int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
     }
   }
   else {
-    if (nrhs > 3) {
-      rwt_errormsg("There are at most 3 input parameters allowed!");
+    if (nrhs > 4) {
+      rwt_errormsg("There are at most 4 input parameters allowed!");
       return 1;
     }
     if (nrhs < 2) {
@@ -38,6 +38,18 @@ int rwt_check_parameter_count(int nrhs, transform_t transform_type) {
   return 0;
 }
 
+
+int rwt_numel( const mxArray * mtx)
+{
+    mwSize ndims = mxGetNumberOfDimensions(mtx);
+    if (ndims==0)
+        return 0;
+    int i,d=1;
+    const mwSize * dims = mxGetDimensions(mtx);
+    for (i=0;i<ndims;++i)
+        d *= dims[i];
+    return d;
+}
 
 /*!
  * For the inverse redundant transform check that the dimensions of the low and high inputs match
@@ -150,18 +162,21 @@ int rwt_check_levels(int levels, size_t rows, size_t cols) {
  */
 rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[], transform_t transform_type) {
   rwt_init_params params;
-  int argNumL;
+  int i;
 
   /*! Check for correct # of input parameters */
   if (rwt_check_parameter_count(nrhs, transform_type) != 0) return params;
-  /*! Check that we don't have more than two dimensions in the input since that is currently unsupported. */
-  if (mxGetNumberOfDimensions(prhs[0]) > 2) {
-    rwt_errormsg("Matrix must have fewer than 3 dimensions!");
-    return params;
-  }
+
   /*! Get the number of rows and columns in the input matrix. */
-  params.nrows = mxGetM(prhs[0]);
-  params.ncols = mxGetN(prhs[0]);
+  const mwSize * dims = mxGetDimensions(prhs[0]);
+  mwSize ndims = mxGetNumberOfDimensions(prhs[0]);
+  params.nrows = dims[0];
+  params.ncols = dims[1];
+
+  /*allow multiple matrices to be transformed at once*/
+  params.nmats = 1;
+  for (i=2;i<ndims;++i)
+    params.nmats *= dims[i];
 
   if (params.nrows == 0 && params.ncols == 0) {
     rwt_errormsg("The input matrix cannot be empty");
@@ -169,14 +184,41 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   }
 
   /*! Read the number of levels, L, from the input values if it was given, otherwise calculate L. Sanity check L */
-  argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
-  if ((argNumL + 1) == nrhs)
+  int argNumL = (transform_type == INVERSE_REDUNDANT_DWT) ? 3 : 2;
+  int argnumTransDims = argNumL + 1;
+  int transDims;
+  if ( nrhs >= (argnumTransDims + 1) && rwt_numel( prhs[argnumTransDims] )!=0 ) {
+    transDims = (int)*mxGetPr(prhs[argnumTransDims]);
+  }else{
+    transDims = MIN(params.nrows,params.ncols) > 1 ? 2:1;
+    /* legacy defaults is 2d if there are at least 2 dimensions */
+  }
+
+  if ( transDims < 2) {
+      /* 1D transform */
+      if (params.nrows ==1) {
+          /* OK -- nrows==1,ncols>1 */
+      }else if ( params.ncols == 1) {
+          params.ncols = params.nrows;
+          params.nrows = 1;
+      }else{
+          /* both leading dimensions >1, push (via view) the second into the 3rd */
+          params.nmats *= params.ncols;
+          params.ncols = params.nrows;
+          params.nrows = 1;
+      }
+  }else {
+      /*2D across first two dimensions */
+  }
+
+  if ( nrhs >= (argNumL + 1) && rwt_numel( prhs[argNumL] )!=0 ) {
     params.levels = (int) *mxGetPr(prhs[argNumL]);
-  else
+  }else{
     params.levels = rwt_find_levels(params.nrows, params.ncols);
+  }
 
   if (rwt_check_levels(params.levels, params.nrows, params.ncols)) {
-    return params;
+      return params;
   }
 
   /*! Read the scaling coefficients, h, from the input and find their length, ncoeff. 
@@ -199,7 +241,7 @@ rwt_init_params rwt_matlab_init(int nlhs, mxArray *plhs[], int nrhs, const mxArr
   }
   /*! Create the first item in the output array as a double matrix with the same dimensions as the input. */
 
-  plhs[0] = mxCreateNumericMatrix(params.nrows, params.ncols, mxGetClassID(prhs[0]), mxIsComplex(prhs[0]) ? mxCOMPLEX : mxREAL);
+  plhs[0] = mxCreateNumericArray( ndims,dims, mxGetClassID(prhs[0]), mxIsComplex(prhs[0]) ? mxCOMPLEX : mxREAL);
   return params;
 }
 #endif
