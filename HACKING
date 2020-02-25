@@ -39,7 +39,7 @@ same content at doc/latex/refman.pdf
 If you haven't used Doxygen before, here's what you need to know: put a ! after
 the opening /* in a comment to include that comment in the generated docs, look
 at the top of some existing functions to see how function parameters are shown,
-and note that you can use latex formulas.
+and note that you can use LaTeX formulas.
 
 ================================================================================
 = UNIT TESTS
