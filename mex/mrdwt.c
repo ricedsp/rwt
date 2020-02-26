@@ -41,7 +41,7 @@
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   double *x, *yl, *yh;
   rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, REDUNDANT_DWT);
-  if (min(params.nrows, params.ncols) == 1)
+  if (MIN(params.nrows, params.ncols) == 1)
     plhs[1] = mxCreateDoubleMatrix(params.nrows, params.levels*params.ncols, mxREAL);
   else
     plhs[1] = mxCreateDoubleMatrix(params.nrows, 3*params.levels*params.ncols, mxREAL);

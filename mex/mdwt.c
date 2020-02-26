@@ -4,7 +4,7 @@
     This file is used to produce a MATLAB MEX binary for the discrete wavelet transform
 
 %y = mdwt(x,h,L);
-% 
+%
 % function computes the discrete wavelet transform y for a 1D or 2D input
 % signal x.
 %
@@ -35,6 +35,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, NORMAL_DWT);     /*! Check input and determine the parameters for dwt() */
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);                                                               /*! Create the output matrix */
   *mxGetPr(plhs[1]) = params.levels;                                                  /*! The second returned item is the number of levels */
-  dwt(mxGetPr(prhs[0]), params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, mxGetPr(plhs[0]));  /*! Perform the DWT */
+  if ( mxIsDouble(prhs[0]) ) {
+     dwt_double(mxGetPr(prhs[0]), mxGetPr(plhs[0]),&params);
+     if ( mxIsComplex(prhs[0]) )
+       dwt_double(mxGetPi(prhs[0]), mxGetPi(plhs[0]),&params);
+  }else if (mxIsSingle(prhs[0] ) ) {
+    dwt_float((float*)mxGetData(prhs[0]), (float*)mxGetData(plhs[0]),&params);  /*! Perform the DWT */
+     if ( mxIsComplex(prhs[0]) )
+      dwt_float((float*)mxGetImagData(prhs[0]), (float*)mxGetImagData(plhs[0]),&params);
+  }else{
+    rwt_errormsg("unsupported data type");
+  }
 }
 

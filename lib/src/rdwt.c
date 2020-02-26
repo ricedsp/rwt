@@ -54,12 +54,12 @@ void rdwt_convolution(double *x_in, size_t lx, double *coeff_low, double *coeff_
  */
 void rdwt_allocate(size_t m, size_t n, int ncoeff, double **x_dummy_low, double **x_dummy_high, double **y_dummy_low_low, 
   double **y_dummy_low_high, double **y_dummy_high_low, double **y_dummy_high_high, double **coeff_low, double **coeff_high) {
-  *x_dummy_low       = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
-  *x_dummy_high      = (double *) rwt_calloc(max(m,n)+ncoeff-1, sizeof(double));
-  *y_dummy_low_low   = (double *) rwt_calloc(max(m,n),          sizeof(double));
-  *y_dummy_low_high  = (double *) rwt_calloc(max(m,n),          sizeof(double));
-  *y_dummy_high_low  = (double *) rwt_calloc(max(m,n),          sizeof(double));
-  *y_dummy_high_high = (double *) rwt_calloc(max(m,n),          sizeof(double));
+  *x_dummy_low       = (double *) rwt_calloc(MAX(m,n)+ncoeff-1, sizeof(double));
+  *x_dummy_high      = (double *) rwt_calloc(MAX(m,n)+ncoeff-1, sizeof(double));
+  *y_dummy_low_low   = (double *) rwt_calloc(MAX(m,n),          sizeof(double));
+  *y_dummy_low_high  = (double *) rwt_calloc(MAX(m,n),          sizeof(double));
+  *y_dummy_high_low  = (double *) rwt_calloc(MAX(m,n),          sizeof(double));
+  *y_dummy_high_high = (double *) rwt_calloc(MAX(m,n),          sizeof(double));
   *coeff_low         = (double *) rwt_calloc(ncoeff,            sizeof(double));
   *coeff_high        = (double *) rwt_calloc(ncoeff,            sizeof(double));
 }

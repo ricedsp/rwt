@@ -1,19 +1,19 @@
 function [y,L] = mdwt(x,h,L)
-%    [y,L] = mdwt(x,h,L);
+%    [y,L] = mdwt(x,h[,L[,transdims]]);
 %
 %    Function computes the discrete wavelet transform y for a 1D or 2D input
 %    signal x using the scaling filter h.
 %
 %    Input:
-%	x : finite length 1D or 2D signal (implicitly periodized)
+%       x : input matrix or nd array ( transform will be done on leading 1 or 2 dims)
 %       h : scaling filter
-%       L : number of levels. In the case of a 1D signal, length(x) must be
-%           divisible by 2^L; in the case of a 2D signal, the row and the
-%           column dimension must be divisible by 2^L. If no argument is
-%           specified, a full DWT is returned for maximal possible L.
+%       L : number of levels. In the case of a 1D transform, size(x,1) must be
+%           divisible by 2^L; for a 2D transform, size(x,2) must also be
+%           divisible by 2^L. The default is the maximal possible L.
+%       transdims: 1 or 2 dimensional transform, default is 2 (if size allows )
 %
 %    Output:
-%       y : the wavelet transform of the signal 
+%       y : the wavelet transform of the signal
 %           (see example to understand the coefficients)
 %       L : number of decomposition levels
 %
@@ -36,7 +36,7 @@ function [y,L] = mdwt(x,h,L)
 %
 %    2D Example:
 %
-%       load test_image        
+%       load test_image
 %       h = daubcqf(4,'min');
 %       L = 1;
 %       [y,L] = mdwt(test_image,h,L);
@@ -58,16 +58,21 @@ function [y,L] = mdwt(x,h,L)
 %              |   L,H   |  H,H   |
 %              |         |        |
 %              `------------------'
-%       
-%       where 
+%
+%       where
 %            1 : High pass vertically and high pass horizontally
 %            2 : Low pass vertically and high pass horizontally
 %            3 : High pass vertically and low  pass horizontally
-%            4 : Low pass vertically and Low pass horizontally 
+%            4 : Low pass vertically and Low pass horizontally
 %                (scaling coefficients)
 %
+%    4D Tensor with 2D transforms across leading  Example:
 %
-%
+%       x=randn(64,64,3,2);
+%       h=[1,1]*sqrt(.5);
+%       y=mdwt(x,h);
+%       y22 = mdwt(x(:,:,2,2),h);
+%       assert (norm(y(:,:,2,2) - y22 ) < 1e-9)
 %
 %    See also: midwt, mrdwt, mirdwt
 %
@@ -76,7 +81,7 @@ if exist('OCTAVE_VERSION', 'builtin')
   x = x * 1.0;
   if (exist('L'))
     [y,L] = omdwt(x,h,L);
-  else  
+  else
     [y,L] = omdwt(x,h);
   end
 else

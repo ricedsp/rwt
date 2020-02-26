@@ -32,12 +32,20 @@
  *
  */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  double *x, *y;
   rwt_init_params params = rwt_matlab_init(nlhs, plhs, nrhs, prhs, INVERSE_DWT);
-  y = mxGetPr(prhs[0]);
-  x = mxGetPr(plhs[0]);
   plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
   *mxGetPr(plhs[1]) = params.levels;
-  idwt(x, params.nrows, params.ncols, params.scalings, params.ncoeff, params.levels, y);
+
+  if ( mxIsDouble(prhs[0]) ) {
+      idwt_double((double*)mxGetData(plhs[0]), (double*)mxGetData(prhs[0]), &params);
+      if ( mxIsComplex(prhs[0]) )
+          idwt_double((double*)mxGetImagData(plhs[0]), (double*)mxGetImagData(prhs[0]),&params);
+  }else if (mxIsSingle(prhs[0])){
+      idwt_float((float*)mxGetData(plhs[0]), (float*)mxGetData(prhs[0]),&params);
+      if ( mxIsComplex(prhs[0]) )
+          idwt_float((float*)mxGetImagData(plhs[0]), (float*)mxGetImagData(prhs[0]),&params);
+  }else{
+      rwt_errormsg("unsupported data type");
+  }
 }
 

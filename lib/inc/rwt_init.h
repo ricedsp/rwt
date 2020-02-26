@@ -6,19 +6,22 @@
 
 #include "rwt_platform.h"
 
+typedef struct {
+size_t nrows;     /*!< The number of rows in the input matrix. Output matrix will match.  */
+size_t ncols;     /*!< The number of columns in the input matrix. Output matrix will match. */
+size_t nmats;     /*!< The number of matrices (actually just the product of any dimensions past 2) */
+int levels;       /*!< L, the number of levels for the transform. */
+int ncoeff;       /*!< Length of h / the number of scaling coefficients */
+double *scalings; /*!< Wavelet scaling coefficients */
+} rwt_init_params;
+
+typedef enum {NORMAL_DWT, REDUNDANT_DWT, INVERSE_DWT, INVERSE_REDUNDANT_DWT} transform_t;
+
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   #include "mex.h"
   #ifndef OCTAVE_MEX_FILE
     #include "matrix.h"
   #endif
-  typedef struct {
-    size_t nrows;     /*!< The number of rows in the input matrix. Output matrix will match.  */
-    size_t ncols;     /*!< The number of columns in the input matrix. Output matrix will match. */
-    int levels;       /*!< L, the number of levels for the transform. */
-    int ncoeff;       /*!< Length of h / the number of scaling coefficients */
-    double *scalings; /*!< Wavelet scaling coefficients */
-  } rwt_init_params;
-  typedef enum {NORMAL_DWT, REDUNDANT_DWT, INVERSE_DWT, INVERSE_REDUNDANT_DWT} transform_t;
 #endif
 
 #ifdef __cplusplus
